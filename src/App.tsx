@@ -337,7 +337,6 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [actionsError, setActionsError] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
-  const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
   const [isReminderDialogOpen, setIsReminderDialogOpen] = useState(false);
   const [isRemindersManagerOpen, setIsRemindersManagerOpen] = useState(false);
@@ -624,7 +623,7 @@ function App() {
     setSelectedBlock(null);
     setBlockPendingDelete(null);
     setError(null);
-    setIsActionsOpen(false);
+    setIsVisualSettingsOpen(false);
   }
 
   function clearDay() {
@@ -633,7 +632,7 @@ function App() {
     setSelectedBlock(null);
     setBlockPendingDelete(null);
     setError(null);
-    setIsActionsOpen(false);
+    setIsVisualSettingsOpen(false);
   }
 
   function exportJson() {
@@ -646,7 +645,7 @@ function App() {
     anchor.download = 'chronodex-blocos.json';
     anchor.click();
     URL.revokeObjectURL(url);
-    setIsActionsOpen(false);
+    setIsVisualSettingsOpen(false);
   }
 
   async function importJson(event: ChangeEvent<HTMLInputElement>) {
@@ -669,7 +668,7 @@ function App() {
       setEditingBlock(null);
       setSelectedBlock(null);
       setError(null);
-      setIsActionsOpen(false);
+      setIsVisualSettingsOpen(false);
     } catch {
       setError(messages.importFailureError);
     } finally {
@@ -914,29 +913,12 @@ function App() {
           </button>
           <button
             type="button"
-            aria-label={messages.actions}
-            onClick={() => {
-              setActionsError(null);
-              setIsActionsOpen(true);
-            }}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
-          >
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="h-4 w-4"
-              fill="currentColor"
-            >
-              <circle cx="5" cy="12" r="1.5" />
-              <circle cx="12" cy="12" r="1.5" />
-              <circle cx="19" cy="12" r="1.5" />
-            </svg>
-          </button>
-          <button
-            type="button"
             aria-label={messages.visualSettings}
             title={messages.visualSettings}
-            onClick={() => setIsVisualSettingsOpen(true)}
+            onClick={() => {
+              setActionsError(null);
+              setIsVisualSettingsOpen(true);
+            }}
             className="flex h-11 w-11 items-center justify-center rounded-xl border border-black bg-white text-black transition hover:bg-black hover:text-white dark:border-white dark:bg-[#191919] dark:text-white dark:hover:bg-white dark:hover:text-black"
           >
             <svg
@@ -1078,105 +1060,6 @@ function App() {
             </svg>
           </a>
         </div>
-
-        {isActionsOpen ? (
-          <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4">
-            <button
-              type="button"
-              aria-label={messages.closeActions}
-              className="absolute inset-0 cursor-default"
-              onClick={() => setIsActionsOpen(false)}
-            />
-            <section className="modal-panel-in relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
-              <div className="mb-5 flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-sm font-medium text-black dark:text-white">
-                    {messages.actions}
-                  </h2>
-                  <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
-                    {messages.actionsDescription}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  aria-label={messages.closeActions}
-                  onClick={() => setIsActionsOpen(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
-                >
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                  >
-                    <path d="M6 6l12 12" />
-                    <path d="M18 6L6 18" />
-                  </svg>
-                </button>
-              </div>
-              <div className="grid gap-2">
-                <button
-                  type="button"
-                  onClick={enableNotifications}
-                  disabled={notificationPermission === 'granted'}
-                  className="rounded-xl border border-black bg-black px-4 py-3 text-left text-sm font-medium text-white transition hover:bg-gray-800 disabled:opacity-50 dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-200"
-                >
-                  {notificationPermission === 'granted'
-                    ? messages.notificationsEnabled
-                    : messages.enableNotifications}
-                </button>
-                <button
-                  type="button"
-                  onClick={scheduleTestNotification}
-                  disabled={notificationPermission !== 'granted'}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
-                >
-                  {messages.testNotification}
-                </button>
-                <button
-                  type="button"
-                  onClick={loadExample}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
-                >
-                  {messages.loadExample}
-                </button>
-                <button
-                  type="button"
-                  onClick={exportJson}
-                  disabled={blocks.length === 0}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
-                >
-                  {messages.exportJson}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => importInputRef.current?.click()}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
-                >
-                  {messages.importJson}
-                </button>
-                <button
-                  type="button"
-                  onClick={clearDay}
-                  disabled={blocks.length === 0}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-red-700 transition hover:border-red-200 hover:bg-red-50 disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-red-400 dark:hover:bg-red-950/30"
-                >
-                  {messages.clearDay}
-                </button>
-              </div>
-
-              {actionsError ? (
-                <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
-                  {actionsError}
-                </div>
-              ) : null}
-
-            </section>
-          </div>
-        ) : null}
 
         <div
           className={[
@@ -1461,7 +1344,7 @@ function App() {
               className="absolute inset-0 cursor-default"
               onClick={cancelDeleteBlock}
             />
-            <section className="modal-panel-in relative w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
+            <section className="modal-panel-in relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
               <div className="mb-5">
                 <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-red-600 dark:text-red-400">
                   {messages.delete}
@@ -1594,23 +1477,93 @@ function App() {
                 </button>
               </div>
 
-              <label className="block">
-                <span className="flex items-center justify-between gap-4 text-xs font-medium text-gray-600 dark:text-neutral-400">
-                  <span>{messages.blockOpacity}</span>
-                  <span className="text-black dark:text-white">
-                    {Math.round(blockOpacity * 100)}%
+              <div className="space-y-6">
+                <label className="block">
+                  <span className="flex items-center justify-between gap-4 text-xs font-medium text-gray-600 dark:text-neutral-400">
+                    <span>{messages.blockOpacity}</span>
+                    <span className="text-black dark:text-white">
+                      {Math.round(blockOpacity * 100)}%
+                    </span>
                   </span>
-                </span>
-                <input
-                  type="range"
-                  min="0.2"
-                  max="0.8"
-                  step="0.02"
-                  value={blockOpacity}
-                  onChange={(event) => setBlockOpacity(Number(event.target.value))}
-                  className="mt-4 w-full accent-black dark:accent-white"
-                />
-              </label>
+                  <input
+                    type="range"
+                    min="0.2"
+                    max="0.8"
+                    step="0.02"
+                    value={blockOpacity}
+                    onChange={(event) => setBlockOpacity(Number(event.target.value))}
+                    className="mt-4 w-full accent-black dark:accent-white"
+                  />
+                </label>
+
+                <div className="border-t border-gray-200 pt-5 dark:border-neutral-800">
+                  <div className="mb-4">
+                    <h3 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500 dark:text-neutral-500">
+                      {messages.actions}
+                    </h3>
+                    <p className="mt-2 text-xs text-gray-500 dark:text-neutral-400">
+                      {messages.actionsDescription}
+                    </p>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <button
+                      type="button"
+                      onClick={enableNotifications}
+                      disabled={notificationPermission === 'granted'}
+                      className="rounded-xl border border-black bg-black px-4 py-3 text-left text-sm font-medium text-white transition hover:bg-gray-800 disabled:opacity-50 dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                    >
+                      {notificationPermission === 'granted'
+                        ? messages.notificationsEnabled
+                        : messages.enableNotifications}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={scheduleTestNotification}
+                      disabled={notificationPermission !== 'granted'}
+                      className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
+                    >
+                      {messages.testNotification}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={loadExample}
+                      className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
+                    >
+                      {messages.loadExample}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={exportJson}
+                      disabled={blocks.length === 0}
+                      className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
+                    >
+                      {messages.exportJson}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => importInputRef.current?.click()}
+                      className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
+                    >
+                      {messages.importJson}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearDay}
+                      disabled={blocks.length === 0}
+                      className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-red-700 transition hover:border-red-200 hover:bg-red-50 disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-red-400 dark:hover:bg-red-950/30"
+                    >
+                      {messages.clearDay}
+                    </button>
+                  </div>
+
+                  {actionsError ? (
+                    <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+                      {actionsError}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             </section>
           </div>
         ) : null}
