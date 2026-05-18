@@ -121,10 +121,11 @@ export function ChronodexView({
               r="100"
               stroke="currentColor"
               strokeWidth="0.9"
-              className="fill-white dark:fill-[#111111]"
+              className="chronodex-line-draw fill-white dark:fill-[#111111]"
+              pathLength={1}
             />
 
-            {guideRings.map((ring) => (
+            {guideRings.map((ring, ringIndex) => (
               <g key={ring.period}>
                 <circle
                   cx="250"
@@ -133,6 +134,9 @@ export function ChronodexView({
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="0.55"
+                  className="chronodex-line-draw"
+                  style={{ animationDelay: `${ringIndex * 120}ms` }}
+                  pathLength={1}
                 />
                 <circle
                   cx="250"
@@ -141,6 +145,9 @@ export function ChronodexView({
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="0.55"
+                  className="chronodex-line-draw"
+                  style={{ animationDelay: `${60 + ringIndex * 120}ms` }}
+                  pathLength={1}
                 />
                 {hourIndexes.map((hour) => {
                   const start = hour * 60 - 26;
@@ -161,6 +168,9 @@ export function ChronodexView({
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="0.62"
+                      className="chronodex-line-draw"
+                      style={{ animationDelay: `${180 + hour * 18 + ringIndex * 80}ms` }}
+                      pathLength={1}
                     />
                   );
                 })}
@@ -186,6 +196,8 @@ export function ChronodexView({
                       stroke="currentColor"
                       strokeWidth={isHour ? 0.62 : 0.34}
                       strokeLinecap="round"
+                      className="chronodex-tick-draw"
+                      style={{ animationDelay: `${280 + tick * 7 + ringIndex * 90}ms` }}
                     />
                   );
                 })}
@@ -205,7 +217,8 @@ export function ChronodexView({
                       y={point.y}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      className="fill-gray-600 text-[8.5px] font-medium dark:fill-neutral-400"
+                      className="chronodex-label-in fill-gray-600 text-[8.5px] font-medium dark:fill-neutral-400"
+                      style={{ animationDelay: `${520 + hour * 24 + ringIndex * 80}ms` }}
                     >
                       {formatHourLabel(hour, ring.period)}
                     </text>
@@ -230,7 +243,7 @@ export function ChronodexView({
               ))}
             </g>
 
-            {[0, 3, 6, 9].map((hour) => {
+            {[0, 3, 6, 9].map((hour, index) => {
               const point = polarToCartesian(250, 250, 236, minutesToChronodexAngle(hour * 60));
               return (
                 <circle
@@ -240,7 +253,8 @@ export function ChronodexView({
                   r="9.5"
                   stroke="currentColor"
                   strokeWidth="0.9"
-                  className="pointer-events-none fill-white dark:fill-[#111111]"
+                  className="chronodex-node-in pointer-events-none fill-white dark:fill-[#111111]"
+                  style={{ animationDelay: `${680 + index * 70}ms` }}
                 />
               );
             })}

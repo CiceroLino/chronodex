@@ -60,10 +60,11 @@ export function ChronodexArc({
                 angles.endAngle,
               )}
               fill={block.color}
-            stroke={isSelected || block.highlighted ? 'currentColor' : '#262626'}
+              stroke={isSelected || block.highlighted ? 'currentColor' : '#262626'}
               strokeWidth={isSelected || isActive || block.highlighted ? 1 : 0.55}
               opacity={block.highlighted ? 0.74 : isActive ? 0.7 : 0.52}
-              className="cursor-pointer transition-opacity duration-150 hover:opacity-75"
+              className="chronodex-block-in cursor-pointer transition-opacity duration-150 hover:opacity-75"
+              style={{ animationDelay: `${index * 80}ms` }}
               role="button"
               tabIndex={0}
               aria-label={`${block.title}, ${block.startTime} até ${block.endTime}`}

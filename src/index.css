@@ -70,6 +70,91 @@ button:disabled {
   animation: modal-panel-in 180ms ease-out;
 }
 
+@keyframes chronodex-line-draw {
+  from {
+    opacity: 0;
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes chronodex-tick-draw {
+  from {
+    opacity: 0;
+    transform: scaleY(0.35);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes chronodex-label-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes chronodex-node-in {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes chronodex-block-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.chronodex-line-draw {
+  animation: chronodex-line-draw 760ms ease-out both;
+  stroke-dasharray: 1;
+}
+
+.chronodex-tick-draw {
+  animation: chronodex-tick-draw 360ms ease-out both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.chronodex-label-in {
+  animation: chronodex-label-in 360ms ease-out both;
+}
+
+.chronodex-node-in {
+  animation: chronodex-node-in 420ms ease-out both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.chronodex-block-in {
+  animation: chronodex-block-in 520ms ease-out both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
 @keyframes spider-legend-in {
   from {
     opacity: 0;
