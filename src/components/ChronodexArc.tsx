@@ -10,6 +10,8 @@ type ChronodexArcProps = {
   isActive: boolean;
   isSelected: boolean;
   onSelect: (block: TimeBlock) => void;
+  onHover: (block: TimeBlock, position: { x: number; y: number }) => void;
+  onLeave: () => void;
 };
 
 export function ChronodexArc({
@@ -17,6 +19,8 @@ export function ChronodexArc({
   isActive,
   isSelected,
   onSelect,
+  onHover,
+  onLeave,
 }: ChronodexArcProps) {
   const ranges = splitBlockRangeByHalfDay(block);
 
@@ -48,6 +52,19 @@ export function ChronodexArc({
             tabIndex={0}
             aria-label={`${block.title}, ${block.startTime} até ${block.endTime}`}
             onClick={() => onSelect(block)}
+            onPointerMove={(event) => {
+              const bounds = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
+
+              if (!bounds) {
+                return;
+              }
+
+              onHover(block, {
+                x: event.clientX - bounds.left,
+                y: event.clientY - bounds.top,
+              });
+            }}
+            onPointerLeave={onLeave}
             onKeyDown={(event) => {
               if (event.key === 'Enter' || event.key === ' ') {
                 onSelect(block);

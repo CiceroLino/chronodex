@@ -245,9 +245,9 @@ function App() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f7f7] text-black">
-      <div className="grid min-h-screen lg:grid-cols-[390px_minmax(0,1fr)]">
-        <section className="border-b border-gray-200 bg-white px-6 py-7 lg:border-b-0 lg:border-r lg:px-7">
+    <main className="min-h-screen bg-[#f7f7f7] text-black lg:h-screen lg:overflow-hidden">
+      <div className="grid min-h-screen lg:h-screen lg:min-h-0 lg:grid-cols-[390px_minmax(0,1fr)]">
+        <section className="border-b border-gray-200 bg-white px-6 py-7 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-7">
           <header className="mb-9">
             <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500">
               Planejamento diário

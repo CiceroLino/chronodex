@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { TimeBlock } from '../types';
 import {
   describeAnnularSector,
@@ -40,6 +41,10 @@ export function ChronodexView({
   selectedBlock,
   onSelectBlock,
 }: ChronodexViewProps) {
+  const [hoveredBlock, setHoveredBlock] = useState<{
+    block: TimeBlock;
+    position: { x: number; y: number };
+  } | null>(null);
   const currentMinute = now.getHours() * 60 + now.getMinutes();
   const activeBlock = blocks.find((block) => isMinuteInsideBlock(currentMinute, block)) ?? null;
   const footerCards = [
@@ -65,8 +70,8 @@ export function ChronodexView({
   ];
 
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center gap-8 bg-[#f7f7f7] px-8 py-10 lg:px-14">
-      <div className="relative w-full max-w-[820px]">
+    <section className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f7f7f7] px-6 py-6 lg:h-screen lg:min-h-0 lg:overflow-hidden lg:px-10">
+      <div className="relative w-full max-w-[680px] lg:w-[min(760px,calc(100vh-176px))] lg:max-w-none">
         <div className="relative mx-auto aspect-square w-full">
           <svg
             viewBox="0 0 500 500"
@@ -179,12 +184,16 @@ export function ChronodexView({
                   isActive={activeBlock?.id === block.id}
                   isSelected={selectedBlock?.id === block.id}
                   onSelect={onSelectBlock}
+                  onHover={(nextBlock, position) => {
+                    setHoveredBlock({ block: nextBlock, position });
+                  }}
+                  onLeave={() => setHoveredBlock(null)}
                 />
               ))}
             </g>
 
             {[0, 3, 6, 9].map((hour) => {
-              const point = polarToCartesian(250, 250, 226, minutesToChronodexAngle(hour * 60));
+              const point = polarToCartesian(250, 250, 236, minutesToChronodexAngle(hour * 60));
               return (
                 <circle
                   key={`node-${hour}`}
@@ -194,6 +203,7 @@ export function ChronodexView({
                   fill="#ffffff"
                   stroke="#111111"
                   strokeWidth="0.9"
+                  className="pointer-events-none"
                 />
               );
             })}
@@ -202,11 +212,32 @@ export function ChronodexView({
           </svg>
 
           <StatsPanel blocks={blocks} now={now} />
+
+          {hoveredBlock ? (
+            <div
+              className="pointer-events-none absolute z-10 max-w-64 rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-xs text-gray-600"
+              style={{
+                left: `${hoveredBlock.position.x}px`,
+                top: `${hoveredBlock.position.y}px`,
+                transform: 'translate(14px, -50%)',
+              }}
+            >
+              <p className="text-sm font-medium text-black">{hoveredBlock.block.title}</p>
+              <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-gray-500">
+                {hoveredBlock.block.startTime} - {hoveredBlock.block.endTime}
+              </p>
+              {hoveredBlock.block.description ? (
+                <p className="mt-2 leading-5 text-gray-600">
+                  {hoveredBlock.block.description}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </div>
 
       {selectedBlock ? (
-        <div className="w-full max-w-[820px] border-t border-gray-200 pt-4 text-center">
+        <div className="w-full max-w-[760px] border-t border-gray-200 pt-3 text-center">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
             {selectedBlock.category}
           </p>
@@ -218,9 +249,9 @@ export function ChronodexView({
         </div>
       ) : null}
 
-      <div className="grid w-full max-w-[980px] grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid w-full max-w-[900px] grid-cols-2 gap-2 lg:grid-cols-4">
         {footerCards.map((card) => (
-          <div key={card.label} className="rounded-2xl border border-gray-200 bg-white px-5 py-4">
+          <div key={card.label} className="rounded-2xl border border-gray-200 bg-white px-4 py-3">
             <p className="truncate text-sm font-light text-black">{card.value}</p>
             <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500">
               {card.label}
