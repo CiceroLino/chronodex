@@ -303,6 +303,7 @@ function App() {
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
   const [isMobileBlocksOpen, setIsMobileBlocksOpen] = useState(false);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [theme, setTheme] = useState<Theme>(() => readStoredTheme());
   const [locale, setLocale] = useState<AppLocale>(() => readStoredLocale());
@@ -722,22 +723,33 @@ function App() {
           </select>
         </div>
 
-        <a
-          href="https://github.com/CiceroLino/chronodex"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Open GitHub repository"
-          className="fixed right-4 top-4 z-40 flex h-12 w-12 items-center justify-center rounded-xl border border-black bg-black text-white ring-4 ring-black/8 transition hover:bg-gray-800 dark:border-white dark:bg-white dark:text-black dark:ring-white/10 dark:hover:bg-neutral-200 lg:right-6 lg:top-6"
-        >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            className="h-5 w-5"
-            fill="currentColor"
+        <div className="fixed right-4 top-4 z-40 flex gap-2 lg:right-6 lg:top-6">
+          <button
+            type="button"
+            aria-label={messages.help}
+            title={messages.help}
+            onClick={() => setIsHelpOpen(true)}
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-black bg-black text-sm font-semibold text-white ring-4 ring-black/8 transition hover:bg-gray-800 dark:border-white dark:bg-white dark:text-black dark:ring-white/10 dark:hover:bg-neutral-200"
           >
-            <path d="M12 2C6.48 2 2 6.58 2 12.22c0 4.52 2.87 8.35 6.84 9.7.5.1.68-.22.68-.49v-1.74c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.56 2.35 1.11 2.92.85.09-.67.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.05 0-1.11.39-2.02 1.03-2.74-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.04A9.3 9.3 0 0 1 12 6.95c.85 0 1.7.12 2.5.34 1.9-1.32 2.74-1.04 2.74-1.04.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.74 0 3.92-2.34 4.78-4.57 5.04.36.32.68.95.68 1.92v2.78c0 .27.18.59.69.49A10.15 10.15 0 0 0 22 12.22C22 6.58 17.52 2 12 2Z" />
-          </svg>
-        </a>
+            ?
+          </button>
+          <a
+            href="https://github.com/CiceroLino/chronodex"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open GitHub repository"
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-black bg-black text-white ring-4 ring-black/8 transition hover:bg-gray-800 dark:border-white dark:bg-white dark:text-black dark:ring-white/10 dark:hover:bg-neutral-200"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              fill="currentColor"
+            >
+              <path d="M12 2C6.48 2 2 6.58 2 12.22c0 4.52 2.87 8.35 6.84 9.7.5.1.68-.22.68-.49v-1.74c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.56 2.35 1.11 2.92.85.09-.67.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.05 0-1.11.39-2.02 1.03-2.74-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.04A9.3 9.3 0 0 1 12 6.95c.85 0 1.7.12 2.5.34 1.9-1.32 2.74-1.04 2.74-1.04.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.74 0 3.92-2.34 4.78-4.57 5.04.36.32.68.95.68 1.92v2.78c0 .27.18.59.69.49A10.15 10.15 0 0 0 22 12.22C22 6.58 17.52 2 12 2Z" />
+            </svg>
+          </a>
+        </div>
 
         {isActionsOpen ? (
           <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4">
@@ -1064,6 +1076,74 @@ function App() {
                 </button>
               </div>
               <SpiderDashboard blocks={blocks} locale={locale} />
+            </section>
+          </div>
+        ) : null}
+
+        {isHelpOpen ? (
+          <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
+            <button
+              type="button"
+              aria-label={messages.closeForm}
+              className="absolute inset-0 cursor-default"
+              onClick={() => setIsHelpOpen(false)}
+            />
+            <section className="modal-panel-in relative w-full max-w-md overflow-hidden rounded-2xl border border-black bg-white p-5 shadow-[0_14px_38px_rgba(0,0,0,0.10)] dark:border-white/40 dark:bg-[#171717] dark:shadow-[0_14px_38px_rgba(0,0,0,0.35)]">
+              <span
+                aria-hidden="true"
+                className="absolute left-0 top-0 h-1 w-full bg-black dark:bg-white"
+              />
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-gray-500 dark:text-neutral-500">
+                    {messages.help}
+                  </p>
+                  <h2 className="mt-2 text-base font-medium text-black dark:text-white">
+                    {messages.helpTitle}
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-gray-500 dark:text-neutral-400">
+                    {messages.helpDescription}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label={messages.closeForm}
+                  onClick={() => setIsHelpOpen(false)}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="1.8"
+                  >
+                    <path d="M6 6l12 12" />
+                    <path d="M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-5 border-t border-gray-200 pt-5 dark:border-neutral-800">
+                <section>
+                  <h3 className="text-xs font-medium uppercase tracking-[0.16em] text-black dark:text-white">
+                    {messages.helpHowItWorks}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-neutral-300">
+                    {messages.helpHowItWorksDescription}
+                  </p>
+                </section>
+                <section className="border-t border-gray-200 pt-5 dark:border-neutral-800">
+                  <h3 className="text-xs font-medium uppercase tracking-[0.16em] text-black dark:text-white">
+                    {messages.helpStorage}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-neutral-300">
+                    {messages.helpStorageDescription}
+                  </p>
+                </section>
+              </div>
             </section>
           </div>
         ) : null}

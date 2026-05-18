@@ -53,6 +53,13 @@ type Messages = {
   openDayBlocks: string;
   highlightedBlock: string;
   highlightedBlockDescription: string;
+  help: string;
+  helpDescription: string;
+  helpHowItWorks: string;
+  helpHowItWorksDescription: string;
+  helpStorage: string;
+  helpStorageDescription: string;
+  helpTitle: string;
   hoursPlanned: string;
   importJson: string;
   invalidImportError: string;
@@ -114,6 +121,13 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     openDayBlocks: 'Abrir blocos do dia',
     highlightedBlock: 'Destacar bloco',
     highlightedBlockDescription: 'Renderiza por cima de sobreposições e marca no painel.',
+    help: 'Ajuda',
+    helpDescription: 'Como o Chronodex funciona e onde seus dados ficam salvos.',
+    helpHowItWorks: 'Como funciona',
+    helpHowItWorksDescription: 'Crie blocos de tempo, escolha uma categoria e veja cada atividade encaixada no anel AM/PM. O dashboard mostra a distribuição das 24 horas por categoria.',
+    helpStorage: 'Armazenamento local',
+    helpStorageDescription: 'Todas as informações são salvas no localStorage, a memória do seu próprio navegador. Elas não são enviadas para servidor e podem sumir se você limpar os dados do navegador.',
+    helpTitle: 'Sobre este Chronodex',
     hoursPlanned: 'horas planejadas',
     importJson: 'Importar JSON',
     invalidImportError: 'O arquivo não contém blocos válidos.',
@@ -173,6 +187,13 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     openDayBlocks: 'Abrir bloques del día',
     highlightedBlock: 'Destacar bloque',
     highlightedBlockDescription: 'Se renderiza encima de solapamientos y se marca en el panel.',
+    help: 'Ayuda',
+    helpDescription: 'Cómo funciona Chronodex y dónde se guardan tus datos.',
+    helpHowItWorks: 'Cómo funciona',
+    helpHowItWorksDescription: 'Crea bloques de tiempo, elige una categoría y ve cada actividad encajada en el anillo AM/PM. El dashboard muestra la distribución de las 24 horas por categoría.',
+    helpStorage: 'Almacenamiento local',
+    helpStorageDescription: 'Toda la información se guarda en localStorage, la memoria de tu propio navegador. No se envía a ningún servidor y puede desaparecer si limpias los datos del navegador.',
+    helpTitle: 'Acerca de este Chronodex',
     hoursPlanned: 'horas planificadas',
     importJson: 'Importar JSON',
     invalidImportError: 'El archivo no contiene bloques válidos.',
@@ -232,6 +253,13 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     openDayBlocks: 'Open day blocks',
     highlightedBlock: 'Highlight block',
     highlightedBlockDescription: 'Renders above overlaps and marks it in the panel.',
+    help: 'Help',
+    helpDescription: 'How Chronodex works and where your data is stored.',
+    helpHowItWorks: 'How it works',
+    helpHowItWorksDescription: 'Create time blocks, choose a category, and see each activity fitted into the AM/PM ring. The dashboard shows the 24-hour distribution by category.',
+    helpStorage: 'Local storage',
+    helpStorageDescription: 'All information is saved in localStorage, the memory of your own browser. It is not sent to a server and may disappear if you clear browser data.',
+    helpTitle: 'About this Chronodex',
     hoursPlanned: 'planned hours',
     importJson: 'Import JSON',
     invalidImportError: 'The file does not contain valid blocks.',
@@ -291,6 +319,13 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     openDayBlocks: '今日のブロックを開く',
     highlightedBlock: 'ブロックを強調',
     highlightedBlockDescription: '重なりの上に表示し、パネルに印を付けます。',
+    help: 'ヘルプ',
+    helpDescription: 'Chronodexの仕組みとデータの保存場所。',
+    helpHowItWorks: '仕組み',
+    helpHowItWorksDescription: '時間ブロックを作成し、カテゴリを選ぶと、各活動がAM/PMリングに配置されます。ダッシュボードでは24時間のカテゴリ別配分を確認できます。',
+    helpStorage: 'ローカル保存',
+    helpStorageDescription: 'すべての情報はlocalStorage、つまり自分のブラウザ内のメモリに保存されます。サーバーには送信されず、ブラウザデータを削除すると消える場合があります。',
+    helpTitle: 'このChronodexについて',
     hoursPlanned: '計画時間',
     importJson: 'JSONを読み込む',
     invalidImportError: '有効なブロックが含まれていません。',
