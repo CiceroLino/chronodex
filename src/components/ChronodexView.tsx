@@ -3,7 +3,6 @@ import {
   formatLocalizedDuration,
   getCategoryLabel,
   getMessages,
-  INTL_LOCALES,
   type AppLocale,
 } from '../i18n';
 import { CATEGORIES, CATEGORY_COLORS, type TimeBlock } from '../types';
@@ -12,7 +11,6 @@ import {
   getChronodexAngleRange,
   getDuration,
   getBlockProgressPercent,
-  getTotalPlannedMinutes,
   isMinuteInsideBlock,
   minutesToChronodexAngle,
   polarToCartesian,
@@ -62,27 +60,6 @@ export function ChronodexView({
     ? getBlockProgressPercent(currentMinute, activeBlock)
     : null;
   const chronodexBlocks = sortBlocksForChronodex(blocks);
-  const footerCards = [
-    {
-      label: messages.hoursPlanned,
-      value: formatLocalizedDuration(getTotalPlannedMinutes(blocks), locale),
-    },
-    {
-      label: messages.totalBlocks,
-      value: String(blocks.length),
-    },
-    {
-      label: messages.activeBlock,
-      value: activeBlock?.title ?? messages.free,
-    },
-    {
-      label: messages.timeNow,
-      value: new Intl.DateTimeFormat(INTL_LOCALES[locale], {
-        hour: '2-digit',
-        minute: '2-digit',
-      }).format(now),
-    },
-  ];
 
   return (
     <section className="relative flex min-h-[680px] flex-col items-center justify-center gap-4 bg-[#f7f7f7] px-4 pb-28 pt-8 transition-colors dark:bg-[#111111] sm:min-h-[760px] sm:px-6 lg:h-screen lg:min-h-0 lg:overflow-hidden lg:px-10 lg:py-6">
@@ -363,17 +340,6 @@ export function ChronodexView({
             </p>
           </div>
         ) : null}
-      </div>
-
-      <div className="grid w-full max-w-[900px] grid-cols-2 gap-2 lg:grid-cols-4">
-        {footerCards.map((card) => (
-          <div key={card.label} className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]">
-            <p className="truncate text-sm font-light text-black dark:text-white">{card.value}</p>
-            <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
-              {card.label}
-            </p>
-          </div>
-        ))}
       </div>
     </section>
   );
