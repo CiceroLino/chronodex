@@ -17,6 +17,7 @@ const emptyForm: FormState = {
   endTime: '10:00',
   category: 'Trabalho',
   color: CATEGORY_COLORS.Trabalho,
+  highlighted: false,
 };
 
 export function TimeBlockForm({
@@ -154,6 +155,21 @@ export function TimeBlockForm({
           />
         </div>
       </div>
+
+      <label className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm text-gray-700">
+        <input
+          type="checkbox"
+          checked={form.highlighted === true}
+          onChange={(event) => updateField('highlighted', event.target.checked)}
+          className="h-4 w-4 accent-black"
+        />
+        <span className="flex min-w-0 flex-col">
+          <span className="font-medium text-black">Destacar bloco</span>
+          <span className="mt-0.5 text-xs text-gray-500">
+            Renderiza por cima de sobreposições e marca no painel.
+          </span>
+        </span>
+      </label>
 
       {error ? (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">

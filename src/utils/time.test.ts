@@ -10,6 +10,7 @@ import {
   minutesToTime,
   splitBlockRange,
   splitBlockRangeByHalfDay,
+  sortBlocksForChronodex,
   timeToMinutes,
 } from './time';
 import type { TimeBlock } from '../types';
@@ -92,6 +93,16 @@ describe('time utilities', () => {
     ]);
 
     expect(overlaps).toEqual(new Set(['work', 'meeting', 'sleep', 'reading']));
+  });
+
+  test('sorts highlighted chronodex blocks after regular blocks for rendering', () => {
+    const regular = block('regular', '09:00', '10:00');
+    const highlighted = { ...block('highlighted', '09:30', '10:30'), highlighted: true };
+
+    expect(sortBlocksForChronodex([highlighted, regular])).toEqual([
+      regular,
+      highlighted,
+    ]);
   });
 
   test('returns an SVG path for an arc segment', () => {

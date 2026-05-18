@@ -15,6 +15,7 @@ export type TimeBlock = {
   endTime: string;
   category: Category;
   color: string;
+  highlighted?: boolean;
 };
 
 export const CATEGORIES: Category[] = [

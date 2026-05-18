@@ -222,3 +222,13 @@ export function getTotalPlannedMinutes(blocks: TimeBlock[]): number {
     0,
   );
 }
+
+export function sortBlocksForChronodex(blocks: TimeBlock[]): TimeBlock[] {
+  return [...blocks].sort((first, second) => {
+    if (first.highlighted === second.highlighted) {
+      return timeToMinutes(first.startTime) - timeToMinutes(second.startTime);
+    }
+
+    return first.highlighted ? 1 : -1;
+  });
+}

@@ -23,6 +23,7 @@ const sampleBlocks: TimeBlock[] = [
     endTime: '07:30',
     category: 'Saúde',
     color: CATEGORY_COLORS.Saúde,
+    highlighted: true,
   },
   {
     id: 'sample-2',
@@ -48,6 +49,7 @@ const sampleBlocks: TimeBlock[] = [
     endTime: '16:30',
     category: 'Estudo',
     color: CATEGORY_COLORS.Estudo,
+    highlighted: true,
   },
   {
     id: 'sample-5',
@@ -116,6 +118,7 @@ function parseBlocks(value: unknown): TimeBlock[] {
         endTime: block.endTime,
         category,
         color: block.color,
+        highlighted: block.highlighted === true,
       },
     ];
   });

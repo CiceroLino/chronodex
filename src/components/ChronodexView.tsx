@@ -9,6 +9,7 @@ import {
   isMinuteInsideBlock,
   minutesToChronodexAngle,
   polarToCartesian,
+  sortBlocksForChronodex,
 } from '../utils/time';
 import { ChronodexArc } from './ChronodexArc';
 import { CurrentTimeIndicator } from './CurrentTimeIndicator';
@@ -47,6 +48,7 @@ export function ChronodexView({
   } | null>(null);
   const currentMinute = now.getHours() * 60 + now.getMinutes();
   const activeBlock = blocks.find((block) => isMinuteInsideBlock(currentMinute, block)) ?? null;
+  const chronodexBlocks = sortBlocksForChronodex(blocks);
   const footerCards = [
     {
       label: 'horas planejadas',
@@ -177,7 +179,7 @@ export function ChronodexView({
             ))}
 
             <g>
-              {blocks.map((block) => (
+              {chronodexBlocks.map((block) => (
                 <ChronodexArc
                   key={block.id}
                   block={block}

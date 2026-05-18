@@ -37,6 +37,7 @@ export function TimeBlockList({
               'border bg-white p-3 transition',
               hasOverlap ? 'border-amber-300 bg-amber-50/40' : 'border-gray-200',
               isActive ? 'border-black' : '',
+              block.highlighted ? 'border-black' : '',
             ].join(' ')}
           >
             <div className="flex items-start gap-3">
@@ -50,8 +51,16 @@ export function TimeBlockList({
                 onClick={() => onEdit(block)}
                 className="min-w-0 flex-1 text-left"
               >
-                <span className="block truncate text-sm font-medium text-black">
-                  {block.title}
+                <span className="flex min-w-0 items-center gap-2">
+                  {block.highlighted ? (
+                    <span
+                      aria-label="Bloco destacado"
+                      className="h-2 w-2 shrink-0 rounded-full bg-black"
+                    />
+                  ) : null}
+                  <span className="block truncate text-sm font-medium text-black">
+                    {block.title}
+                  </span>
                 </span>
                 <span className="mt-1 block text-xs font-normal text-gray-500">
                   {block.startTime} - {block.endTime} ·{' '}
