@@ -721,14 +721,14 @@ function App() {
         </a>
 
         {isActionsOpen ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4">
+          <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4">
             <button
               type="button"
               aria-label={messages.closeActions}
               className="absolute inset-0 cursor-default"
               onClick={() => setIsActionsOpen(false)}
             />
-            <section className="relative w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
+            <section className="modal-panel-in relative w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-sm font-medium text-black dark:text-white">
@@ -887,7 +887,7 @@ function App() {
           </div>
 
         {isBlockDialogOpen ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
+          <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
             <button
               type="button"
               aria-label={messages.closeForm}
@@ -898,7 +898,7 @@ function App() {
                 setError(null);
               }}
             />
-            <section className="relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
+            <section className="modal-panel-in relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-sm font-medium text-black dark:text-white">
@@ -948,14 +948,14 @@ function App() {
         ) : null}
 
         {isDashboardOpen ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
+          <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
             <button
               type="button"
               aria-label={messages.closeDashboard}
               className="absolute inset-0 cursor-default"
               onClick={() => setIsDashboardOpen(false)}
             />
-            <section className="relative max-h-full w-full max-w-3xl overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
+            <section className="modal-panel-in relative max-h-full w-full max-w-3xl overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-sm font-medium text-black dark:text-white">
