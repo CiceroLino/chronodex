@@ -26,7 +26,7 @@ export function ChronodexArc({
   onLeave,
 }: ChronodexArcProps) {
   const ranges = splitBlockRangeByHalfDay(block);
-  const blockOpacity = isSelected ? 0.84 : block.highlighted ? 0.74 : isActive ? 0.76 : 0.52;
+  const blockOpacity = isSelected ? 0.58 : block.highlighted ? 0.5 : isActive ? 0.48 : 0.34;
   const blockStrokeWidth = isSelected ? 1.35 : isActive || block.highlighted ? 1 : 0.55;
 
   return (
