@@ -56,6 +56,7 @@ type Messages = {
   expandSidebar: string;
   expandDayBlocks: string;
   openDayBlocks: string;
+  openReminders: string;
   highlightedBlock: string;
   highlightedBlockDescription: string;
   help: string;
@@ -143,6 +144,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     expandSidebar: 'Expandir painel lateral',
     expandDayBlocks: 'Expandir blocos do dia',
     openDayBlocks: 'Abrir blocos do dia',
+    openReminders: 'Administrar lembretes',
     highlightedBlock: 'Destacar bloco',
     highlightedBlockDescription: 'Renderiza por cima de sobreposições e marca no painel.',
     help: 'Ajuda',
@@ -228,6 +230,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     expandSidebar: 'Expandir panel lateral',
     expandDayBlocks: 'Expandir bloques del día',
     openDayBlocks: 'Abrir bloques del día',
+    openReminders: 'Administrar recordatorios',
     highlightedBlock: 'Destacar bloque',
     highlightedBlockDescription: 'Se renderiza encima de solapamientos y se marca en el panel.',
     help: 'Ayuda',
@@ -313,6 +316,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     expandSidebar: 'Expand sidebar',
     expandDayBlocks: 'Expand day blocks',
     openDayBlocks: 'Open day blocks',
+    openReminders: 'Manage reminders',
     highlightedBlock: 'Highlight block',
     highlightedBlockDescription: 'Renders above overlaps and marks it in the panel.',
     help: 'Help',
@@ -398,6 +402,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     expandSidebar: 'サイドバーを展開',
     expandDayBlocks: '今日のブロックを展開',
     openDayBlocks: '今日のブロックを開く',
+    openReminders: 'リマインダーを管理',
     highlightedBlock: 'ブロックを強調',
     highlightedBlockDescription: '重なりの上に表示し、パネルに印を付けます。',
     help: 'ヘルプ',

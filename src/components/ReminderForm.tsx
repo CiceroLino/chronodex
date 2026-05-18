@@ -75,12 +75,14 @@ export function ReminderForm({ locale, onSubmit }: ReminderFormProps) {
         />
       </div>
 
-      <button
-        type="submit"
-        className="rounded-xl bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
-      >
-        {messages.addReminder}
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          className="rounded-xl bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+        >
+          {messages.addReminder}
+        </button>
+      </div>
     </form>
   );
 }

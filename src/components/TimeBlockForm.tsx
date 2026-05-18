@@ -187,13 +187,7 @@ export function TimeBlockForm({
         </div>
       ) : null}
 
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="submit"
-          className="rounded-xl bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
-        >
-          {editingBlock ? messages.saveChange : messages.addBlock}
-        </button>
+      <div className="flex flex-wrap justify-end gap-3">
         {editingBlock ? (
           <button
             type="button"
@@ -203,6 +197,12 @@ export function TimeBlockForm({
             {messages.cancelEdit}
           </button>
         ) : null}
+        <button
+          type="submit"
+          className="rounded-xl bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+        >
+          {editingBlock ? messages.saveChange : messages.addBlock}
+        </button>
       </div>
     </form>
   );

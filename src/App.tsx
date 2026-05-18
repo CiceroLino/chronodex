@@ -328,6 +328,8 @@ function App() {
   const [now, setNow] = useState(() => new Date());
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
+  const [isReminderDialogOpen, setIsReminderDialogOpen] = useState(false);
+  const [isRemindersManagerOpen, setIsRemindersManagerOpen] = useState(false);
   const [isMobileBlocksOpen, setIsMobileBlocksOpen] = useState(false);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -505,6 +507,7 @@ function App() {
 
   function addReminder(reminder: Omit<Reminder, 'id'>) {
     setReminders((current) => [...current, { ...reminder, id: createId() }]);
+    setIsReminderDialogOpen(false);
   }
 
   function removeReminder(id: string) {
@@ -822,6 +825,52 @@ function App() {
           </button>
           <button
             type="button"
+            aria-label={messages.addReminder}
+            title={messages.addReminder}
+            onClick={() => setIsReminderDialogOpen(true)}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-black bg-white text-gray-800 transition hover:bg-black hover:text-white dark:border-white dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-white dark:hover:text-black"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.8"
+            >
+              <path d="M12 6v6l4 2" />
+              <circle cx="12" cy="12" r="8" />
+              <path d="M18 4l2 2" />
+              <path d="M6 4L4 6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label={messages.openReminders}
+            title={messages.openReminders}
+            onClick={() => setIsRemindersManagerOpen(true)}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.8"
+            >
+              <path d="M7 8h10" />
+              <path d="M7 12h7" />
+              <path d="M7 16h5" />
+              <path d="M5 4h14v16H5z" />
+            </svg>
+          </button>
+          <button
+            type="button"
             aria-label={messages.spiderDashboard}
             title={
               canOpenDashboard ? messages.spiderDashboard : messages.requiredBlocksForDashboard
@@ -1087,51 +1136,6 @@ function App() {
                 </div>
               ) : null}
 
-              <section className="mt-6 border-t border-gray-200 pt-5 dark:border-neutral-800">
-                <div className="mb-4">
-                  <h3 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500 dark:text-neutral-500">
-                    {messages.reminders}
-                  </h3>
-                </div>
-                <ReminderForm locale={locale} onSubmit={addReminder} />
-
-                <div className="mt-4 space-y-2">
-                  {reminders.length === 0 ? (
-                    <p className="rounded-xl border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 dark:border-neutral-800 dark:text-neutral-500">
-                      {messages.noReminders}
-                    </p>
-                  ) : (
-                    reminders.map((reminder) => (
-                      <div
-                        key={reminder.id}
-                        className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white px-3 py-3 dark:border-neutral-800 dark:bg-[#191919]"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-gray-500 dark:text-neutral-500">
-                            {reminder.time}
-                          </p>
-                          <p className="mt-1 truncate text-sm font-medium text-black dark:text-white">
-                            {reminder.title}
-                          </p>
-                          {reminder.description ? (
-                            <p className="mt-1 line-clamp-2 text-xs leading-5 text-gray-600 dark:text-neutral-300">
-                              {reminder.description}
-                            </p>
-                          ) : null}
-                        </div>
-                        <button
-                          type="button"
-                          aria-label={messages.removeReminder}
-                          onClick={() => removeReminder(reminder.id)}
-                          className="rounded-xl border border-gray-200 px-3 py-2 text-xs font-medium text-red-700 transition hover:border-red-200 hover:bg-red-50 dark:border-neutral-800 dark:text-red-400 dark:hover:bg-red-950/30"
-                        >
-                          {messages.delete}
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </section>
             </section>
           </div>
         ) : null}
@@ -1227,6 +1231,128 @@ function App() {
               />
             </aside>
           </div>
+
+        {isReminderDialogOpen ? (
+          <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
+            <button
+              type="button"
+              aria-label={messages.closeForm}
+              className="absolute inset-0 cursor-default"
+              onClick={() => setIsReminderDialogOpen(false)}
+            />
+            <section className="modal-panel-in relative w-full max-w-md rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-sm font-medium text-black dark:text-white">
+                    {messages.addReminder}
+                  </h2>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
+                    {messages.reminderTime}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label={messages.closeForm}
+                  onClick={() => setIsReminderDialogOpen(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="1.8"
+                  >
+                    <path d="M6 6l12 12" />
+                    <path d="M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+              <ReminderForm locale={locale} onSubmit={addReminder} />
+            </section>
+          </div>
+        ) : null}
+
+        {isRemindersManagerOpen ? (
+          <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
+            <button
+              type="button"
+              aria-label={messages.closeForm}
+              className="absolute inset-0 cursor-default"
+              onClick={() => setIsRemindersManagerOpen(false)}
+            />
+            <section className="modal-panel-in relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-sm font-medium text-black dark:text-white">
+                    {messages.reminders}
+                  </h2>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
+                    {messages.openReminders}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label={messages.closeForm}
+                  onClick={() => setIsRemindersManagerOpen(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="1.8"
+                  >
+                    <path d="M6 6l12 12" />
+                    <path d="M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {reminders.length === 0 ? (
+                  <p className="rounded-xl border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 dark:border-neutral-800 dark:text-neutral-500">
+                    {messages.noReminders}
+                  </p>
+                ) : (
+                  reminders.map((reminder) => (
+                    <div
+                      key={reminder.id}
+                      className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white px-3 py-3 dark:border-neutral-800 dark:bg-[#191919]"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-gray-500 dark:text-neutral-500">
+                          {reminder.time}
+                        </p>
+                        <p className="mt-1 truncate text-sm font-medium text-black dark:text-white">
+                          {reminder.title}
+                        </p>
+                        {reminder.description ? (
+                          <p className="mt-1 line-clamp-2 text-xs leading-5 text-gray-600 dark:text-neutral-300">
+                            {reminder.description}
+                          </p>
+                        ) : null}
+                      </div>
+                      <button
+                        type="button"
+                        aria-label={messages.removeReminder}
+                        onClick={() => removeReminder(reminder.id)}
+                        className="rounded-xl border border-gray-200 px-3 py-2 text-xs font-medium text-red-700 transition hover:border-red-200 hover:bg-red-50 dark:border-neutral-800 dark:text-red-400 dark:hover:bg-red-950/30"
+                      >
+                        {messages.delete}
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </section>
+          </div>
+        ) : null}
 
         {isBlockDialogOpen ? (
           <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
