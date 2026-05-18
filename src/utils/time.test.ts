@@ -7,6 +7,7 @@ import {
   getCategoryTimeShares,
   getDuration,
   getChronodexAngleRange,
+  getSpiderPointRadius,
   minutesToAngle,
   minutesToChronodexAngle,
   minutesToTime,
@@ -142,6 +143,13 @@ describe('time utilities', () => {
       minutes: 0,
       percentage: 0,
     });
+  });
+
+  test('scales spider dashboard points from the center to their final radius', () => {
+    expect(getSpiderPointRadius(180, 180, 0)).toBe(0);
+    expect(getSpiderPointRadius(180, 180, 0.5)).toBe(47);
+    expect(getSpiderPointRadius(180, 180, 1)).toBe(94);
+    expect(getSpiderPointRadius(0, 180, 1)).toBe(10);
   });
 
   test('returns an SVG path for an arc segment', () => {

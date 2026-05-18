@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   formatLocalizedDuration,
   getCategoryLabel,
@@ -5,7 +6,11 @@ import {
   type AppLocale,
 } from '../i18n';
 import { CATEGORY_COLORS, type TimeBlock } from '../types';
-import { getCategoryTimeShares, polarToCartesian } from '../utils/time';
+import {
+  getCategoryTimeShares,
+  getSpiderPointRadius,
+  polarToCartesian,
+} from '../utils/time';
 
 type SpiderDashboardProps = {
   blocks: TimeBlock[];
@@ -14,15 +19,45 @@ type SpiderDashboardProps = {
 
 const center = 130;
 const maxRadius = 94;
+const animationDuration = 900;
+
+function easeOutCubic(progress: number): number {
+  return 1 - (1 - progress) ** 3;
+}
 
 export function SpiderDashboard({ blocks, locale }: SpiderDashboardProps) {
   const messages = getMessages(locale);
   const shares = getCategoryTimeShares(blocks);
   const maxMinutes = Math.max(...shares.map((share) => share.minutes), 1);
+  const [drawProgress, setDrawProgress] = useState(0);
+  const animationKey = shares
+    .map((share) => `${share.category}:${share.minutes}`)
+    .join('|');
+
+  useEffect(() => {
+    let frame = 0;
+    const startedAt = performance.now();
+
+    setDrawProgress(0);
+
+    const tick = (time: number) => {
+      const elapsed = Math.min((time - startedAt) / animationDuration, 1);
+      setDrawProgress(easeOutCubic(elapsed));
+
+      if (elapsed < 1) {
+        frame = requestAnimationFrame(tick);
+      }
+    };
+
+    frame = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(frame);
+  }, [animationKey]);
+
   const points = shares
     .map((share, index) => {
       const angle = (index / shares.length) * 360 - 90;
-      const radius = share.minutes === 0 ? 10 : 20 + (share.minutes / maxMinutes) * 74;
+      const radius = getSpiderPointRadius(share.minutes, maxMinutes, drawProgress);
       const point = polarToCartesian(center, center, radius, angle);
       return `${point.x.toFixed(2)},${point.y.toFixed(2)}`;
     })
@@ -91,39 +126,44 @@ export function SpiderDashboard({ blocks, locale }: SpiderDashboardProps) {
         {shares
           .filter((share) => share.minutes > 0)
           .sort((first, second) => second.minutes - first.minutes)
-          .map((share, index) => (
-            <div
-              key={share.category}
-              className="spider-legend-in rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]"
-              style={{ animationDelay: `${140 + index * 70}ms` }}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span
-                    className="h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{ backgroundColor: CATEGORY_COLORS[share.category] }}
-                  />
-                  <span className="truncate text-sm font-medium text-black dark:text-white">
-                    {getCategoryLabel(share.category, locale)}
+          .map((share, index) => {
+            const animatedPercentage = share.percentage * drawProgress;
+            const percentagePrecision = Number.isInteger(share.percentage) ? 0 : 1;
+
+            return (
+              <div
+                key={share.category}
+                className="spider-legend-in rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]"
+                style={{ animationDelay: `${140 + index * 70}ms` }}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: CATEGORY_COLORS[share.category] }}
+                    />
+                    <span className="truncate text-sm font-medium text-black dark:text-white">
+                      {getCategoryLabel(share.category, locale)}
+                    </span>
+                  </div>
+                  <span className="shrink-0 text-sm font-light text-black dark:text-white">
+                    {formatLocalizedDuration(share.minutes, locale)}
                   </span>
                 </div>
-                <span className="shrink-0 text-sm font-light text-black dark:text-white">
-                  {formatLocalizedDuration(share.minutes, locale)}
-                </span>
-              </div>
-              <div className="mt-2 flex items-center gap-3">
-                <div className="h-1 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-800">
-                  <div
-                    className="h-full rounded-full bg-black transition-[width] duration-700 ease-out dark:bg-white"
-                    style={{ width: `${share.percentage}%` }}
-                  />
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="h-1 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-800">
+                    <div
+                      className="h-full rounded-full bg-black transition-[width] duration-100 ease-linear dark:bg-white"
+                      style={{ width: `${animatedPercentage}%` }}
+                    />
+                  </div>
+                  <span className="w-12 text-right text-[10px] font-medium uppercase tracking-[0.12em] text-gray-500 dark:text-neutral-500">
+                    {animatedPercentage.toFixed(percentagePrecision)}%
+                  </span>
                 </div>
-                <span className="w-12 text-right text-[10px] font-medium uppercase tracking-[0.12em] text-gray-500 dark:text-neutral-500">
-                  {share.percentage}%
-                </span>
               </div>
-            </div>
-          ))}
+            );
+          })}
         <p className="pt-2 text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
           {messages.timeShare}
         </p>

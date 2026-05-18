@@ -256,6 +256,17 @@ export function getCategoryTimeShares(blocks: TimeBlock[]): CategoryTimeShare[] 
   });
 }
 
+export function getSpiderPointRadius(
+  minutes: number,
+  maxMinutes: number,
+  progress: number,
+): number {
+  const boundedProgress = Math.min(Math.max(progress, 0), 1);
+  const finalRadius = minutes === 0 ? 10 : 20 + (minutes / maxMinutes) * 74;
+
+  return Number((finalRadius * boundedProgress).toFixed(2));
+}
+
 export function sortBlocksForChronodex(blocks: TimeBlock[]): TimeBlock[] {
   return [...blocks].sort((first, second) => {
     if (first.highlighted === second.highlighted) {
