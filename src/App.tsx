@@ -324,7 +324,7 @@ function readStoredBlockOpacity(): number {
     return stored;
   }
 
-  return 0.34;
+  return 0.5;
 }
 
 function App() {
