@@ -12,6 +12,7 @@ type ChronodexArcProps = {
   block: TimeBlock;
   isActive: boolean;
   isSelected: boolean;
+  blockOpacity: number;
   onSelect: (block: TimeBlock) => void;
   onHover: (block: TimeBlock, position: { x: number; y: number }) => void;
   onLeave: () => void;
@@ -21,12 +22,16 @@ export function ChronodexArc({
   block,
   isActive,
   isSelected,
+  blockOpacity,
   onSelect,
   onHover,
   onLeave,
 }: ChronodexArcProps) {
   const ranges = splitBlockRangeByHalfDay(block);
-  const blockOpacity = isSelected ? 0.58 : block.highlighted ? 0.5 : isActive ? 0.48 : 0.34;
+  const fillOpacity = Math.min(
+    isSelected ? blockOpacity + 0.24 : block.highlighted ? blockOpacity + 0.16 : isActive ? blockOpacity + 0.12 : blockOpacity,
+    0.86,
+  );
   const blockStrokeWidth = isSelected ? 1.35 : isActive || block.highlighted ? 1 : 0.55;
 
   return (
@@ -62,10 +67,10 @@ export function ChronodexArc({
                 angles.endAngle,
               )}
               fill={block.color}
+              fillOpacity={fillOpacity}
               stroke={isSelected || block.highlighted ? 'currentColor' : '#262626'}
               strokeWidth={blockStrokeWidth}
-              opacity={blockOpacity}
-              className="chronodex-block-in cursor-pointer outline-none transition-opacity duration-150 hover:opacity-75 focus:outline-none"
+              className="chronodex-block-in cursor-pointer outline-none transition-[fill-opacity] duration-150 hover:fill-opacity-60 focus:outline-none"
               style={{ animationDelay: `${index * 80}ms` }}
               role="button"
               tabIndex={0}

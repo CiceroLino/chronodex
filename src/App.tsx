@@ -35,6 +35,7 @@ type EditableBlock = Omit<TimeBlock, 'id'>;
 const STORAGE_KEY = 'chronodex-time-blocks-v2';
 const REMINDERS_STORAGE_KEY = 'chronodex-reminders-v1';
 const THEME_STORAGE_KEY = 'chronodex-theme';
+const BLOCK_OPACITY_STORAGE_KEY = 'chronodex-block-opacity';
 
 type Theme = 'light' | 'dark';
 
@@ -316,6 +317,16 @@ function readStoredLocale(): AppLocale {
   return getLocaleFromStorage(window.localStorage);
 }
 
+function readStoredBlockOpacity(): number {
+  const stored = Number(window.localStorage.getItem(BLOCK_OPACITY_STORAGE_KEY));
+
+  if (Number.isFinite(stored) && stored >= 0.2 && stored <= 0.8) {
+    return stored;
+  }
+
+  return 0.34;
+}
+
 function App() {
   const [blocks, setBlocks] = useState<TimeBlock[]>(() => readStoredBlocks());
   const [reminders, setReminders] = useState<Reminder[]>(() => readStoredReminders());
@@ -332,11 +343,13 @@ function App() {
   const [isRemindersManagerOpen, setIsRemindersManagerOpen] = useState(false);
   const [isMobileBlocksOpen, setIsMobileBlocksOpen] = useState(false);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+  const [isVisualSettingsOpen, setIsVisualSettingsOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLocaleOpen, setIsLocaleOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [theme, setTheme] = useState<Theme>(() => readStoredTheme());
   const [locale, setLocale] = useState<AppLocale>(() => readStoredLocale());
+  const [blockOpacity, setBlockOpacity] = useState(() => readStoredBlockOpacity());
   const [notificationPermission, setNotificationPermission] = useState<
     NotificationPermission | 'unsupported'
   >(() => (typeof Notification === 'undefined' ? 'unsupported' : Notification.permission));
@@ -366,6 +379,10 @@ function App() {
     document.documentElement.lang = INTL_LOCALES[locale];
     window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
   }, [locale]);
+
+  useEffect(() => {
+    window.localStorage.setItem(BLOCK_OPACITY_STORAGE_KEY, String(blockOpacity));
+  }, [blockOpacity]);
 
   function showDesktopNotification(title: string, description?: string, tag?: string) {
     if (typeof Notification === 'undefined' || Notification.permission !== 'granted') {
@@ -913,6 +930,27 @@ function App() {
               <circle cx="5" cy="12" r="1.5" />
               <circle cx="12" cy="12" r="1.5" />
               <circle cx="19" cy="12" r="1.5" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label={messages.visualSettings}
+            title={messages.visualSettings}
+            onClick={() => setIsVisualSettingsOpen(true)}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-black bg-white text-black transition hover:bg-black hover:text-white dark:border-white dark:bg-[#191919] dark:text-white dark:hover:bg-white dark:hover:text-black"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-[18px] w-[18px]"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.8"
+            >
+              <path d="M12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8Z" />
+              <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.04.04a2.1 2.1 0 0 1-2.97 2.97l-.04-.04a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.08 1.65V21.3a2.1 2.1 0 0 1-4.2 0v-.06a1.8 1.8 0 0 0-1.08-1.65 1.8 1.8 0 0 0-1.98.36l-.04.04a2.1 2.1 0 0 1-2.97-2.97l.04-.04A1.8 1.8 0 0 0 4.6 15a1.8 1.8 0 0 0-1.65-1.08H2.9a2.1 2.1 0 0 1 0-4.2h.06A1.8 1.8 0 0 0 4.6 8.64a1.8 1.8 0 0 0-.36-1.98L4.2 6.62a2.1 2.1 0 0 1 2.97-2.97l.04.04a1.8 1.8 0 0 0 1.98.36 1.8 1.8 0 0 0 1.08-1.65V2.34a2.1 2.1 0 0 1 4.2 0v.06a1.8 1.8 0 0 0 1.08 1.65 1.8 1.8 0 0 0 1.98-.36l.04-.04a2.1 2.1 0 0 1 2.97 2.97l-.04.04a1.8 1.8 0 0 0-.36 1.98 1.8 1.8 0 0 0 1.65 1.08h.06a2.1 2.1 0 0 1 0 4.2h-.06A1.8 1.8 0 0 0 19.4 15Z" />
             </svg>
           </button>
           <button
@@ -1517,6 +1555,66 @@ function App() {
           </div>
         ) : null}
 
+        {isVisualSettingsOpen ? (
+          <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
+            <button
+              type="button"
+              aria-label={messages.closeForm}
+              className="absolute inset-0 cursor-default"
+              onClick={() => setIsVisualSettingsOpen(false)}
+            />
+            <section className="modal-panel-in relative w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-sm font-medium text-black dark:text-white">
+                    {messages.visualSettings}
+                  </h2>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
+                    {messages.visualSettingsDescription}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label={messages.closeForm}
+                  onClick={() => setIsVisualSettingsOpen(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="1.8"
+                  >
+                    <path d="M6 6l12 12" />
+                    <path d="M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+
+              <label className="block">
+                <span className="flex items-center justify-between gap-4 text-xs font-medium text-gray-600 dark:text-neutral-400">
+                  <span>{messages.blockOpacity}</span>
+                  <span className="text-black dark:text-white">
+                    {Math.round(blockOpacity * 100)}%
+                  </span>
+                </span>
+                <input
+                  type="range"
+                  min="0.2"
+                  max="0.8"
+                  step="0.02"
+                  value={blockOpacity}
+                  onChange={(event) => setBlockOpacity(Number(event.target.value))}
+                  className="mt-4 w-full accent-black dark:accent-white"
+                />
+              </label>
+            </section>
+          </div>
+        ) : null}
+
         {isHelpOpen ? (
           <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
             <button
@@ -1590,6 +1688,7 @@ function App() {
           now={now}
           selectedBlock={selectedBlock}
           locale={locale}
+          blockOpacity={blockOpacity}
           onSelectBlock={setSelectedBlock}
         />
         <NoticeRail

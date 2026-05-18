@@ -25,6 +25,7 @@ type ChronodexViewProps = {
   now: Date;
   selectedBlock: TimeBlock | null;
   locale: AppLocale;
+  blockOpacity: number;
   onSelectBlock: (block: TimeBlock | null) => void;
 };
 
@@ -47,6 +48,7 @@ export function ChronodexView({
   now,
   selectedBlock,
   locale,
+  blockOpacity,
   onSelectBlock,
 }: ChronodexViewProps) {
   const [hoveredBlock, setHoveredBlock] = useState<{
@@ -211,6 +213,7 @@ export function ChronodexView({
                   block={block}
                   isActive={activeBlock?.id === block.id}
                   isSelected={selectedBlock?.id === block.id}
+                  blockOpacity={blockOpacity}
                   onSelect={onSelectBlock}
                   onHover={(nextBlock, position) => {
                     setHoveredBlock({ block: nextBlock, position });

@@ -28,6 +28,7 @@ type Messages = {
   addReminder: string;
   blockCount: string;
   blockEnded: string;
+  blockOpacity: string;
   blockStarted: string;
   blockFormDescription: string;
   blocks: string;
@@ -101,6 +102,8 @@ type Messages = {
   title: string;
   titlePlaceholder: string;
   totalBlocks: string;
+  visualSettings: string;
+  visualSettingsDescription: string;
   emptyTitleError: string;
   free: string;
   overlapDetected: string;
@@ -116,6 +119,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     addReminder: 'Adicionar lembrete',
     blockCount: 'blocos',
     blockEnded: 'Bloco finalizado',
+    blockOpacity: 'Opacidade dos blocos',
     blockStarted: 'Bloco iniciado',
     blockFormDescription: 'Defina horário, cor e marcação temporal.',
     blocks: 'blocos',
@@ -189,6 +193,8 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     title: 'Título',
     titlePlaceholder: 'Ex.: Revisar planejamento',
     totalBlocks: 'total de blocos',
+    visualSettings: 'Aparência do Chronodex',
+    visualSettingsDescription: 'Ajuste como os blocos aparecem sobre as linhas técnicas.',
     emptyTitleError: 'Informe um título para o bloco.',
     free: 'livre',
     overlapDetected: 'Sobreposição detectada neste horário.',
@@ -202,6 +208,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     addReminder: 'Añadir recordatorio',
     blockCount: 'bloques',
     blockEnded: 'Bloque finalizado',
+    blockOpacity: 'Opacidad de los bloques',
     blockStarted: 'Bloque iniciado',
     blockFormDescription: 'Define horario, color y marca temporal.',
     blocks: 'bloques',
@@ -275,6 +282,8 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     title: 'Título',
     titlePlaceholder: 'Ej.: Revisar planificación',
     totalBlocks: 'total de bloques',
+    visualSettings: 'Apariencia de Chronodex',
+    visualSettingsDescription: 'Ajusta cómo aparecen los bloques sobre las líneas técnicas.',
     emptyTitleError: 'Ingresa un título para el bloque.',
     free: 'libre',
     overlapDetected: 'Solapamiento detectado en este horario.',
@@ -288,6 +297,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     addReminder: 'Add reminder',
     blockCount: 'blocks',
     blockEnded: 'Block ended',
+    blockOpacity: 'Block opacity',
     blockStarted: 'Block started',
     blockFormDescription: 'Set time, color, and temporal marking.',
     blocks: 'blocks',
@@ -361,6 +371,8 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     title: 'Title',
     titlePlaceholder: 'E.g. Review planning',
     totalBlocks: 'total blocks',
+    visualSettings: 'Chronodex appearance',
+    visualSettingsDescription: 'Adjust how blocks appear over the technical lines.',
     emptyTitleError: 'Enter a title for the block.',
     free: 'free',
     overlapDetected: 'Overlap detected at this time.',
@@ -374,6 +386,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     addReminder: 'リマインダーを追加',
     blockCount: 'ブロック',
     blockEnded: 'ブロック終了',
+    blockOpacity: 'ブロックの不透明度',
     blockStarted: 'ブロック開始',
     blockFormDescription: '時刻、色、時間マークを設定します。',
     blocks: 'ブロック',
@@ -447,6 +460,8 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     title: 'タイトル',
     titlePlaceholder: '例: 計画を見直す',
     totalBlocks: 'ブロック合計',
+    visualSettings: 'Chronodexの表示',
+    visualSettingsDescription: '技術的な線の上に表示されるブロックの見え方を調整します。',
     emptyTitleError: 'ブロックのタイトルを入力してください。',
     free: '空き',
     overlapDetected: 'この時間に重なりがあります。',
