@@ -304,6 +304,7 @@ function App() {
   const [isMobileBlocksOpen, setIsMobileBlocksOpen] = useState(false);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isLocaleOpen, setIsLocaleOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [theme, setTheme] = useState<Theme>(() => readStoredTheme());
   const [locale, setLocale] = useState<AppLocale>(() => readStoredLocale());
@@ -709,18 +710,62 @@ function App() {
               </svg>
             )}
           </button>
-          <select
-            aria-label="Language"
-            value={locale}
-            onChange={(event) => setLocale(event.target.value as AppLocale)}
-            className="h-11 rounded-xl border border-gray-200 bg-white px-3 text-xs font-medium text-gray-700 outline-none transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
-          >
-            {SUPPORTED_LOCALES.map((nextLocale) => (
-              <option key={nextLocale} value={nextLocale}>
-                {LOCALE_LABELS[nextLocale]}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Language"
+              aria-expanded={isLocaleOpen}
+              onClick={() => setIsLocaleOpen((current) => !current)}
+              className="flex h-11 min-w-16 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3 text-xs font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
+            >
+              <span>{LOCALE_LABELS[locale]}</span>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className={[
+                  'h-3.5 w-3.5 transition-transform',
+                  isLocaleOpen ? 'rotate-180' : '',
+                ].join(' ')}
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.8"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+
+            {isLocaleOpen ? (
+              <div className="modal-panel-in absolute bottom-14 right-0 z-50 w-36 overflow-hidden rounded-2xl border border-gray-200 bg-white p-1 dark:border-neutral-800 dark:bg-[#191919] lg:bottom-auto lg:top-12">
+                {SUPPORTED_LOCALES.map((nextLocale) => {
+                  const isSelected = nextLocale === locale;
+
+                  return (
+                    <button
+                      key={nextLocale}
+                      type="button"
+                      onClick={() => {
+                        setLocale(nextLocale);
+                        setIsLocaleOpen(false);
+                      }}
+                      className={[
+                        'flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-medium transition',
+                        isSelected
+                          ? 'bg-black text-white dark:bg-white dark:text-black'
+                          : 'text-gray-600 hover:bg-gray-50 dark:text-neutral-300 dark:hover:bg-neutral-900',
+                      ].join(' ')}
+                    >
+                      <span>{LOCALE_LABELS[nextLocale]}</span>
+                      {isSelected ? (
+                        <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
         </div>
 
         <div className="fixed right-4 top-4 z-40 flex gap-2 lg:right-6 lg:top-6">
