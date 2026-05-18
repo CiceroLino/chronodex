@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { TimeBlock } from '../types';
+import { CATEGORIES, CATEGORY_COLORS, type TimeBlock } from '../types';
 import {
   describeAnnularSector,
   formatDuration,
@@ -72,7 +72,23 @@ export function ChronodexView({
   ];
 
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f7f7f7] px-6 py-6 lg:h-screen lg:min-h-0 lg:overflow-hidden lg:px-10">
+    <section className="relative flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f7f7f7] px-6 py-6 lg:h-screen lg:min-h-0 lg:overflow-hidden lg:px-10">
+      <aside className="pointer-events-none absolute right-6 top-1/2 hidden -translate-y-1/2 flex-col gap-3 xl:flex">
+        {CATEGORIES.map((category) => (
+          <div
+            key={category}
+            className="pointer-events-auto group relative flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white"
+          >
+            <span
+              className="h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: CATEGORY_COLORS[category] }}
+            />
+            <span className="absolute right-9 top-1/2 hidden -translate-y-1/2 whitespace-nowrap rounded-xl border border-gray-200 bg-white px-3 py-2 text-[11px] font-medium text-gray-600 group-hover:block">
+              {category}
+            </span>
+          </div>
+        ))}
+      </aside>
       <div className="relative w-full max-w-[680px] lg:w-[min(760px,calc(100vh-176px))] lg:max-w-none">
         <div className="relative mx-auto aspect-square w-full">
           <svg

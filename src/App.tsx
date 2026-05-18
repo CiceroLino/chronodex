@@ -136,6 +136,8 @@ function App() {
   const [selectedBlock, setSelectedBlock] = useState<TimeBlock | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -174,12 +176,14 @@ function App() {
       );
       setEditingBlock(null);
       setSelectedBlock(updatedBlock);
+      setIsBlockDialogOpen(false);
       return;
     }
 
     const newBlock = { ...form, id: createId() };
     setBlocks((current) => [...current, newBlock]);
     setSelectedBlock(newBlock);
+    setIsBlockDialogOpen(false);
   }
 
   function deleteBlock(id: string) {
@@ -194,11 +198,18 @@ function App() {
     }
   }
 
+  function openNewBlockDialog() {
+    setEditingBlock(null);
+    setError(null);
+    setIsBlockDialogOpen(true);
+  }
+
   function loadExample() {
     setBlocks(sampleBlocks.map((block) => ({ ...block, id: createId() })));
     setEditingBlock(null);
     setSelectedBlock(null);
     setError(null);
+    setIsActionsOpen(false);
   }
 
   function clearDay() {
@@ -206,6 +217,7 @@ function App() {
     setEditingBlock(null);
     setSelectedBlock(null);
     setError(null);
+    setIsActionsOpen(false);
   }
 
   function exportJson() {
@@ -218,6 +230,7 @@ function App() {
     anchor.download = 'chronodex-blocos.json';
     anchor.click();
     URL.revokeObjectURL(url);
+    setIsActionsOpen(false);
   }
 
   async function importJson(event: ChangeEvent<HTMLInputElement>) {
@@ -240,6 +253,7 @@ function App() {
       setEditingBlock(null);
       setSelectedBlock(null);
       setError(null);
+      setIsActionsOpen(false);
     } catch {
       setError('Não foi possível importar este JSON.');
     } finally {
@@ -251,99 +265,23 @@ function App() {
     <main className="min-h-screen bg-[#f7f7f7] text-black lg:h-screen lg:overflow-hidden">
       <div className="grid min-h-screen lg:h-screen lg:min-h-0 lg:grid-cols-[390px_minmax(0,1fr)]">
         <section className="border-b border-gray-200 bg-white px-6 py-7 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-7">
-          <header className="mb-9">
-            <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500">
-              Planejamento diário
-            </p>
-            <h1 className="mt-3 text-3xl font-light tracking-normal text-black">Chronodex</h1>
-            <p className="mt-3 text-sm font-normal leading-6 text-gray-500">
-              {new Intl.DateTimeFormat('pt-BR', {
-                weekday: 'long',
-                day: '2-digit',
-                month: 'long',
-              }).format(now)}
-            </p>
-          </header>
-
-          <section className="border-t border-gray-200 pt-6">
-            <h2 className="mb-5 text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
-              Novo bloco
-            </h2>
-            <TimeBlockForm
-              editingBlock={editingBlock}
-              error={error}
-              onSubmit={saveBlock}
-              onCancelEdit={() => {
-                setEditingBlock(null);
-                setError(null);
-              }}
-            />
-          </section>
-
-          <section className="mt-9 border-t border-gray-200 pt-6">
-            <div className="mb-5 flex items-center justify-between gap-3">
-              <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
-                Blocos do dia
-              </h2>
+          <header className="mb-8">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500">
+                Planejamento diário
+              </p>
+              <h1 className="mt-3 text-3xl font-light tracking-normal text-black">
+                Chronodex
+              </h1>
+              <p className="mt-3 text-sm font-normal leading-6 text-gray-500">
+                {new Intl.DateTimeFormat('pt-BR', {
+                  weekday: 'long',
+                  day: '2-digit',
+                  month: 'long',
+                }).format(now)}
+              </p>
             </div>
-
-            <TimeBlockList
-              blocks={sortedBlocks}
-              overlapIds={overlapIds}
-              activeBlockId={activeBlockId}
-              onEdit={(block) => {
-                setEditingBlock(block);
-                setSelectedBlock(block);
-                setError(null);
-              }}
-              onDelete={deleteBlock}
-            />
-          </section>
-
-          <section className="mt-9 border-t border-gray-200 pt-6">
-            <h2 className="mb-5 text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
-              Ações
-            </h2>
-            <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={loadExample}
-                  className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
-                >
-                  Exemplo
-                </button>
-                <button
-                  type="button"
-                  onClick={exportJson}
-                  disabled={blocks.length === 0}
-                  className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 disabled:opacity-40"
-                >
-                  Exportar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => importInputRef.current?.click()}
-                  className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
-                >
-                  Importar
-                </button>
-                <button
-                  type="button"
-                  onClick={clearDay}
-                  disabled={blocks.length === 0}
-                  className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 disabled:opacity-40"
-                >
-                  Limpar
-                </button>
-              <input
-                ref={importInputRef}
-                type="file"
-                accept="application/json"
-                onChange={importJson}
-                className="hidden"
-              />
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-2">
+            <div className="mt-6 grid grid-cols-2 gap-2">
               <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3">
                 <span className="block text-lg font-light text-black">{blocks.length}</span>
                 <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500">
@@ -359,8 +297,208 @@ function App() {
                 </span>
               </div>
             </div>
+          </header>
+
+          <section className="border-t border-gray-200 pt-6">
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+                Blocos do dia
+              </h2>
+            </div>
+
+            <TimeBlockList
+              blocks={sortedBlocks}
+              overlapIds={overlapIds}
+              activeBlockId={activeBlockId}
+              onEdit={(block) => {
+                setEditingBlock(block);
+                setSelectedBlock(block);
+                setError(null);
+                setIsBlockDialogOpen(true);
+              }}
+              onDelete={deleteBlock}
+            />
           </section>
+
+          <input
+            ref={importInputRef}
+            type="file"
+            accept="application/json"
+            onChange={importJson}
+            className="hidden"
+          />
         </section>
+
+        <div className="fixed left-4 top-4 z-40 flex gap-2 lg:left-[410px] lg:top-6">
+          <button
+            type="button"
+            aria-label="Adicionar bloco"
+            onClick={openNewBlockDialog}
+            className="flex h-11 w-11 items-center justify-center rounded-xl bg-black text-white transition hover:bg-gray-800"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label="Abrir ações"
+            onClick={() => setIsActionsOpen(true)}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="currentColor"
+            >
+              <circle cx="5" cy="12" r="1.5" />
+              <circle cx="12" cy="12" r="1.5" />
+              <circle cx="19" cy="12" r="1.5" />
+            </svg>
+          </button>
+        </div>
+
+        {isActionsOpen ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4">
+            <button
+              type="button"
+              aria-label="Fechar ações"
+              className="absolute inset-0 cursor-default"
+              onClick={() => setIsActionsOpen(false)}
+            />
+            <section className="relative w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5">
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-sm font-medium text-black">Ações do dia</h2>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Importação, exportação e estado inicial.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Fechar ações"
+                  onClick={() => setIsActionsOpen(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  >
+                    <path d="M6 6l12 12" />
+                    <path d="M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+              <div className="grid gap-2">
+                <button
+                  type="button"
+                  onClick={loadExample}
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50"
+                >
+                  Carregar exemplo
+                </button>
+                <button
+                  type="button"
+                  onClick={exportJson}
+                  disabled={blocks.length === 0}
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 disabled:opacity-40"
+                >
+                  Exportar JSON
+                </button>
+                <button
+                  type="button"
+                  onClick={() => importInputRef.current?.click()}
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50"
+                >
+                  Importar JSON
+                </button>
+                <button
+                  type="button"
+                  onClick={clearDay}
+                  disabled={blocks.length === 0}
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-red-700 transition hover:border-red-200 hover:bg-red-50 disabled:opacity-40"
+                >
+                  Limpar dia
+                </button>
+              </div>
+            </section>
+          </div>
+        ) : null}
+
+        {isBlockDialogOpen ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
+            <button
+              type="button"
+              aria-label="Fechar formulário"
+              className="absolute inset-0 cursor-default"
+              onClick={() => {
+                setIsBlockDialogOpen(false);
+                setEditingBlock(null);
+                setError(null);
+              }}
+            />
+            <section className="relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5">
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-sm font-medium text-black">
+                    {editingBlock ? 'Editar bloco' : 'Novo bloco'}
+                  </h2>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Defina horário, cor e marcação temporal.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Fechar formulário"
+                  onClick={() => {
+                    setIsBlockDialogOpen(false);
+                    setEditingBlock(null);
+                    setError(null);
+                  }}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  >
+                    <path d="M6 6l12 12" />
+                    <path d="M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+              <TimeBlockForm
+                editingBlock={editingBlock}
+                error={error}
+                onSubmit={saveBlock}
+                onCancelEdit={() => {
+                  setIsBlockDialogOpen(false);
+                  setEditingBlock(null);
+                  setError(null);
+                }}
+              />
+            </section>
+          </div>
+        ) : null}
 
         <ChronodexView
           blocks={sortedBlocks}
