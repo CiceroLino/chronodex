@@ -32,7 +32,9 @@ type Messages = {
   category: string;
   clearDay: string;
   closeActions: string;
+  closeDashboard: string;
   closeForm: string;
+  collapseSidebar: string;
   color: string;
   dailyPlanning: string;
   dayBlocks: string;
@@ -42,6 +44,7 @@ type Messages = {
   end: string;
   equalTimeError: string;
   exportJson: string;
+  expandSidebar: string;
   highlightedBlock: string;
   highlightedBlockDescription: string;
   hoursPlanned: string;
@@ -52,7 +55,11 @@ type Messages = {
   optional: string;
   planned: string;
   progress: string;
+  requiredBlocksForDashboard: string;
   saveChange: string;
+  spiderDashboard: string;
+  spiderDashboardDescription: string;
+  timeShare: string;
   start: string;
   themeDark: string;
   themeLight: string;
@@ -79,7 +86,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     category: 'Categoria',
     clearDay: 'Limpar dia',
     closeActions: 'Fechar ações',
+    closeDashboard: 'Fechar dashboard',
     closeForm: 'Fechar formulário',
+    collapseSidebar: 'Recolher painel lateral',
     color: 'Cor',
     dailyPlanning: 'Planejamento diário',
     dayBlocks: 'Blocos do dia',
@@ -89,6 +98,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     end: 'Fim',
     equalTimeError: 'O horário inicial não pode ser igual ao horário final.',
     exportJson: 'Exportar JSON',
+    expandSidebar: 'Expandir painel lateral',
     highlightedBlock: 'Destacar bloco',
     highlightedBlockDescription: 'Renderiza por cima de sobreposições e marca no painel.',
     hoursPlanned: 'horas planejadas',
@@ -99,7 +109,11 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     optional: 'Opcional',
     planned: 'planejadas',
     progress: 'progresso',
+    requiredBlocksForDashboard: 'Adicione pelo menos 4 blocos para abrir o dashboard.',
     saveChange: 'Salvar alteração',
+    spiderDashboard: 'Spider dashboard',
+    spiderDashboardDescription: 'Distribuição de tempo por categoria nas 24 horas.',
+    timeShare: 'participação do dia',
     start: 'Início',
     themeDark: 'Ativar tema escuro',
     themeLight: 'Ativar tema claro',
@@ -124,7 +138,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     category: 'Categoría',
     clearDay: 'Limpiar día',
     closeActions: 'Cerrar acciones',
+    closeDashboard: 'Cerrar dashboard',
     closeForm: 'Cerrar formulario',
+    collapseSidebar: 'Contraer panel lateral',
     color: 'Color',
     dailyPlanning: 'Planificación diaria',
     dayBlocks: 'Bloques del día',
@@ -134,6 +150,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     end: 'Fin',
     equalTimeError: 'La hora inicial no puede ser igual a la hora final.',
     exportJson: 'Exportar JSON',
+    expandSidebar: 'Expandir panel lateral',
     highlightedBlock: 'Destacar bloque',
     highlightedBlockDescription: 'Se renderiza encima de solapamientos y se marca en el panel.',
     hoursPlanned: 'horas planificadas',
@@ -144,7 +161,11 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     optional: 'Opcional',
     planned: 'planificadas',
     progress: 'progreso',
+    requiredBlocksForDashboard: 'Añade al menos 4 bloques para abrir el dashboard.',
     saveChange: 'Guardar cambio',
+    spiderDashboard: 'Spider dashboard',
+    spiderDashboardDescription: 'Distribución de tiempo por categoría en las 24 horas.',
+    timeShare: 'participación del día',
     start: 'Inicio',
     themeDark: 'Activar tema oscuro',
     themeLight: 'Activar tema claro',
@@ -169,7 +190,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     category: 'Category',
     clearDay: 'Clear day',
     closeActions: 'Close actions',
+    closeDashboard: 'Close dashboard',
     closeForm: 'Close form',
+    collapseSidebar: 'Collapse sidebar',
     color: 'Color',
     dailyPlanning: 'Daily planning',
     dayBlocks: 'Day blocks',
@@ -179,6 +202,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     end: 'End',
     equalTimeError: 'Start time cannot be the same as end time.',
     exportJson: 'Export JSON',
+    expandSidebar: 'Expand sidebar',
     highlightedBlock: 'Highlight block',
     highlightedBlockDescription: 'Renders above overlaps and marks it in the panel.',
     hoursPlanned: 'planned hours',
@@ -189,7 +213,11 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     optional: 'Optional',
     planned: 'planned',
     progress: 'progress',
+    requiredBlocksForDashboard: 'Add at least 4 blocks to open the dashboard.',
     saveChange: 'Save change',
+    spiderDashboard: 'Spider dashboard',
+    spiderDashboardDescription: 'Time distribution by category across the 24-hour day.',
+    timeShare: 'day share',
     start: 'Start',
     themeDark: 'Enable dark theme',
     themeLight: 'Enable light theme',
@@ -214,7 +242,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     category: 'カテゴリ',
     clearDay: '日をクリア',
     closeActions: '操作を閉じる',
+    closeDashboard: 'ダッシュボードを閉じる',
     closeForm: 'フォームを閉じる',
+    collapseSidebar: 'サイドバーを折りたたむ',
     color: '色',
     dailyPlanning: '日次計画',
     dayBlocks: '今日のブロック',
@@ -224,6 +254,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     end: '終了',
     equalTimeError: '開始時刻と終了時刻は同じにできません。',
     exportJson: 'JSONを書き出す',
+    expandSidebar: 'サイドバーを展開',
     highlightedBlock: 'ブロックを強調',
     highlightedBlockDescription: '重なりの上に表示し、パネルに印を付けます。',
     hoursPlanned: '計画時間',
@@ -234,7 +265,11 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     optional: '任意',
     planned: '計画済み',
     progress: '進捗',
+    requiredBlocksForDashboard: 'ダッシュボードを開くには4つ以上のブロックを追加してください。',
     saveChange: '変更を保存',
+    spiderDashboard: 'スパイダーダッシュボード',
+    spiderDashboardDescription: '24時間におけるカテゴリ別の時間配分。',
+    timeShare: '日の割合',
     start: '開始',
     themeDark: 'ダークテーマを有効化',
     themeLight: 'ライトテーマを有効化',

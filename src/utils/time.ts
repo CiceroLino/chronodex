@@ -1,4 +1,4 @@
-import type { TimeBlock } from '../types';
+import { CATEGORIES, type Category, type TimeBlock } from '../types';
 
 export type MinuteRange = {
   start: number;
@@ -9,6 +9,12 @@ export type ChronodexPeriod = 'am' | 'pm';
 
 export type ChronodexRange = MinuteRange & {
   period: ChronodexPeriod;
+};
+
+export type CategoryTimeShare = {
+  category: Category;
+  minutes: number;
+  percentage: number;
 };
 
 const DAY_MINUTES = 1440;
@@ -234,6 +240,20 @@ export function getTotalPlannedMinutes(blocks: TimeBlock[]): number {
     (total, block) => total + getDuration(block.startTime, block.endTime),
     0,
   );
+}
+
+export function getCategoryTimeShares(blocks: TimeBlock[]): CategoryTimeShare[] {
+  return CATEGORIES.map((category) => {
+    const minutes = blocks
+      .filter((block) => block.category === category)
+      .reduce((total, block) => total + getDuration(block.startTime, block.endTime), 0);
+
+    return {
+      category,
+      minutes,
+      percentage: Number(((minutes / DAY_MINUTES) * 100).toFixed(1)),
+    };
+  });
 }
 
 export function sortBlocksForChronodex(blocks: TimeBlock[]): TimeBlock[] {

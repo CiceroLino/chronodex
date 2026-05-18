@@ -1,5 +1,6 @@
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { ChronodexView } from './components/ChronodexView';
+import { SpiderDashboard } from './components/SpiderDashboard';
 import { TimeBlockForm } from './components/TimeBlockForm';
 import { TimeBlockList } from './components/TimeBlockList';
 import {
@@ -299,6 +300,8 @@ function App() {
   const [now, setNow] = useState(() => new Date());
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [theme, setTheme] = useState<Theme>(() => readStoredTheme());
   const [locale, setLocale] = useState<AppLocale>(() => readStoredLocale());
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -332,6 +335,7 @@ function App() {
     ? getBlockProgressPercent(currentMinute, activeBlock)
     : null;
   const totalMinutes = getTotalPlannedMinutes(blocks);
+  const canOpenDashboard = blocks.length > 3;
 
   function saveBlock(form: EditableBlock) {
     if (!form.title) {
@@ -440,8 +444,21 @@ function App() {
 
   return (
     <main className="min-h-screen bg-[#f7f7f7] text-black transition-colors dark:bg-[#111111] dark:text-white lg:h-screen lg:overflow-hidden">
-      <div className="grid min-h-screen lg:h-screen lg:min-h-0 lg:grid-cols-[390px_minmax(0,1fr)]">
-        <section className="border-b border-gray-200 bg-white px-6 py-7 transition-colors dark:border-neutral-800 dark:bg-[#151515] lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-7">
+      <div
+        className={[
+          'grid min-h-screen lg:h-screen lg:min-h-0',
+          isSidebarCollapsed
+            ? 'lg:grid-cols-[0px_minmax(0,1fr)]'
+            : 'lg:grid-cols-[390px_minmax(0,1fr)]',
+        ].join(' ')}
+      >
+        <section
+          className={[
+            'border-b border-gray-200 bg-white transition-colors dark:border-neutral-800 dark:bg-[#151515] lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r',
+            isSidebarCollapsed ? 'overflow-hidden px-0 py-0 lg:border-r-0' : 'px-6 py-7 lg:px-7',
+          ].join(' ')}
+        >
+          <div className={isSidebarCollapsed ? 'hidden' : ''}>
           <header className="mb-8">
             <div>
               <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500 dark:text-neutral-500">
@@ -506,9 +523,42 @@ function App() {
             onChange={importJson}
             className="hidden"
           />
+          </div>
         </section>
 
-        <div className="fixed left-4 top-4 z-40 flex gap-2 lg:left-[410px] lg:top-6">
+        <div
+          className={[
+            'fixed left-4 top-4 z-40 flex gap-2 transition-[left]',
+            isSidebarCollapsed ? 'lg:left-6' : 'lg:left-[410px]',
+            'lg:top-6',
+          ].join(' ')}
+        >
+          <button
+            type="button"
+            aria-label={
+              isSidebarCollapsed ? messages.expandSidebar : messages.collapseSidebar
+            }
+            title={isSidebarCollapsed ? messages.expandSidebar : messages.collapseSidebar}
+            onClick={() => setIsSidebarCollapsed((current) => !current)}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.8"
+            >
+              {isSidebarCollapsed ? (
+                <path d="M9 18l6-6-6-6" />
+              ) : (
+                <path d="M15 18l-6-6 6-6" />
+              )}
+            </svg>
+          </button>
           <button
             type="button"
             aria-label={messages.addBlock}
@@ -526,6 +576,32 @@ function App() {
             >
               <path d="M5 12h14" />
               <path d="M12 5v14" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label={messages.spiderDashboard}
+            title={
+              canOpenDashboard ? messages.spiderDashboard : messages.requiredBlocksForDashboard
+            }
+            disabled={!canOpenDashboard}
+            onClick={() => setIsDashboardOpen(true)}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.8"
+            >
+              <path d="M12 3l8 6-3 10H7L4 9l8-6Z" />
+              <path d="M12 3v16" />
+              <path d="M4 9l13 10" />
+              <path d="M20 9L7 19" />
             </svg>
           </button>
           <button
@@ -747,6 +823,49 @@ function App() {
                   setError(null);
                 }}
               />
+            </section>
+          </div>
+        ) : null}
+
+        {isDashboardOpen ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
+            <button
+              type="button"
+              aria-label={messages.closeDashboard}
+              className="absolute inset-0 cursor-default"
+              onClick={() => setIsDashboardOpen(false)}
+            />
+            <section className="relative max-h-full w-full max-w-3xl overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-sm font-medium text-black dark:text-white">
+                    {messages.spiderDashboard}
+                  </h2>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
+                    {messages.spiderDashboardDescription}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label={messages.closeDashboard}
+                  onClick={() => setIsDashboardOpen(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="1.8"
+                  >
+                    <path d="M6 6l12 12" />
+                    <path d="M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+              <SpiderDashboard blocks={blocks} locale={locale} />
             </section>
           </div>
         ) : null}

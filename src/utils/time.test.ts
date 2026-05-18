@@ -4,6 +4,7 @@ import {
   describeArc,
   detectOverlaps,
   getBlockProgressPercent,
+  getCategoryTimeShares,
   getDuration,
   getChronodexAngleRange,
   minutesToAngle,
@@ -121,6 +122,26 @@ describe('time utilities', () => {
       regular,
       highlighted,
     ]);
+  });
+
+  test('calculates category time shares against the full day', () => {
+    const shares = getCategoryTimeShares([
+      block('work', '09:00', '12:00'),
+      { ...block('study', '13:00', '14:30'), category: 'Estudo' },
+    ]);
+
+    expect(shares.find((share) => share.category === 'Trabalho')).toMatchObject({
+      minutes: 180,
+      percentage: 12.5,
+    });
+    expect(shares.find((share) => share.category === 'Estudo')).toMatchObject({
+      minutes: 90,
+      percentage: 6.3,
+    });
+    expect(shares.find((share) => share.category === 'Saúde')).toMatchObject({
+      minutes: 0,
+      percentage: 0,
+    });
   });
 
   test('returns an SVG path for an arc segment', () => {
