@@ -226,7 +226,7 @@ export function getBlockProgressPercent(minute: number, block: TimeBlock): numbe
   const adjustedMinute = end <= start && minute < start ? minute + DAY_MINUTES : minute;
   const elapsed = adjustedMinute - start;
 
-  return Math.round((elapsed / getDuration(block.startTime, block.endTime)) * 100);
+  return Number(((elapsed / getDuration(block.startTime, block.endTime)) * 100).toFixed(1));
 }
 
 export function getTotalPlannedMinutes(blocks: TimeBlock[]): number {

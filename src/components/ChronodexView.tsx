@@ -55,7 +55,7 @@ export function ChronodexView({
     block: TimeBlock;
     position: { x: number; y: number };
   } | null>(null);
-  const currentMinute = now.getHours() * 60 + now.getMinutes();
+  const currentMinute = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
   const messages = getMessages(locale);
   const activeBlock = blocks.find((block) => isMinuteInsideBlock(currentMinute, block)) ?? null;
   const activeBlockProgress = activeBlock

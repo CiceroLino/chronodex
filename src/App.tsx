@@ -325,7 +325,7 @@ function App() {
 
   const sortedBlocks = useMemo(() => sortBlocks(blocks), [blocks]);
   const overlapIds = useMemo(() => detectOverlaps(blocks), [blocks]);
-  const currentMinute = now.getHours() * 60 + now.getMinutes();
+  const currentMinute = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
   const activeBlock = blocks.find((block) => isMinuteInsideBlock(currentMinute, block)) ?? null;
   const activeBlockId = activeBlock?.id ?? null;
   const activeBlockProgress = activeBlock

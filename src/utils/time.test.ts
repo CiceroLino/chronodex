@@ -102,7 +102,7 @@ describe('time utilities', () => {
     expect(getBlockProgressPercent(timeToMinutes('09:00'), block('work', '09:00', '10:00')))
       .toBe(0);
     expect(getBlockProgressPercent(timeToMinutes('09:59'), block('work', '09:00', '10:00')))
-      .toBe(98);
+      .toBe(98.3);
   });
 
   test('calculates progress percentage for active blocks across midnight', () => {

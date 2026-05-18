@@ -31,6 +31,7 @@ export function StatsPanel({
   const time = new Intl.DateTimeFormat(INTL_LOCALES[locale], {
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
   }).format(now);
   const activeBlockDuration = activeBlock
     ? formatLocalizedDuration(getDuration(activeBlock.startTime, activeBlock.endTime), locale)
@@ -43,13 +44,13 @@ export function StatsPanel({
       </span>
       {activeBlock && activeBlockProgress !== null ? (
         <>
-          <span className="mt-3 text-[11px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
-            {messages.activeBlock}
+          <span className="mt-2 text-[28px] font-light leading-none text-black dark:text-white">
+            {time}
           </span>
-          <span className="mt-1 max-w-36 truncate text-base font-medium leading-tight text-black dark:text-white">
+          <span className="mt-3 max-w-40 truncate text-base font-medium leading-tight text-black dark:text-white">
             {activeBlock.title}
           </span>
-          <span className="mt-1 max-w-36 truncate text-[10px] font-medium uppercase tracking-[0.12em] text-gray-500 dark:text-neutral-500">
+          <span className="mt-1 max-w-40 truncate text-[10px] font-medium uppercase tracking-[0.12em] text-gray-500 dark:text-neutral-500">
             {getCategoryLabel(activeBlock.category, locale)}
           </span>
           <span className="mt-2 text-xs text-gray-500 dark:text-neutral-400">
@@ -58,11 +59,11 @@ export function StatsPanel({
           <div className="mt-3 w-32">
             <div className="mb-1 flex items-center justify-between text-[9px] font-medium uppercase tracking-[0.14em] text-gray-500 dark:text-neutral-500">
               <span>{messages.progress}</span>
-              <span>{activeBlockProgress}%</span>
+              <span>{activeBlockProgress.toFixed(1)}%</span>
             </div>
             <div className="h-1 overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-800">
               <div
-                className="h-full rounded-full bg-black transition-[width] duration-500 dark:bg-white"
+                className="h-full rounded-full bg-black transition-[width] duration-1000 ease-linear dark:bg-white"
                 style={{ width: `${activeBlockProgress}%` }}
               />
             </div>

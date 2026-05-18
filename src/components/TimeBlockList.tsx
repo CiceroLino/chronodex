@@ -102,11 +102,11 @@ export function TimeBlockList({
               <div className="mt-3">
                 <div className="mb-1 flex items-center justify-between text-[10px] font-medium uppercase tracking-[0.14em] text-gray-500 dark:text-neutral-500">
                   <span>{messages.progress}</span>
-                  <span>{activeBlockProgress}%</span>
+                  <span>{activeBlockProgress.toFixed(1)}%</span>
                 </div>
                 <div className="h-1 overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-800">
                   <div
-                    className="h-full rounded-full bg-black transition-[width] duration-500 dark:bg-white"
+                    className="h-full rounded-full bg-black transition-[width] duration-1000 ease-linear dark:bg-white"
                     style={{ width: `${activeBlockProgress}%` }}
                   />
                 </div>
