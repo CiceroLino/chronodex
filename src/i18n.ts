@@ -51,6 +51,7 @@ type Messages = {
   noBlocks: string;
   optional: string;
   planned: string;
+  progress: string;
   saveChange: string;
   start: string;
   themeDark: string;
@@ -97,6 +98,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     noBlocks: 'Nenhum bloco planejado ainda.',
     optional: 'Opcional',
     planned: 'planejadas',
+    progress: 'progresso',
     saveChange: 'Salvar alteração',
     start: 'Início',
     themeDark: 'Ativar tema escuro',
@@ -141,6 +143,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     noBlocks: 'Aún no hay bloques planificados.',
     optional: 'Opcional',
     planned: 'planificadas',
+    progress: 'progreso',
     saveChange: 'Guardar cambio',
     start: 'Inicio',
     themeDark: 'Activar tema oscuro',
@@ -185,6 +188,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     noBlocks: 'No blocks planned yet.',
     optional: 'Optional',
     planned: 'planned',
+    progress: 'progress',
     saveChange: 'Save change',
     start: 'Start',
     themeDark: 'Enable dark theme',
@@ -229,6 +233,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     noBlocks: '計画されたブロックはまだありません。',
     optional: '任意',
     planned: '計画済み',
+    progress: '進捗',
     saveChange: '変更を保存',
     start: '開始',
     themeDark: 'ダークテーマを有効化',

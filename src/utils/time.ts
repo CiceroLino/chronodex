@@ -216,6 +216,19 @@ export function isMinuteInsideBlock(minute: number, block: TimeBlock): boolean {
   );
 }
 
+export function getBlockProgressPercent(minute: number, block: TimeBlock): number {
+  if (!isMinuteInsideBlock(minute, block)) {
+    return 0;
+  }
+
+  const start = timeToMinutes(block.startTime);
+  const end = timeToMinutes(block.endTime);
+  const adjustedMinute = end <= start && minute < start ? minute + DAY_MINUTES : minute;
+  const elapsed = adjustedMinute - start;
+
+  return Math.round((elapsed / getDuration(block.startTime, block.endTime)) * 100);
+}
+
 export function getTotalPlannedMinutes(blocks: TimeBlock[]): number {
   return blocks.reduce(
     (total, block) => total + getDuration(block.startTime, block.endTime),

@@ -14,6 +14,7 @@ import {
 import { CATEGORY_COLORS, CATEGORIES, type TimeBlock } from './types';
 import {
   detectOverlaps,
+  getBlockProgressPercent,
   getTotalPlannedMinutes,
   isMinuteInsideBlock,
   timeToMinutes,
@@ -325,8 +326,11 @@ function App() {
   const sortedBlocks = useMemo(() => sortBlocks(blocks), [blocks]);
   const overlapIds = useMemo(() => detectOverlaps(blocks), [blocks]);
   const currentMinute = now.getHours() * 60 + now.getMinutes();
-  const activeBlockId =
-    blocks.find((block) => isMinuteInsideBlock(currentMinute, block))?.id ?? null;
+  const activeBlock = blocks.find((block) => isMinuteInsideBlock(currentMinute, block)) ?? null;
+  const activeBlockId = activeBlock?.id ?? null;
+  const activeBlockProgress = activeBlock
+    ? getBlockProgressPercent(currentMinute, activeBlock)
+    : null;
   const totalMinutes = getTotalPlannedMinutes(blocks);
 
   function saveBlock(form: EditableBlock) {
@@ -483,6 +487,7 @@ function App() {
               blocks={sortedBlocks}
               overlapIds={overlapIds}
               activeBlockId={activeBlockId}
+              activeBlockProgress={activeBlockProgress}
               locale={locale}
               onEdit={(block) => {
                 setEditingBlock(block);

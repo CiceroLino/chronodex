@@ -3,6 +3,7 @@ import {
   describeAnnularSector,
   describeArc,
   detectOverlaps,
+  getBlockProgressPercent,
   getDuration,
   getChronodexAngleRange,
   minutesToAngle,
@@ -93,6 +94,23 @@ describe('time utilities', () => {
     ]);
 
     expect(overlaps).toEqual(new Set(['work', 'meeting', 'sleep', 'reading']));
+  });
+
+  test('calculates progress percentage for an active block', () => {
+    expect(getBlockProgressPercent(timeToMinutes('09:30'), block('work', '09:00', '10:00')))
+      .toBe(50);
+    expect(getBlockProgressPercent(timeToMinutes('09:00'), block('work', '09:00', '10:00')))
+      .toBe(0);
+    expect(getBlockProgressPercent(timeToMinutes('09:59'), block('work', '09:00', '10:00')))
+      .toBe(98);
+  });
+
+  test('calculates progress percentage for active blocks across midnight', () => {
+    const nightBlock = block('night', '23:00', '01:00');
+
+    expect(getBlockProgressPercent(timeToMinutes('23:30'), nightBlock)).toBe(25);
+    expect(getBlockProgressPercent(timeToMinutes('00:00'), nightBlock)).toBe(50);
+    expect(getBlockProgressPercent(timeToMinutes('00:30'), nightBlock)).toBe(75);
   });
 
   test('sorts highlighted chronodex blocks after regular blocks for rendering', () => {

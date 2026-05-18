@@ -11,6 +11,7 @@ type TimeBlockListProps = {
   blocks: TimeBlock[];
   overlapIds: Set<string>;
   activeBlockId: string | null;
+  activeBlockProgress: number | null;
   locale: AppLocale;
   onEdit: (block: TimeBlock) => void;
   onDelete: (id: string) => void;
@@ -20,6 +21,7 @@ export function TimeBlockList({
   blocks,
   overlapIds,
   activeBlockId,
+  activeBlockProgress,
   locale,
   onEdit,
   onDelete,
@@ -95,6 +97,20 @@ export function TimeBlockList({
               <p className="mt-3 text-xs font-medium text-amber-700 dark:text-amber-400">
                 {messages.overlapDetected}
               </p>
+            ) : null}
+            {isActive && activeBlockProgress !== null ? (
+              <div className="mt-3">
+                <div className="mb-1 flex items-center justify-between text-[10px] font-medium uppercase tracking-[0.14em] text-gray-500 dark:text-neutral-500">
+                  <span>{messages.progress}</span>
+                  <span>{activeBlockProgress}%</span>
+                </div>
+                <div className="h-1 overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-800">
+                  <div
+                    className="h-full rounded-full bg-black transition-[width] duration-500 dark:bg-white"
+                    style={{ width: `${activeBlockProgress}%` }}
+                  />
+                </div>
+              </div>
             ) : null}
           </div>
         );

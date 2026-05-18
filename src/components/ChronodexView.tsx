@@ -11,6 +11,7 @@ import {
   describeAnnularSector,
   getChronodexAngleRange,
   getDuration,
+  getBlockProgressPercent,
   getTotalPlannedMinutes,
   isMinuteInsideBlock,
   minutesToChronodexAngle,
@@ -57,6 +58,9 @@ export function ChronodexView({
   const currentMinute = now.getHours() * 60 + now.getMinutes();
   const messages = getMessages(locale);
   const activeBlock = blocks.find((block) => isMinuteInsideBlock(currentMinute, block)) ?? null;
+  const activeBlockProgress = activeBlock
+    ? getBlockProgressPercent(currentMinute, activeBlock)
+    : null;
   const chronodexBlocks = sortBlocksForChronodex(blocks);
   const footerCards = [
     {
@@ -244,7 +248,13 @@ export function ChronodexView({
             <CurrentTimeIndicator now={now} />
           </svg>
 
-          <StatsPanel blocks={blocks} now={now} locale={locale} />
+          <StatsPanel
+            blocks={blocks}
+            now={now}
+            locale={locale}
+            activeBlock={activeBlock}
+            activeBlockProgress={activeBlockProgress}
+          />
 
           {hoveredBlock ? (
             <div
