@@ -2,6 +2,15 @@ import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { ChronodexView } from './components/ChronodexView';
 import { TimeBlockForm } from './components/TimeBlockForm';
 import { TimeBlockList } from './components/TimeBlockList';
+import {
+  getLocaleFromStorage,
+  getMessages,
+  INTL_LOCALES,
+  LOCALE_LABELS,
+  LOCALE_STORAGE_KEY,
+  SUPPORTED_LOCALES,
+  type AppLocale,
+} from './i18n';
 import { CATEGORY_COLORS, CATEGORIES, type TimeBlock } from './types';
 import {
   detectOverlaps,
@@ -17,52 +26,192 @@ const THEME_STORAGE_KEY = 'chronodex-theme';
 
 type Theme = 'light' | 'dark';
 
-const sampleBlocks: TimeBlock[] = [
-  {
-    id: 'sample-1',
-    title: 'Ritual matinal',
-    description: 'Café, revisão do dia e preparação mental.',
-    startTime: '06:30',
-    endTime: '07:30',
-    category: 'Saúde',
-    color: CATEGORY_COLORS.Saúde,
-    highlighted: true,
-  },
-  {
-    id: 'sample-2',
-    title: 'Trabalho profundo',
-    description: 'Bloco sem reuniões para tarefas de maior impacto.',
-    startTime: '08:30',
-    endTime: '11:30',
-    category: 'Trabalho',
-    color: CATEGORY_COLORS.Trabalho,
-  },
-  {
-    id: 'sample-3',
-    title: 'Almoço',
-    startTime: '12:00',
-    endTime: '13:00',
-    category: 'Alimentação',
-    color: CATEGORY_COLORS.Alimentação,
-  },
-  {
-    id: 'sample-4',
-    title: 'Estudo guiado',
-    startTime: '15:00',
-    endTime: '16:30',
-    category: 'Estudo',
-    color: CATEGORY_COLORS.Estudo,
-    highlighted: true,
-  },
-  {
-    id: 'sample-5',
-    title: 'Projeto pessoal',
-    startTime: '20:30',
-    endTime: '22:30',
-    category: 'Projeto pessoal',
-    color: CATEGORY_COLORS['Projeto pessoal'],
-  },
-];
+const sampleBlocksByLocale: Record<AppLocale, TimeBlock[]> = {
+  'pt-BR': [
+    {
+      id: 'sample-1',
+      title: 'Ritual matinal',
+      description: 'Café, revisão do dia e preparação mental.',
+      startTime: '06:30',
+      endTime: '07:30',
+      category: 'Saúde',
+      color: CATEGORY_COLORS.Saúde,
+      highlighted: true,
+    },
+    {
+      id: 'sample-2',
+      title: 'Trabalho profundo',
+      description: 'Bloco sem reuniões para tarefas de maior impacto.',
+      startTime: '08:30',
+      endTime: '11:30',
+      category: 'Trabalho',
+      color: CATEGORY_COLORS.Trabalho,
+    },
+    {
+      id: 'sample-3',
+      title: 'Almoço',
+      startTime: '12:00',
+      endTime: '13:00',
+      category: 'Alimentação',
+      color: CATEGORY_COLORS.Alimentação,
+    },
+    {
+      id: 'sample-4',
+      title: 'Estudo guiado',
+      startTime: '15:00',
+      endTime: '16:30',
+      category: 'Estudo',
+      color: CATEGORY_COLORS.Estudo,
+      highlighted: true,
+    },
+    {
+      id: 'sample-5',
+      title: 'Projeto pessoal',
+      startTime: '20:30',
+      endTime: '22:30',
+      category: 'Projeto pessoal',
+      color: CATEGORY_COLORS['Projeto pessoal'],
+    },
+  ],
+  es: [
+    {
+      id: 'sample-1',
+      title: 'Ritual matinal',
+      description: 'Café, revisión del día y preparación mental.',
+      startTime: '06:30',
+      endTime: '07:30',
+      category: 'Saúde',
+      color: CATEGORY_COLORS.Saúde,
+      highlighted: true,
+    },
+    {
+      id: 'sample-2',
+      title: 'Trabajo profundo',
+      description: 'Bloque sin reuniones para tareas de mayor impacto.',
+      startTime: '08:30',
+      endTime: '11:30',
+      category: 'Trabalho',
+      color: CATEGORY_COLORS.Trabalho,
+    },
+    {
+      id: 'sample-3',
+      title: 'Almuerzo',
+      startTime: '12:00',
+      endTime: '13:00',
+      category: 'Alimentação',
+      color: CATEGORY_COLORS.Alimentação,
+    },
+    {
+      id: 'sample-4',
+      title: 'Estudio guiado',
+      startTime: '15:00',
+      endTime: '16:30',
+      category: 'Estudo',
+      color: CATEGORY_COLORS.Estudo,
+      highlighted: true,
+    },
+    {
+      id: 'sample-5',
+      title: 'Proyecto personal',
+      startTime: '20:30',
+      endTime: '22:30',
+      category: 'Projeto pessoal',
+      color: CATEGORY_COLORS['Projeto pessoal'],
+    },
+  ],
+  en: [
+    {
+      id: 'sample-1',
+      title: 'Morning ritual',
+      description: 'Coffee, day review, and mental preparation.',
+      startTime: '06:30',
+      endTime: '07:30',
+      category: 'Saúde',
+      color: CATEGORY_COLORS.Saúde,
+      highlighted: true,
+    },
+    {
+      id: 'sample-2',
+      title: 'Deep work',
+      description: 'Meeting-free block for high-impact tasks.',
+      startTime: '08:30',
+      endTime: '11:30',
+      category: 'Trabalho',
+      color: CATEGORY_COLORS.Trabalho,
+    },
+    {
+      id: 'sample-3',
+      title: 'Lunch',
+      startTime: '12:00',
+      endTime: '13:00',
+      category: 'Alimentação',
+      color: CATEGORY_COLORS.Alimentação,
+    },
+    {
+      id: 'sample-4',
+      title: 'Guided study',
+      startTime: '15:00',
+      endTime: '16:30',
+      category: 'Estudo',
+      color: CATEGORY_COLORS.Estudo,
+      highlighted: true,
+    },
+    {
+      id: 'sample-5',
+      title: 'Personal project',
+      startTime: '20:30',
+      endTime: '22:30',
+      category: 'Projeto pessoal',
+      color: CATEGORY_COLORS['Projeto pessoal'],
+    },
+  ],
+  ja: [
+    {
+      id: 'sample-1',
+      title: '朝のルーティン',
+      description: 'コーヒー、日次レビュー、心の準備。',
+      startTime: '06:30',
+      endTime: '07:30',
+      category: 'Saúde',
+      color: CATEGORY_COLORS.Saúde,
+      highlighted: true,
+    },
+    {
+      id: 'sample-2',
+      title: '深い作業',
+      description: '重要な作業のための会議なしブロック。',
+      startTime: '08:30',
+      endTime: '11:30',
+      category: 'Trabalho',
+      color: CATEGORY_COLORS.Trabalho,
+    },
+    {
+      id: 'sample-3',
+      title: '昼食',
+      startTime: '12:00',
+      endTime: '13:00',
+      category: 'Alimentação',
+      color: CATEGORY_COLORS.Alimentação,
+    },
+    {
+      id: 'sample-4',
+      title: 'ガイド学習',
+      startTime: '15:00',
+      endTime: '16:30',
+      category: 'Estudo',
+      color: CATEGORY_COLORS.Estudo,
+      highlighted: true,
+    },
+    {
+      id: 'sample-5',
+      title: '個人プロジェクト',
+      startTime: '20:30',
+      endTime: '22:30',
+      category: 'Projeto pessoal',
+      color: CATEGORY_COLORS['Projeto pessoal'],
+    },
+  ],
+};
 
 function createId(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
@@ -137,6 +286,10 @@ function readStoredTheme(): Theme {
   return window.localStorage.getItem(THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light';
 }
 
+function readStoredLocale(): AppLocale {
+  return getLocaleFromStorage(window.localStorage);
+}
+
 function App() {
   const [blocks, setBlocks] = useState<TimeBlock[]>(() => readStoredBlocks());
   const [editingBlock, setEditingBlock] = useState<TimeBlock | null>(null);
@@ -146,7 +299,9 @@ function App() {
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>(() => readStoredTheme());
+  const [locale, setLocale] = useState<AppLocale>(() => readStoredLocale());
   const importInputRef = useRef<HTMLInputElement>(null);
+  const messages = getMessages(locale);
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(blocks));
@@ -162,6 +317,11 @@ function App() {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
+  useEffect(() => {
+    document.documentElement.lang = INTL_LOCALES[locale];
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+  }, [locale]);
+
   const sortedBlocks = useMemo(() => sortBlocks(blocks), [blocks]);
   const overlapIds = useMemo(() => detectOverlaps(blocks), [blocks]);
   const currentMinute = now.getHours() * 60 + now.getMinutes();
@@ -171,12 +331,12 @@ function App() {
 
   function saveBlock(form: EditableBlock) {
     if (!form.title) {
-      setError('Informe um título para o bloco.');
+      setError(messages.emptyTitleError);
       return;
     }
 
     if (form.startTime === form.endTime) {
-      setError('O horário inicial não pode ser igual ao horário final.');
+      setError(messages.equalTimeError);
       return;
     }
 
@@ -218,7 +378,7 @@ function App() {
   }
 
   function loadExample() {
-    setBlocks(sampleBlocks.map((block) => ({ ...block, id: createId() })));
+    setBlocks(sampleBlocksByLocale[locale].map((block) => ({ ...block, id: createId() })));
     setEditingBlock(null);
     setSelectedBlock(null);
     setError(null);
@@ -258,7 +418,7 @@ function App() {
       const parsedBlocks = parseBlocks(JSON.parse(content));
 
       if (parsedBlocks.length === 0) {
-        setError('O arquivo não contém blocos válidos.');
+        setError(messages.invalidImportError);
         return;
       }
 
@@ -268,7 +428,7 @@ function App() {
       setError(null);
       setIsActionsOpen(false);
     } catch {
-      setError('Não foi possível importar este JSON.');
+      setError(messages.importFailureError);
     } finally {
       event.target.value = '';
     }
@@ -281,13 +441,13 @@ function App() {
           <header className="mb-8">
             <div>
               <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500 dark:text-neutral-500">
-                Planejamento diário
+                {messages.dailyPlanning}
               </p>
               <h1 className="mt-3 text-3xl font-light tracking-normal text-black dark:text-white">
                 Chronodex
               </h1>
               <p className="mt-3 text-sm font-normal leading-6 text-gray-500 dark:text-neutral-400">
-                {new Intl.DateTimeFormat('pt-BR', {
+                {new Intl.DateTimeFormat(INTL_LOCALES[locale], {
                   weekday: 'long',
                   day: '2-digit',
                   month: 'long',
@@ -298,7 +458,7 @@ function App() {
               <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]">
                 <span className="block text-lg font-light text-black dark:text-white">{blocks.length}</span>
                 <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
-                  blocos
+                  {messages.blocks}
                 </span>
               </div>
               <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]">
@@ -306,7 +466,7 @@ function App() {
                   {Math.floor(totalMinutes / 60)}h
                 </span>
                 <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
-                  planejadas
+                  {messages.planned}
                 </span>
               </div>
             </div>
@@ -315,7 +475,7 @@ function App() {
           <section className="border-t border-gray-200 pt-6 dark:border-neutral-800">
             <div className="mb-5 flex items-center justify-between gap-3">
               <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500 dark:text-neutral-500">
-                Blocos do dia
+                {messages.dayBlocks}
               </h2>
             </div>
 
@@ -323,6 +483,7 @@ function App() {
               blocks={sortedBlocks}
               overlapIds={overlapIds}
               activeBlockId={activeBlockId}
+              locale={locale}
               onEdit={(block) => {
                 setEditingBlock(block);
                 setSelectedBlock(block);
@@ -345,7 +506,7 @@ function App() {
         <div className="fixed left-4 top-4 z-40 flex gap-2 lg:left-[410px] lg:top-6">
           <button
             type="button"
-            aria-label="Adicionar bloco"
+            aria-label={messages.addBlock}
             onClick={openNewBlockDialog}
             className="flex h-11 w-11 items-center justify-center rounded-xl bg-black text-white transition hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
           >
@@ -364,7 +525,7 @@ function App() {
           </button>
           <button
             type="button"
-            aria-label="Abrir ações"
+            aria-label={messages.actions}
             onClick={() => setIsActionsOpen(true)}
             className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
           >
@@ -381,7 +542,7 @@ function App() {
           </button>
           <button
             type="button"
-            aria-label={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
+            aria-label={theme === 'dark' ? messages.themeLight : messages.themeDark}
             onClick={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
             className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
           >
@@ -419,27 +580,41 @@ function App() {
               </svg>
             )}
           </button>
+          <select
+            aria-label="Language"
+            value={locale}
+            onChange={(event) => setLocale(event.target.value as AppLocale)}
+            className="h-11 rounded-xl border border-gray-200 bg-white px-3 text-xs font-medium text-gray-700 outline-none transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
+          >
+            {SUPPORTED_LOCALES.map((nextLocale) => (
+              <option key={nextLocale} value={nextLocale}>
+                {LOCALE_LABELS[nextLocale]}
+              </option>
+            ))}
+          </select>
         </div>
 
         {isActionsOpen ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4">
             <button
               type="button"
-              aria-label="Fechar ações"
+              aria-label={messages.closeActions}
               className="absolute inset-0 cursor-default"
               onClick={() => setIsActionsOpen(false)}
             />
             <section className="relative w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-sm font-medium text-black dark:text-white">Ações do dia</h2>
+                  <h2 className="text-sm font-medium text-black dark:text-white">
+                    {messages.actions}
+                  </h2>
                   <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
-                    Importação, exportação e estado inicial.
+                    {messages.actionsDescription}
                   </p>
                 </div>
                 <button
                   type="button"
-                  aria-label="Fechar ações"
+                  aria-label={messages.closeActions}
                   onClick={() => setIsActionsOpen(false)}
                   className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
                 >
@@ -463,7 +638,7 @@ function App() {
                   onClick={loadExample}
                   className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
                 >
-                  Carregar exemplo
+                  {messages.loadExample}
                 </button>
                 <button
                   type="button"
@@ -471,14 +646,14 @@ function App() {
                   disabled={blocks.length === 0}
                   className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
                 >
-                  Exportar JSON
+                  {messages.exportJson}
                 </button>
                 <button
                   type="button"
                   onClick={() => importInputRef.current?.click()}
                   className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
                 >
-                  Importar JSON
+                  {messages.importJson}
                 </button>
                 <button
                   type="button"
@@ -486,7 +661,7 @@ function App() {
                   disabled={blocks.length === 0}
                   className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-red-700 transition hover:border-red-200 hover:bg-red-50 disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-red-400 dark:hover:bg-red-950/30"
                 >
-                  Limpar dia
+                  {messages.clearDay}
                 </button>
               </div>
             </section>
@@ -497,7 +672,7 @@ function App() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
             <button
               type="button"
-              aria-label="Fechar formulário"
+              aria-label={messages.closeForm}
               className="absolute inset-0 cursor-default"
               onClick={() => {
                 setIsBlockDialogOpen(false);
@@ -509,15 +684,15 @@ function App() {
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-sm font-medium text-black dark:text-white">
-                    {editingBlock ? 'Editar bloco' : 'Novo bloco'}
+                    {editingBlock ? messages.editBlock : messages.addBlock}
                   </h2>
                   <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
-                    Defina horário, cor e marcação temporal.
+                    {messages.blockFormDescription}
                   </p>
                 </div>
                 <button
                   type="button"
-                  aria-label="Fechar formulário"
+                  aria-label={messages.closeForm}
                   onClick={() => {
                     setIsBlockDialogOpen(false);
                     setEditingBlock(null);
@@ -542,6 +717,7 @@ function App() {
               <TimeBlockForm
                 editingBlock={editingBlock}
                 error={error}
+                locale={locale}
                 onSubmit={saveBlock}
                 onCancelEdit={() => {
                   setIsBlockDialogOpen(false);
@@ -557,6 +733,7 @@ function App() {
           blocks={sortedBlocks}
           now={now}
           selectedBlock={selectedBlock}
+          locale={locale}
           onSelectBlock={setSelectedBlock}
         />
       </div>

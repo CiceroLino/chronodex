@@ -1,8 +1,14 @@
 import { useState } from 'react';
+import {
+  formatLocalizedDuration,
+  getCategoryLabel,
+  getMessages,
+  INTL_LOCALES,
+  type AppLocale,
+} from '../i18n';
 import { CATEGORIES, CATEGORY_COLORS, type TimeBlock } from '../types';
 import {
   describeAnnularSector,
-  formatDuration,
   getChronodexAngleRange,
   getDuration,
   getTotalPlannedMinutes,
@@ -19,6 +25,7 @@ type ChronodexViewProps = {
   blocks: TimeBlock[];
   now: Date;
   selectedBlock: TimeBlock | null;
+  locale: AppLocale;
   onSelectBlock: (block: TimeBlock | null) => void;
 };
 
@@ -40,6 +47,7 @@ export function ChronodexView({
   blocks,
   now,
   selectedBlock,
+  locale,
   onSelectBlock,
 }: ChronodexViewProps) {
   const [hoveredBlock, setHoveredBlock] = useState<{
@@ -47,24 +55,25 @@ export function ChronodexView({
     position: { x: number; y: number };
   } | null>(null);
   const currentMinute = now.getHours() * 60 + now.getMinutes();
+  const messages = getMessages(locale);
   const activeBlock = blocks.find((block) => isMinuteInsideBlock(currentMinute, block)) ?? null;
   const chronodexBlocks = sortBlocksForChronodex(blocks);
   const footerCards = [
     {
-      label: 'horas planejadas',
-      value: formatDuration(getTotalPlannedMinutes(blocks)),
+      label: messages.hoursPlanned,
+      value: formatLocalizedDuration(getTotalPlannedMinutes(blocks), locale),
     },
     {
-      label: 'total de blocos',
+      label: messages.totalBlocks,
       value: String(blocks.length),
     },
     {
-      label: 'bloco atual',
-      value: activeBlock?.title ?? 'livre',
+      label: messages.activeBlock,
+      value: activeBlock?.title ?? messages.free,
     },
     {
-      label: 'hora atual',
-      value: new Intl.DateTimeFormat('pt-BR', {
+      label: messages.timeNow,
+      value: new Intl.DateTimeFormat(INTL_LOCALES[locale], {
         hour: '2-digit',
         minute: '2-digit',
       }).format(now),
@@ -84,7 +93,7 @@ export function ChronodexView({
               style={{ backgroundColor: CATEGORY_COLORS[category] }}
             />
             <span className="absolute right-9 top-1/2 hidden -translate-y-1/2 whitespace-nowrap rounded-xl border border-gray-200 bg-white px-3 py-2 text-[11px] font-medium text-gray-600 group-hover:block dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300">
-              {category}
+              {getCategoryLabel(category, locale)}
             </span>
           </div>
         ))}
@@ -235,7 +244,7 @@ export function ChronodexView({
             <CurrentTimeIndicator now={now} />
           </svg>
 
-          <StatsPanel blocks={blocks} now={now} />
+          <StatsPanel blocks={blocks} now={now} locale={locale} />
 
           {hoveredBlock ? (
             <div
@@ -263,12 +272,15 @@ export function ChronodexView({
       {selectedBlock ? (
         <div className="w-full max-w-[760px] border-t border-gray-200 pt-3 text-center dark:border-neutral-800">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500 dark:text-neutral-500">
-            {selectedBlock.category}
+            {getCategoryLabel(selectedBlock.category, locale)}
           </p>
           <p className="mt-2 text-sm font-medium text-black dark:text-white">{selectedBlock.title}</p>
           <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
             {selectedBlock.startTime} - {selectedBlock.endTime} ·{' '}
-            {formatDuration(getDuration(selectedBlock.startTime, selectedBlock.endTime))}
+            {formatLocalizedDuration(
+              getDuration(selectedBlock.startTime, selectedBlock.endTime),
+              locale,
+            )}
           </p>
         </div>
       ) : null}
