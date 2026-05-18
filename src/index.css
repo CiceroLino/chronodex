@@ -171,6 +171,21 @@ button:disabled {
   stroke-dasharray: 0.18 0.82;
 }
 
+@media (max-width: 767px) {
+  .chronodex-line-draw {
+    animation-delay: 0ms !important;
+    animation-duration: 420ms;
+  }
+
+  .chronodex-tick-draw,
+  .chronodex-label-in,
+  .chronodex-node-in,
+  .chronodex-block-in {
+    animation-delay: 120ms !important;
+    animation-duration: 260ms;
+  }
+}
+
 @keyframes chronodex-active-block-trace {
   from {
     stroke-dashoffset: 1;
