@@ -295,6 +295,7 @@ function readStoredLocale(): AppLocale {
 function App() {
   const [blocks, setBlocks] = useState<TimeBlock[]>(() => readStoredBlocks());
   const [editingBlock, setEditingBlock] = useState<TimeBlock | null>(null);
+  const [blockPendingDelete, setBlockPendingDelete] = useState<TimeBlock | null>(null);
   const [selectedBlock, setSelectedBlock] = useState<TimeBlock | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
@@ -378,6 +379,22 @@ function App() {
     if (selectedBlock?.id === id) {
       setSelectedBlock(null);
     }
+
+    setBlockPendingDelete(null);
+  }
+
+  function requestDeleteBlock(id: string) {
+    const block = blocks.find((currentBlock) => currentBlock.id === id);
+
+    if (!block) {
+      return;
+    }
+
+    setBlockPendingDelete(block);
+  }
+
+  function cancelDeleteBlock() {
+    setBlockPendingDelete(null);
   }
 
   function openNewBlockDialog() {
@@ -390,6 +407,7 @@ function App() {
     setBlocks(sampleBlocksByLocale[locale].map((block) => ({ ...block, id: createId() })));
     setEditingBlock(null);
     setSelectedBlock(null);
+    setBlockPendingDelete(null);
     setError(null);
     setIsActionsOpen(false);
   }
@@ -398,6 +416,7 @@ function App() {
     setBlocks([]);
     setEditingBlock(null);
     setSelectedBlock(null);
+    setBlockPendingDelete(null);
     setError(null);
     setIsActionsOpen(false);
   }
@@ -515,7 +534,7 @@ function App() {
                 setError(null);
                 setIsBlockDialogOpen(true);
               }}
-              onDelete={deleteBlock}
+              onDelete={requestDeleteBlock}
             />
           </section>
 
@@ -881,7 +900,7 @@ function App() {
                   setError(null);
                   setIsBlockDialogOpen(true);
                 }}
-                onDelete={deleteBlock}
+                onDelete={requestDeleteBlock}
               />
             </aside>
           </div>
@@ -943,6 +962,65 @@ function App() {
                   setError(null);
                 }}
               />
+            </section>
+          </div>
+        ) : null}
+
+        {blockPendingDelete ? (
+          <div className="modal-backdrop-in fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">
+            <button
+              type="button"
+              aria-label={messages.keepBlock}
+              className="absolute inset-0 cursor-default"
+              onClick={cancelDeleteBlock}
+            />
+            <section className="modal-panel-in relative w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
+              <div className="mb-5">
+                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-red-600 dark:text-red-400">
+                  {messages.delete}
+                </p>
+                <h2 className="mt-2 text-base font-medium text-black dark:text-white">
+                  {messages.confirmDeleteTitle}
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-gray-500 dark:text-neutral-400">
+                  {messages.confirmDeleteDescription}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-neutral-800 dark:bg-[#111111]">
+                <div className="flex items-start gap-3">
+                  <span
+                    aria-hidden="true"
+                    className="mt-1 h-10 w-1 shrink-0 rounded-full"
+                    style={{ backgroundColor: blockPendingDelete.color }}
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-black dark:text-white">
+                      {blockPendingDelete.title}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
+                      {blockPendingDelete.startTime} - {blockPendingDelete.endTime}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={cancelDeleteBlock}
+                  className="rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-900"
+                >
+                  {messages.keepBlock}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => deleteBlock(blockPendingDelete.id)}
+                  className="rounded-xl border border-red-700 bg-red-700 px-4 py-3 text-sm font-medium text-white transition hover:border-red-800 hover:bg-red-800 dark:border-red-500 dark:bg-red-500 dark:hover:border-red-400 dark:hover:bg-red-400"
+                >
+                  {messages.confirmDeleteAction}
+                </button>
+              </div>
             </section>
           </div>
         ) : null}

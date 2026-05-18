@@ -37,6 +37,9 @@ type Messages = {
   collapseSidebar: string;
   collapseDayBlocks: string;
   color: string;
+  confirmDeleteAction: string;
+  confirmDeleteDescription: string;
+  confirmDeleteTitle: string;
   dailyPlanning: string;
   dayBlocks: string;
   delete: string;
@@ -53,6 +56,7 @@ type Messages = {
   hoursPlanned: string;
   importJson: string;
   invalidImportError: string;
+  keepBlock: string;
   loadExample: string;
   noBlocks: string;
   optional: string;
@@ -94,6 +98,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     collapseSidebar: 'Recolher painel lateral',
     collapseDayBlocks: 'Recolher blocos do dia',
     color: 'Cor',
+    confirmDeleteAction: 'Excluir bloco',
+    confirmDeleteDescription: 'Esta ação remove o bloco do dia e não pode ser desfeita.',
+    confirmDeleteTitle: 'Excluir este bloco?',
     dailyPlanning: 'Planejamento diário',
     dayBlocks: 'Blocos do dia',
     delete: 'Excluir',
@@ -110,6 +117,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     hoursPlanned: 'horas planejadas',
     importJson: 'Importar JSON',
     invalidImportError: 'O arquivo não contém blocos válidos.',
+    keepBlock: 'Manter bloco',
     loadExample: 'Carregar exemplo',
     noBlocks: 'Nenhum bloco planejado ainda.',
     optional: 'Opcional',
@@ -149,6 +157,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     collapseSidebar: 'Contraer panel lateral',
     collapseDayBlocks: 'Contraer bloques del día',
     color: 'Color',
+    confirmDeleteAction: 'Eliminar bloque',
+    confirmDeleteDescription: 'Esta acción quita el bloque del día y no se puede deshacer.',
+    confirmDeleteTitle: '¿Eliminar este bloque?',
     dailyPlanning: 'Planificación diaria',
     dayBlocks: 'Bloques del día',
     delete: 'Eliminar',
@@ -165,6 +176,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     hoursPlanned: 'horas planificadas',
     importJson: 'Importar JSON',
     invalidImportError: 'El archivo no contiene bloques válidos.',
+    keepBlock: 'Mantener bloque',
     loadExample: 'Cargar ejemplo',
     noBlocks: 'Aún no hay bloques planificados.',
     optional: 'Opcional',
@@ -204,6 +216,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     collapseSidebar: 'Collapse sidebar',
     collapseDayBlocks: 'Collapse day blocks',
     color: 'Color',
+    confirmDeleteAction: 'Delete block',
+    confirmDeleteDescription: 'This removes the block from the day and cannot be undone.',
+    confirmDeleteTitle: 'Delete this block?',
     dailyPlanning: 'Daily planning',
     dayBlocks: 'Day blocks',
     delete: 'Delete',
@@ -220,6 +235,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     hoursPlanned: 'planned hours',
     importJson: 'Import JSON',
     invalidImportError: 'The file does not contain valid blocks.',
+    keepBlock: 'Keep block',
     loadExample: 'Load example',
     noBlocks: 'No blocks planned yet.',
     optional: 'Optional',
@@ -259,6 +275,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     collapseSidebar: 'サイドバーを折りたたむ',
     collapseDayBlocks: '今日のブロックを折りたたむ',
     color: '色',
+    confirmDeleteAction: 'ブロックを削除',
+    confirmDeleteDescription: 'この日のブロックを削除します。この操作は元に戻せません。',
+    confirmDeleteTitle: 'このブロックを削除しますか？',
     dailyPlanning: '日次計画',
     dayBlocks: '今日のブロック',
     delete: '削除',
@@ -275,6 +294,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     hoursPlanned: '計画時間',
     importJson: 'JSONを読み込む',
     invalidImportError: '有効なブロックが含まれていません。',
+    keepBlock: 'ブロックを残す',
     loadExample: '例を読み込む',
     noBlocks: '計画されたブロックはまだありません。',
     optional: '任意',
