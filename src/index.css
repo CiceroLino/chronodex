@@ -143,6 +143,17 @@ button:disabled {
   animation: chronodex-label-in 360ms ease-out both;
 }
 
+.chronodex-hour-label {
+  paint-order: stroke;
+  stroke: #f7f7f7;
+  stroke-linejoin: round;
+  stroke-width: 4px;
+}
+
+.dark .chronodex-hour-label {
+  stroke: #111111;
+}
+
 .chronodex-node-in {
   animation: chronodex-node-in 420ms ease-out both;
   transform-box: fill-box;

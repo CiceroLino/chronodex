@@ -217,7 +217,7 @@ export function ChronodexView({
                       y={point.y}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      className="chronodex-label-in fill-gray-600 text-[8.5px] font-medium dark:fill-neutral-400"
+                      className="chronodex-label-in chronodex-hour-label fill-gray-600 text-[8.5px] font-medium dark:fill-neutral-400"
                       style={{ animationDelay: `${520 + hour * 24 + ringIndex * 80}ms` }}
                     >
                       {formatHourLabel(hour, ring.period)}
