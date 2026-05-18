@@ -12,6 +12,10 @@ A minimal radial time planner inspired by analog Chronodex diagrams, bullet jour
 - AM/PM radial planning rings
 - Color-coded time blocks
 - Highlighted block markers
+- Daily reminders
+- In-app notice rail
+- Browser notifications for reminders and block start/end events
+- Category time-share dashboard
 - Light and dark themes
 - Localized UI: Portuguese, Spanish, English, and Japanese
 - Local persistence with `localStorage`
