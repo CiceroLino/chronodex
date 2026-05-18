@@ -69,3 +69,58 @@ button:disabled {
 .modal-panel-in {
   animation: modal-panel-in 180ms ease-out;
 }
+
+@keyframes spider-radar-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spider-shape-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+
+  65% {
+    opacity: 0.12;
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spider-legend-in {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.spider-radar-in {
+  animation: spider-radar-in 420ms ease-out both;
+  transform-origin: center;
+}
+
+.spider-shape-in {
+  animation: spider-shape-in 700ms ease-out both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.spider-legend-in {
+  animation: spider-legend-in 360ms ease-out both;
+}

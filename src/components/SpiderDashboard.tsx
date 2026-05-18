@@ -33,7 +33,7 @@ export function SpiderDashboard({ blocks, locale }: SpiderDashboardProps) {
       <div className="relative">
         <svg
           viewBox="0 0 260 260"
-          className="h-full min-h-64 w-full text-black dark:text-white"
+          className="spider-radar-in h-full min-h-64 w-full text-black dark:text-white"
           role="img"
           aria-label={messages.spiderDashboard}
         >
@@ -77,6 +77,7 @@ export function SpiderDashboard({ blocks, locale }: SpiderDashboardProps) {
             );
           })}
           <polygon
+            className="spider-shape-in"
             points={points}
             fill="currentColor"
             fillOpacity="0.08"
@@ -90,10 +91,11 @@ export function SpiderDashboard({ blocks, locale }: SpiderDashboardProps) {
         {shares
           .filter((share) => share.minutes > 0)
           .sort((first, second) => second.minutes - first.minutes)
-          .map((share) => (
+          .map((share, index) => (
             <div
               key={share.category}
-              className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]"
+              className="spider-legend-in rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]"
+              style={{ animationDelay: `${140 + index * 70}ms` }}
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-2">
@@ -112,7 +114,7 @@ export function SpiderDashboard({ blocks, locale }: SpiderDashboardProps) {
               <div className="mt-2 flex items-center gap-3">
                 <div className="h-1 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-800">
                   <div
-                    className="h-full rounded-full bg-black dark:bg-white"
+                    className="h-full rounded-full bg-black transition-[width] duration-700 ease-out dark:bg-white"
                     style={{ width: `${share.percentage}%` }}
                   />
                 </div>
