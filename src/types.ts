@@ -28,11 +28,11 @@ export const CATEGORIES: Category[] = [
 ];
 
 export const CATEGORY_COLORS: Record<Category, string> = {
-  Trabalho: '#2563eb',
-  Estudo: '#7c3aed',
-  Saúde: '#059669',
-  Casa: '#d97706',
-  Descanso: '#0891b2',
-  Alimentação: '#dc2626',
-  'Projeto pessoal': '#9333ea',
+  Trabalho: '#8fb2d8',
+  Estudo: '#b8a7d8',
+  Saúde: '#a9cdb6',
+  Casa: '#d8c486',
+  Descanso: '#9dc8c6',
+  Alimentação: '#d9a095',
+  'Projeto pessoal': '#c7a5bd',
 };

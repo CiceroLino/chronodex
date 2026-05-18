@@ -49,6 +49,11 @@ export function minutesToAngle(minutes: number): number {
   return (minutes / DAY_MINUTES) * 360 - 90;
 }
 
+export function minutesToChronodexAngle(minutes: number): number {
+  const shifted = ((minutes - 720) % DAY_MINUTES) + DAY_MINUTES;
+  return minutesToAngle(shifted % DAY_MINUTES);
+}
+
 export function polarToCartesian(
   centerX: number,
   centerY: number,
@@ -86,6 +91,47 @@ export function describeArc(
     1,
     end.x.toFixed(3),
     end.y.toFixed(3),
+  ].join(' ');
+}
+
+export function describeAnnularSector(
+  centerX: number,
+  centerY: number,
+  innerRadius: number,
+  outerRadius: number,
+  startAngle: number,
+  endAngle: number,
+): string {
+  const outerStart = polarToCartesian(centerX, centerY, outerRadius, startAngle);
+  const outerEnd = polarToCartesian(centerX, centerY, outerRadius, endAngle);
+  const innerEnd = polarToCartesian(centerX, centerY, innerRadius, endAngle);
+  const innerStart = polarToCartesian(centerX, centerY, innerRadius, startAngle);
+  const largeArcFlag = Math.abs(endAngle - startAngle) > 180 ? '1' : '0';
+
+  return [
+    'M',
+    outerStart.x.toFixed(3),
+    outerStart.y.toFixed(3),
+    'A',
+    outerRadius,
+    outerRadius,
+    0,
+    largeArcFlag,
+    1,
+    outerEnd.x.toFixed(3),
+    outerEnd.y.toFixed(3),
+    'L',
+    innerEnd.x.toFixed(3),
+    innerEnd.y.toFixed(3),
+    'A',
+    innerRadius,
+    innerRadius,
+    0,
+    largeArcFlag,
+    0,
+    innerStart.x.toFixed(3),
+    innerStart.y.toFixed(3),
+    'Z',
   ].join(' ');
 }
 

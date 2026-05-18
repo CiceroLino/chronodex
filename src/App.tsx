@@ -245,36 +245,27 @@ function App() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#d9fbff_0,#eef3f7_32%,#f7fafc_100%)] px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-[1480px] gap-6 xl:grid-cols-[430px_minmax(0,1fr)]">
-        <section className="space-y-6">
-          <header className="rounded-2xl border border-white/70 bg-white/84 p-6 shadow-xl shadow-slate-900/8 backdrop-blur">
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-cyan-700">
+    <main className="min-h-screen bg-[#f7f7f7] text-black">
+      <div className="grid min-h-screen lg:grid-cols-[390px_minmax(0,1fr)]">
+        <section className="border-b border-gray-200 bg-white px-6 py-7 lg:border-b-0 lg:border-r lg:px-7">
+          <header className="mb-9">
+            <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500">
               Planejamento diário
             </p>
-            <h1 className="mt-3 text-3xl font-black text-slate-950">Chronodex</h1>
-            <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">
+            <h1 className="mt-3 text-3xl font-light tracking-normal text-black">Chronodex</h1>
+            <p className="mt-3 text-sm font-normal leading-6 text-gray-500">
               {new Intl.DateTimeFormat('pt-BR', {
                 weekday: 'long',
                 day: '2-digit',
                 month: 'long',
               }).format(now)}
             </p>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl bg-slate-950 px-4 py-3 text-white">
-                <span className="block text-2xl font-black">{blocks.length}</span>
-                <span className="text-xs font-semibold text-slate-300">blocos</span>
-              </div>
-              <div className="rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-slate-200">
-                <span className="block text-2xl font-black">
-                  {Math.floor(totalMinutes / 60)}h
-                </span>
-                <span className="text-xs font-semibold text-slate-500">planejadas</span>
-              </div>
-            </div>
           </header>
 
-          <section className="rounded-2xl border border-white/70 bg-white/90 p-5 shadow-xl shadow-slate-900/8 backdrop-blur">
+          <section className="border-t border-gray-200 pt-6">
+            <h2 className="mb-5 text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+              Novo bloco
+            </h2>
             <TimeBlockForm
               editingBlock={editingBlock}
               error={error}
@@ -286,48 +277,11 @@ function App() {
             />
           </section>
 
-          <section className="rounded-2xl border border-white/70 bg-white/88 p-5 shadow-xl shadow-slate-900/8 backdrop-blur">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-lg font-black text-slate-950">Blocos do dia</h2>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={loadExample}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-50"
-                >
-                  Exemplo
-                </button>
-                <button
-                  type="button"
-                  onClick={exportJson}
-                  disabled={blocks.length === 0}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-50 disabled:opacity-40"
-                >
-                  Exportar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => importInputRef.current?.click()}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:bg-slate-50"
-                >
-                  Importar
-                </button>
-                <button
-                  type="button"
-                  onClick={clearDay}
-                  disabled={blocks.length === 0}
-                  className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 shadow-sm transition hover:bg-red-100 disabled:opacity-40"
-                >
-                  Limpar
-                </button>
-              </div>
-              <input
-                ref={importInputRef}
-                type="file"
-                accept="application/json"
-                onChange={importJson}
-                className="hidden"
-              />
+          <section className="mt-9 border-t border-gray-200 pt-6">
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+                Blocos do dia
+              </h2>
             </div>
 
             <TimeBlockList
@@ -341,6 +295,67 @@ function App() {
               }}
               onDelete={deleteBlock}
             />
+          </section>
+
+          <section className="mt-9 border-t border-gray-200 pt-6">
+            <h2 className="mb-5 text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+              Ações
+            </h2>
+            <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={loadExample}
+                  className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
+                >
+                  Exemplo
+                </button>
+                <button
+                  type="button"
+                  onClick={exportJson}
+                  disabled={blocks.length === 0}
+                  className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 disabled:opacity-40"
+                >
+                  Exportar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => importInputRef.current?.click()}
+                  className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
+                >
+                  Importar
+                </button>
+                <button
+                  type="button"
+                  onClick={clearDay}
+                  disabled={blocks.length === 0}
+                  className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 disabled:opacity-40"
+                >
+                  Limpar
+                </button>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept="application/json"
+                onChange={importJson}
+                className="hidden"
+              />
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3">
+                <span className="block text-lg font-light text-black">{blocks.length}</span>
+                <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500">
+                  blocos
+                </span>
+              </div>
+              <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3">
+                <span className="block text-lg font-light text-black">
+                  {Math.floor(totalMinutes / 60)}h
+                </span>
+                <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500">
+                  planejadas
+                </span>
+              </div>
+            </div>
           </section>
         </section>
 

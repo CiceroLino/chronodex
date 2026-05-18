@@ -59,9 +59,9 @@ export function TimeBlockForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="title">
+        <label className="mb-2 block text-xs font-medium text-gray-600" htmlFor="title">
           Título
         </label>
         <input
@@ -69,13 +69,13 @@ export function TimeBlockForm({
           value={form.title}
           onChange={(event) => updateField('title', event.target.value)}
           placeholder="Ex.: Revisar planejamento"
-          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+          className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition placeholder:text-gray-400 focus:border-gray-500"
         />
       </div>
 
       <div>
         <label
-          className="mb-2 block text-sm font-semibold text-slate-700"
+          className="mb-2 block text-xs font-medium text-gray-600"
           htmlFor="description"
         >
           Descrição
@@ -86,14 +86,14 @@ export function TimeBlockForm({
           onChange={(event) => updateField('description', event.target.value)}
           placeholder="Opcional"
           rows={3}
-          className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+          className="w-full resize-none rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm text-black outline-none transition placeholder:text-gray-400 focus:border-gray-500"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label
-            className="mb-2 block text-sm font-semibold text-slate-700"
+            className="mb-2 block text-xs font-medium text-gray-600"
             htmlFor="startTime"
           >
             Início
@@ -103,11 +103,11 @@ export function TimeBlockForm({
             type="time"
             value={form.startTime}
             onChange={(event) => updateField('startTime', event.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500"
           />
         </div>
         <div>
-          <label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="endTime">
+          <label className="mb-2 block text-xs font-medium text-gray-600" htmlFor="endTime">
             Fim
           </label>
           <input
@@ -115,7 +115,7 @@ export function TimeBlockForm({
             type="time"
             value={form.endTime}
             onChange={(event) => updateField('endTime', event.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500"
           />
         </div>
       </div>
@@ -123,7 +123,7 @@ export function TimeBlockForm({
       <div className="grid grid-cols-[1fr_auto] gap-3">
         <div>
           <label
-            className="mb-2 block text-sm font-semibold text-slate-700"
+            className="mb-2 block text-xs font-medium text-gray-600"
             htmlFor="category"
           >
             Categoria
@@ -132,7 +132,7 @@ export function TimeBlockForm({
             id="category"
             value={form.category}
             onChange={(event) => handleCategoryChange(event.target.value as Category)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500"
           >
             {CATEGORIES.map((category) => (
               <option key={category} value={category}>
@@ -142,7 +142,7 @@ export function TimeBlockForm({
           </select>
         </div>
         <div>
-          <label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="color">
+          <label className="mb-2 block text-xs font-medium text-gray-600" htmlFor="color">
             Cor
           </label>
           <input
@@ -150,13 +150,13 @@ export function TimeBlockForm({
             type="color"
             value={form.color}
             onChange={(event) => updateField('color', event.target.value)}
-            className="h-[50px] w-16 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm"
+            className="h-11 w-14 rounded-xl border border-gray-200 bg-white p-1.5"
           />
         </div>
       </div>
 
       {error ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
           {error}
         </div>
       ) : null}
@@ -164,7 +164,7 @@ export function TimeBlockForm({
       <div className="flex flex-wrap gap-3">
         <button
           type="submit"
-          className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/10 transition hover:bg-slate-800"
+          className="rounded-xl bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
         >
           {editingBlock ? 'Salvar alteração' : 'Adicionar bloco'}
         </button>
@@ -172,7 +172,7 @@ export function TimeBlockForm({
           <button
             type="button"
             onClick={onCancelEdit}
-            className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+            className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
           >
             Cancelar edição
           </button>

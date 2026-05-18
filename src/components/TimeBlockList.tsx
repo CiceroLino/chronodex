@@ -18,7 +18,7 @@ export function TimeBlockList({
 }: TimeBlockListProps) {
   if (blocks.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-300 bg-white/70 px-5 py-8 text-center text-sm text-slate-500">
+      <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-5 py-8 text-center text-sm text-gray-500">
         Nenhum bloco planejado ainda.
       </div>
     );
@@ -34,15 +34,15 @@ export function TimeBlockList({
           <div
             key={block.id}
             className={[
-              'rounded-2xl border bg-white p-4 shadow-sm transition',
-              hasOverlap ? 'border-amber-300 bg-amber-50/60' : 'border-slate-200',
-              isActive ? 'ring-4 ring-cyan-100' : '',
+              'border bg-white p-3 transition',
+              hasOverlap ? 'border-amber-300 bg-amber-50/40' : 'border-gray-200',
+              isActive ? 'border-black' : '',
             ].join(' ')}
           >
             <div className="flex items-start gap-3">
               <span
                 aria-hidden="true"
-                className="mt-1 h-4 w-4 shrink-0 rounded-full shadow-inner"
+                className="h-12 w-1 shrink-0 rounded-full"
                 style={{ backgroundColor: block.color }}
               />
               <button
@@ -50,27 +50,27 @@ export function TimeBlockList({
                 onClick={() => onEdit(block)}
                 className="min-w-0 flex-1 text-left"
               >
-                <span className="block truncate text-sm font-bold text-slate-900">
+                <span className="block truncate text-sm font-medium text-black">
                   {block.title}
                 </span>
-                <span className="mt-1 block text-xs font-medium text-slate-500">
+                <span className="mt-1 block text-xs font-normal text-gray-500">
                   {block.startTime} - {block.endTime} ·{' '}
                   {formatDuration(getDuration(block.startTime, block.endTime))}
                 </span>
-                <span className="mt-2 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                <span className="mt-2 block text-[10px] font-medium uppercase tracking-[0.14em] text-gray-500">
                   {block.category}
                 </span>
               </button>
               <button
                 type="button"
                 onClick={() => onDelete(block.id)}
-                className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+                className="rounded-xl border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
               >
                 Excluir
               </button>
             </div>
             {hasOverlap ? (
-              <p className="mt-3 text-xs font-semibold text-amber-700">
+              <p className="mt-3 text-xs font-medium text-amber-700">
                 Sobreposição detectada neste horário.
               </p>
             ) : null}

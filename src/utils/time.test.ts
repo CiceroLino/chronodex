@@ -1,9 +1,11 @@
 import { describe, expect, test } from 'vitest';
 import {
+  describeAnnularSector,
   describeArc,
   detectOverlaps,
   getDuration,
   minutesToAngle,
+  minutesToChronodexAngle,
   minutesToTime,
   splitBlockRange,
   timeToMinutes,
@@ -41,6 +43,12 @@ describe('time utilities', () => {
     expect(minutesToAngle(1080)).toBe(180);
   });
 
+  test('maps chronodex minutes with noon at the top', () => {
+    expect(minutesToChronodexAngle(720)).toBe(-90);
+    expect(minutesToChronodexAngle(900)).toBe(-45);
+    expect(minutesToChronodexAngle(1080)).toBe(0);
+  });
+
   test('splits ranges that cross midnight into two renderable segments', () => {
     expect(splitBlockRange(block('night', '22:00', '01:00'))).toEqual([
       { start: 1320, end: 1440 },
@@ -64,5 +72,15 @@ describe('time utilities', () => {
 
     expect(path).toMatch(/^M /);
     expect(path).toContain(' A 170 170 0 0 1 ');
+  });
+
+  test('returns a closed SVG path for an annular sector', () => {
+    const path = describeAnnularSector(250, 250, 160, 194, -90, -60);
+
+    expect(path).toMatch(/^M /);
+    expect(path).toContain(' A 194 194 0 0 1 ');
+    expect(path).toContain(' L ');
+    expect(path).toContain(' A 160 160 0 0 0 ');
+    expect(path.endsWith(' Z')).toBe(true);
   });
 });

@@ -1,5 +1,9 @@
 import type { TimeBlock } from '../types';
-import { describeArc, minutesToAngle, splitBlockRange } from '../utils/time';
+import {
+  describeAnnularSector,
+  minutesToChronodexAngle,
+  splitBlockRange,
+} from '../utils/time';
 
 type ChronodexArcProps = {
   block: TimeBlock;
@@ -15,20 +19,25 @@ export function ChronodexArc({
   onSelect,
 }: ChronodexArcProps) {
   const ranges = splitBlockRange(block);
-  const strokeWidth = isActive || isSelected ? 34 : 28;
 
   return (
     <g>
       {ranges.map((range, index) => (
         <path
           key={`${block.id}-${index}`}
-          d={describeArc(250, 250, 170, minutesToAngle(range.start), minutesToAngle(range.end))}
-          fill="none"
-          stroke={block.color}
-          strokeWidth={strokeWidth}
-          strokeLinecap="round"
-          opacity={isActive ? 0.92 : 0.72}
-          className="transition-all duration-200 hover:opacity-100"
+          d={describeAnnularSector(
+            250,
+            250,
+            126,
+            158,
+            minutesToChronodexAngle(range.start),
+            minutesToChronodexAngle(range.end),
+          )}
+          fill={block.color}
+          stroke={isSelected ? '#111111' : '#262626'}
+          strokeWidth={isSelected || isActive ? 1.2 : 0.65}
+          opacity={isActive ? 0.72 : 0.58}
+          className="cursor-pointer transition-opacity duration-150 hover:opacity-80"
           role="button"
           tabIndex={0}
           aria-label={`${block.title}, ${block.startTime} até ${block.endTime}`}
