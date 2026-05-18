@@ -26,7 +26,7 @@ export function ChronodexArc({
   onLeave,
 }: ChronodexArcProps) {
   const ranges = splitBlockRangeByHalfDay(block);
-  const blockOpacity = isSelected ? 0.84 : block.highlighted ? 0.74 : isActive ? 0.7 : 0.52;
+  const blockOpacity = isSelected ? 0.84 : block.highlighted ? 0.74 : isActive ? 0.76 : 0.52;
   const blockStrokeWidth = isSelected ? 1.35 : isActive || block.highlighted ? 1 : 0.55;
 
   return (
@@ -90,6 +90,23 @@ export function ChronodexArc({
                 }
               }}
             />
+            {isActive && !isSelected ? (
+              <path
+                d={describeArc(
+                  250,
+                  250,
+                  markerRadius,
+                  angles.startAngle,
+                  angles.endAngle,
+                )}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                className="pointer-events-none chronodex-active-block-trace"
+                pathLength={1}
+              />
+            ) : null}
             {block.highlighted ? (
               <g className="pointer-events-none">
                 <path

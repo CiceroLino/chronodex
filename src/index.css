@@ -166,6 +166,21 @@ button:disabled {
   transform-origin: center;
 }
 
+.chronodex-active-block-trace {
+  animation: chronodex-active-block-trace 2.4s linear infinite;
+  stroke-dasharray: 0.18 0.82;
+}
+
+@keyframes chronodex-active-block-trace {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 @keyframes spider-legend-in {
   from {
     opacity: 0;
