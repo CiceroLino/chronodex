@@ -35,6 +35,7 @@ type Messages = {
   closeDashboard: string;
   closeForm: string;
   collapseSidebar: string;
+  collapseDayBlocks: string;
   color: string;
   dailyPlanning: string;
   dayBlocks: string;
@@ -45,6 +46,8 @@ type Messages = {
   equalTimeError: string;
   exportJson: string;
   expandSidebar: string;
+  expandDayBlocks: string;
+  openDayBlocks: string;
   highlightedBlock: string;
   highlightedBlockDescription: string;
   hoursPlanned: string;
@@ -89,6 +92,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     closeDashboard: 'Fechar dashboard',
     closeForm: 'Fechar formulário',
     collapseSidebar: 'Recolher painel lateral',
+    collapseDayBlocks: 'Recolher blocos do dia',
     color: 'Cor',
     dailyPlanning: 'Planejamento diário',
     dayBlocks: 'Blocos do dia',
@@ -99,6 +103,8 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     equalTimeError: 'O horário inicial não pode ser igual ao horário final.',
     exportJson: 'Exportar JSON',
     expandSidebar: 'Expandir painel lateral',
+    expandDayBlocks: 'Expandir blocos do dia',
+    openDayBlocks: 'Abrir blocos do dia',
     highlightedBlock: 'Destacar bloco',
     highlightedBlockDescription: 'Renderiza por cima de sobreposições e marca no painel.',
     hoursPlanned: 'horas planejadas',
@@ -141,6 +147,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     closeDashboard: 'Cerrar dashboard',
     closeForm: 'Cerrar formulario',
     collapseSidebar: 'Contraer panel lateral',
+    collapseDayBlocks: 'Contraer bloques del día',
     color: 'Color',
     dailyPlanning: 'Planificación diaria',
     dayBlocks: 'Bloques del día',
@@ -151,6 +158,8 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     equalTimeError: 'La hora inicial no puede ser igual a la hora final.',
     exportJson: 'Exportar JSON',
     expandSidebar: 'Expandir panel lateral',
+    expandDayBlocks: 'Expandir bloques del día',
+    openDayBlocks: 'Abrir bloques del día',
     highlightedBlock: 'Destacar bloque',
     highlightedBlockDescription: 'Se renderiza encima de solapamientos y se marca en el panel.',
     hoursPlanned: 'horas planificadas',
@@ -193,6 +202,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     closeDashboard: 'Close dashboard',
     closeForm: 'Close form',
     collapseSidebar: 'Collapse sidebar',
+    collapseDayBlocks: 'Collapse day blocks',
     color: 'Color',
     dailyPlanning: 'Daily planning',
     dayBlocks: 'Day blocks',
@@ -203,6 +213,8 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     equalTimeError: 'Start time cannot be the same as end time.',
     exportJson: 'Export JSON',
     expandSidebar: 'Expand sidebar',
+    expandDayBlocks: 'Expand day blocks',
+    openDayBlocks: 'Open day blocks',
     highlightedBlock: 'Highlight block',
     highlightedBlockDescription: 'Renders above overlaps and marks it in the panel.',
     hoursPlanned: 'planned hours',
@@ -245,6 +257,7 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     closeDashboard: 'ダッシュボードを閉じる',
     closeForm: 'フォームを閉じる',
     collapseSidebar: 'サイドバーを折りたたむ',
+    collapseDayBlocks: '今日のブロックを折りたたむ',
     color: '色',
     dailyPlanning: '日次計画',
     dayBlocks: '今日のブロック',
@@ -255,6 +268,8 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     equalTimeError: '開始時刻と終了時刻は同じにできません。',
     exportJson: 'JSONを書き出す',
     expandSidebar: 'サイドバーを展開',
+    expandDayBlocks: '今日のブロックを展開',
+    openDayBlocks: '今日のブロックを開く',
     highlightedBlock: 'ブロックを強調',
     highlightedBlockDescription: '重なりの上に表示し、パネルに印を付けます。',
     hoursPlanned: '計画時間',

@@ -300,6 +300,7 @@ function App() {
   const [now, setNow] = useState(() => new Date());
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
+  const [isMobileBlocksOpen, setIsMobileBlocksOpen] = useState(false);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [theme, setTheme] = useState<Theme>(() => readStoredTheme());
@@ -454,11 +455,13 @@ function App() {
       >
         <section
           className={[
-            'border-b border-gray-200 bg-white transition-colors dark:border-neutral-800 dark:bg-[#151515] lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r',
-            isSidebarCollapsed ? 'overflow-hidden px-0 py-0 lg:border-r-0' : 'px-6 py-7 lg:px-7',
+            'hidden border-b border-gray-200 bg-white transition-colors dark:border-neutral-800 dark:bg-[#151515] lg:block lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r',
+            isSidebarCollapsed
+              ? 'lg:overflow-hidden lg:border-r-0 lg:px-0 lg:py-0'
+              : 'lg:px-7 lg:py-7',
           ].join(' ')}
         >
-          <div className={isSidebarCollapsed ? 'hidden' : ''}>
+          <div className={isSidebarCollapsed ? 'lg:hidden' : ''}>
           <header className="mb-8">
             <div>
               <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500 dark:text-neutral-500">
@@ -494,7 +497,7 @@ function App() {
           </header>
 
           <section className="border-t border-gray-200 pt-6 dark:border-neutral-800">
-            <div className="mb-5 flex items-center justify-between gap-3">
+            <div className="mb-5">
               <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500 dark:text-neutral-500">
                 {messages.dayBlocks}
               </h2>
@@ -528,9 +531,9 @@ function App() {
 
         <div
           className={[
-            'fixed left-4 top-4 z-40 flex gap-2 transition-[left]',
+            'fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 gap-2 rounded-2xl border border-gray-200 bg-white/95 p-2 transition-[left] dark:border-neutral-800 dark:bg-[#151515]/95',
             isSidebarCollapsed ? 'lg:left-6' : 'lg:left-[410px]',
-            'lg:top-6',
+            'lg:bottom-auto lg:top-6 lg:max-w-none lg:translate-x-0 lg:border-0 lg:bg-transparent lg:p-0 lg:dark:bg-transparent',
           ].join(' ')}
         >
           <button
@@ -540,7 +543,7 @@ function App() {
             }
             title={isSidebarCollapsed ? messages.expandSidebar : messages.collapseSidebar}
             onClick={() => setIsSidebarCollapsed((current) => !current)}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
+            className="hidden h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900 lg:flex"
           >
             <svg
               aria-hidden="true"
@@ -557,6 +560,31 @@ function App() {
               ) : (
                 <path d="M15 18l-6-6 6-6" />
               )}
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label={messages.openDayBlocks}
+            title={messages.openDayBlocks}
+            onClick={() => setIsMobileBlocksOpen(true)}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900 lg:hidden"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.8"
+            >
+              <path d="M8 6h13" />
+              <path d="M8 12h13" />
+              <path d="M8 18h13" />
+              <path d="M3 6h.01" />
+              <path d="M3 12h.01" />
+              <path d="M3 18h.01" />
             </svg>
           </button>
           <button
@@ -765,6 +793,98 @@ function App() {
             </section>
           </div>
         ) : null}
+
+        <div
+          className={[
+            'fixed inset-0 z-50 lg:hidden',
+            isMobileBlocksOpen ? 'pointer-events-auto' : 'pointer-events-none',
+          ].join(' ')}
+          aria-hidden={!isMobileBlocksOpen}
+        >
+            <button
+              type="button"
+              aria-label={messages.closeForm}
+              className={[
+                'absolute inset-0 bg-black/18 transition-opacity duration-200',
+                isMobileBlocksOpen ? 'opacity-100' : 'opacity-0',
+              ].join(' ')}
+              onClick={() => setIsMobileBlocksOpen(false)}
+            />
+            <aside
+              className={[
+                'absolute left-0 top-0 h-full w-[min(88vw,390px)] overflow-y-auto border-r border-gray-200 bg-white px-6 py-7 pb-28 transition-transform duration-300 ease-out dark:border-neutral-800 dark:bg-[#151515]',
+                isMobileBlocksOpen ? 'translate-x-0' : '-translate-x-full',
+              ].join(' ')}
+            >
+              <div className="mb-6 flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500 dark:text-neutral-500">
+                    {messages.dailyPlanning}
+                  </p>
+                  <h2 className="mt-2 text-2xl font-light text-black dark:text-white">
+                    Chronodex
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  aria-label={messages.closeForm}
+                  onClick={() => setIsMobileBlocksOpen(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="1.8"
+                  >
+                    <path d="M6 6l12 12" />
+                    <path d="M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+              <div className="mb-6 grid grid-cols-2 gap-2">
+                <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]">
+                  <span className="block text-lg font-light text-black dark:text-white">
+                    {blocks.length}
+                  </span>
+                  <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
+                    {messages.blocks}
+                  </span>
+                </div>
+                <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]">
+                  <span className="block text-lg font-light text-black dark:text-white">
+                    {Math.floor(totalMinutes / 60)}h
+                  </span>
+                  <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
+                    {messages.planned}
+                  </span>
+                </div>
+              </div>
+              <div className="mb-5 border-t border-gray-200 pt-6 dark:border-neutral-800">
+                <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500 dark:text-neutral-500">
+                  {messages.dayBlocks}
+                </h2>
+              </div>
+              <TimeBlockList
+                blocks={sortedBlocks}
+                overlapIds={overlapIds}
+                activeBlockId={activeBlockId}
+                activeBlockProgress={activeBlockProgress}
+                locale={locale}
+                onEdit={(block) => {
+                  setIsMobileBlocksOpen(false);
+                  setEditingBlock(block);
+                  setSelectedBlock(block);
+                  setError(null);
+                  setIsBlockDialogOpen(true);
+                }}
+                onDelete={deleteBlock}
+              />
+            </aside>
+          </div>
 
         {isBlockDialogOpen ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/18 px-4 py-6">

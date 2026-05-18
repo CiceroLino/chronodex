@@ -85,7 +85,7 @@ export function ChronodexView({
   ];
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f7f7f7] px-6 py-6 transition-colors dark:bg-[#111111] lg:h-screen lg:min-h-0 lg:overflow-hidden lg:px-10">
+    <section className="relative flex min-h-[680px] flex-col items-center justify-center gap-4 bg-[#f7f7f7] px-4 pb-28 pt-8 transition-colors dark:bg-[#111111] sm:min-h-[760px] sm:px-6 lg:h-screen lg:min-h-0 lg:overflow-hidden lg:px-10 lg:py-6">
       <aside className="pointer-events-none absolute right-6 top-1/2 hidden -translate-y-1/2 flex-col gap-3 xl:flex">
         {CATEGORIES.map((category) => (
           <div
