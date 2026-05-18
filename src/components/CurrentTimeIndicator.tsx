@@ -12,7 +12,6 @@ export function CurrentTimeIndicator({ now }: CurrentTimeIndicatorProps) {
   const outerRadius = isPm ? 194 : 150;
   const inner = polarToCartesian(250, 250, innerRadius, angle);
   const outer = polarToCartesian(250, 250, outerRadius, angle);
-  const cap = polarToCartesian(250, 250, outerRadius + 4, angle);
 
   return (
     <g>
@@ -25,7 +24,6 @@ export function CurrentTimeIndicator({ now }: CurrentTimeIndicatorProps) {
         strokeWidth="0.9"
         strokeLinecap="round"
       />
-      <circle cx={cap.x} cy={cap.y} r="3.4" fill="#111111" />
     </g>
   );
 }
