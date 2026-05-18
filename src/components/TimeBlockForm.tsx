@@ -62,7 +62,7 @@ export function TimeBlockForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="mb-2 block text-xs font-medium text-gray-600" htmlFor="title">
+        <label className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400" htmlFor="title">
           Título
         </label>
         <input
@@ -70,13 +70,13 @@ export function TimeBlockForm({
           value={form.title}
           onChange={(event) => updateField('title', event.target.value)}
           placeholder="Ex.: Revisar planejamento"
-          className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition placeholder:text-gray-400 focus:border-gray-500"
+          className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition placeholder:text-gray-400 focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:placeholder:text-neutral-600 dark:focus:border-neutral-500"
         />
       </div>
 
       <div>
         <label
-          className="mb-2 block text-xs font-medium text-gray-600"
+          className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400"
           htmlFor="description"
         >
           Descrição
@@ -87,14 +87,14 @@ export function TimeBlockForm({
           onChange={(event) => updateField('description', event.target.value)}
           placeholder="Opcional"
           rows={3}
-          className="w-full resize-none rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm text-black outline-none transition placeholder:text-gray-400 focus:border-gray-500"
+          className="w-full resize-none rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm text-black outline-none transition placeholder:text-gray-400 focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:placeholder:text-neutral-600 dark:focus:border-neutral-500"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label
-            className="mb-2 block text-xs font-medium text-gray-600"
+            className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400"
             htmlFor="startTime"
           >
             Início
@@ -104,11 +104,11 @@ export function TimeBlockForm({
             type="time"
             value={form.startTime}
             onChange={(event) => updateField('startTime', event.target.value)}
-            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500"
+            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:focus:border-neutral-500"
           />
         </div>
         <div>
-          <label className="mb-2 block text-xs font-medium text-gray-600" htmlFor="endTime">
+          <label className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400" htmlFor="endTime">
             Fim
           </label>
           <input
@@ -116,7 +116,7 @@ export function TimeBlockForm({
             type="time"
             value={form.endTime}
             onChange={(event) => updateField('endTime', event.target.value)}
-            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500"
+            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:focus:border-neutral-500"
           />
         </div>
       </div>
@@ -124,7 +124,7 @@ export function TimeBlockForm({
       <div className="grid grid-cols-[1fr_auto] gap-3">
         <div>
           <label
-            className="mb-2 block text-xs font-medium text-gray-600"
+            className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400"
             htmlFor="category"
           >
             Categoria
@@ -133,7 +133,7 @@ export function TimeBlockForm({
             id="category"
             value={form.category}
             onChange={(event) => handleCategoryChange(event.target.value as Category)}
-            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500"
+            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:focus:border-neutral-500"
           >
             {CATEGORIES.map((category) => (
               <option key={category} value={category}>
@@ -143,7 +143,7 @@ export function TimeBlockForm({
           </select>
         </div>
         <div>
-          <label className="mb-2 block text-xs font-medium text-gray-600" htmlFor="color">
+          <label className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400" htmlFor="color">
             Cor
           </label>
           <input
@@ -151,28 +151,28 @@ export function TimeBlockForm({
             type="color"
             value={form.color}
             onChange={(event) => updateField('color', event.target.value)}
-            className="h-11 w-14 rounded-xl border border-gray-200 bg-white p-1.5"
+            className="h-11 w-14 rounded-xl border border-gray-200 bg-white p-1.5 dark:border-neutral-800 dark:bg-[#191919]"
           />
         </div>
       </div>
 
-      <label className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm text-gray-700">
+      <label className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm text-gray-700 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300">
         <input
           type="checkbox"
           checked={form.highlighted === true}
           onChange={(event) => updateField('highlighted', event.target.checked)}
-          className="h-4 w-4 accent-black"
+          className="h-4 w-4 accent-black dark:accent-white"
         />
         <span className="flex min-w-0 flex-col">
-          <span className="font-medium text-black">Destacar bloco</span>
-          <span className="mt-0.5 text-xs text-gray-500">
+          <span className="font-medium text-black dark:text-white">Destacar bloco</span>
+          <span className="mt-0.5 text-xs text-gray-500 dark:text-neutral-500">
             Renderiza por cima de sobreposições e marca no painel.
           </span>
         </span>
       </label>
 
       {error ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
           {error}
         </div>
       ) : null}
@@ -180,7 +180,7 @@ export function TimeBlockForm({
       <div className="flex flex-wrap gap-3">
         <button
           type="submit"
-          className="rounded-xl bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+          className="rounded-xl bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
         >
           {editingBlock ? 'Salvar alteração' : 'Adicionar bloco'}
         </button>
@@ -188,7 +188,7 @@ export function TimeBlockForm({
           <button
             type="button"
             onClick={onCancelEdit}
-            className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+            className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
           >
             Cancelar edição
           </button>

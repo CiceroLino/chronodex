@@ -13,6 +13,9 @@ import {
 type EditableBlock = Omit<TimeBlock, 'id'>;
 
 const STORAGE_KEY = 'chronodex-time-blocks-v2';
+const THEME_STORAGE_KEY = 'chronodex-theme';
+
+type Theme = 'light' | 'dark';
 
 const sampleBlocks: TimeBlock[] = [
   {
@@ -130,6 +133,10 @@ function sortBlocks(blocks: TimeBlock[]): TimeBlock[] {
   );
 }
 
+function readStoredTheme(): Theme {
+  return window.localStorage.getItem(THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light';
+}
+
 function App() {
   const [blocks, setBlocks] = useState<TimeBlock[]>(() => readStoredBlocks());
   const [editingBlock, setEditingBlock] = useState<TimeBlock | null>(null);
@@ -138,6 +145,7 @@ function App() {
   const [now, setNow] = useState(() => new Date());
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
+  const [theme, setTheme] = useState<Theme>(() => readStoredTheme());
   const importInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -148,6 +156,11 @@ function App() {
     const intervalId = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(intervalId);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
 
   const sortedBlocks = useMemo(() => sortBlocks(blocks), [blocks]);
   const overlapIds = useMemo(() => detectOverlaps(blocks), [blocks]);
@@ -262,18 +275,18 @@ function App() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f7f7] text-black lg:h-screen lg:overflow-hidden">
+    <main className="min-h-screen bg-[#f7f7f7] text-black transition-colors dark:bg-[#111111] dark:text-white lg:h-screen lg:overflow-hidden">
       <div className="grid min-h-screen lg:h-screen lg:min-h-0 lg:grid-cols-[390px_minmax(0,1fr)]">
-        <section className="border-b border-gray-200 bg-white px-6 py-7 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-7">
+        <section className="border-b border-gray-200 bg-white px-6 py-7 transition-colors dark:border-neutral-800 dark:bg-[#151515] lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-7">
           <header className="mb-8">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500">
+              <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-500 dark:text-neutral-500">
                 Planejamento diário
               </p>
-              <h1 className="mt-3 text-3xl font-light tracking-normal text-black">
+              <h1 className="mt-3 text-3xl font-light tracking-normal text-black dark:text-white">
                 Chronodex
               </h1>
-              <p className="mt-3 text-sm font-normal leading-6 text-gray-500">
+              <p className="mt-3 text-sm font-normal leading-6 text-gray-500 dark:text-neutral-400">
                 {new Intl.DateTimeFormat('pt-BR', {
                   weekday: 'long',
                   day: '2-digit',
@@ -282,26 +295,26 @@ function App() {
               </p>
             </div>
             <div className="mt-6 grid grid-cols-2 gap-2">
-              <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3">
-                <span className="block text-lg font-light text-black">{blocks.length}</span>
-                <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500">
+              <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]">
+                <span className="block text-lg font-light text-black dark:text-white">{blocks.length}</span>
+                <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
                   blocos
                 </span>
               </div>
-              <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3">
-                <span className="block text-lg font-light text-black">
+              <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]">
+                <span className="block text-lg font-light text-black dark:text-white">
                   {Math.floor(totalMinutes / 60)}h
                 </span>
-                <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500">
+                <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
                   planejadas
                 </span>
               </div>
             </div>
           </header>
 
-          <section className="border-t border-gray-200 pt-6">
+          <section className="border-t border-gray-200 pt-6 dark:border-neutral-800">
             <div className="mb-5 flex items-center justify-between gap-3">
-              <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+              <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500 dark:text-neutral-500">
                 Blocos do dia
               </h2>
             </div>
@@ -334,7 +347,7 @@ function App() {
             type="button"
             aria-label="Adicionar bloco"
             onClick={openNewBlockDialog}
-            className="flex h-11 w-11 items-center justify-center rounded-xl bg-black text-white transition hover:bg-gray-800"
+            className="flex h-11 w-11 items-center justify-center rounded-xl bg-black text-white transition hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
           >
             <svg
               aria-hidden="true"
@@ -353,7 +366,7 @@ function App() {
             type="button"
             aria-label="Abrir ações"
             onClick={() => setIsActionsOpen(true)}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
           >
             <svg
               aria-hidden="true"
@@ -366,6 +379,46 @@ function App() {
               <circle cx="19" cy="12" r="1.5" />
             </svg>
           </button>
+          <button
+            type="button"
+            aria-label={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
+            onClick={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
+          >
+            {theme === 'dark' ? (
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2" />
+                <path d="M12 20v2" />
+                <path d="M4.93 4.93l1.41 1.41" />
+                <path d="M17.66 17.66l1.41 1.41" />
+                <path d="M2 12h2" />
+                <path d="M20 12h2" />
+                <path d="M4.93 19.07l1.41-1.41" />
+                <path d="M17.66 6.34l1.41-1.41" />
+              </svg>
+            ) : (
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              >
+                <path d="M20 14.5A7.5 7.5 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z" />
+              </svg>
+            )}
+          </button>
         </div>
 
         {isActionsOpen ? (
@@ -376,11 +429,11 @@ function App() {
               className="absolute inset-0 cursor-default"
               onClick={() => setIsActionsOpen(false)}
             />
-            <section className="relative w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5">
+            <section className="relative w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-sm font-medium text-black">Ações do dia</h2>
-                  <p className="mt-1 text-xs text-gray-500">
+                  <h2 className="text-sm font-medium text-black dark:text-white">Ações do dia</h2>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
                     Importação, exportação e estado inicial.
                   </p>
                 </div>
@@ -388,7 +441,7 @@ function App() {
                   type="button"
                   aria-label="Fechar ações"
                   onClick={() => setIsActionsOpen(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
                 >
                   <svg
                     aria-hidden="true"
@@ -408,7 +461,7 @@ function App() {
                 <button
                   type="button"
                   onClick={loadExample}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50"
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
                 >
                   Carregar exemplo
                 </button>
@@ -416,14 +469,14 @@ function App() {
                   type="button"
                   onClick={exportJson}
                   disabled={blocks.length === 0}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 disabled:opacity-40"
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
                 >
                   Exportar JSON
                 </button>
                 <button
                   type="button"
                   onClick={() => importInputRef.current?.click()}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50"
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
                 >
                   Importar JSON
                 </button>
@@ -431,7 +484,7 @@ function App() {
                   type="button"
                   onClick={clearDay}
                   disabled={blocks.length === 0}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-red-700 transition hover:border-red-200 hover:bg-red-50 disabled:opacity-40"
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-red-700 transition hover:border-red-200 hover:bg-red-50 disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-red-400 dark:hover:bg-red-950/30"
                 >
                   Limpar dia
                 </button>
@@ -452,13 +505,13 @@ function App() {
                 setError(null);
               }}
             />
-            <section className="relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5">
+            <section className="relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-sm font-medium text-black">
+                  <h2 className="text-sm font-medium text-black dark:text-white">
                     {editingBlock ? 'Editar bloco' : 'Novo bloco'}
                   </h2>
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
                     Defina horário, cor e marcação temporal.
                   </p>
                 </div>
@@ -470,7 +523,7 @@ function App() {
                     setEditingBlock(null);
                     setError(null);
                   }}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
                 >
                   <svg
                     aria-hidden="true"

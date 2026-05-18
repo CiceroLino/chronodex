@@ -72,18 +72,18 @@ export function ChronodexView({
   ];
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f7f7f7] px-6 py-6 lg:h-screen lg:min-h-0 lg:overflow-hidden lg:px-10">
+    <section className="relative flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f7f7f7] px-6 py-6 transition-colors dark:bg-[#111111] lg:h-screen lg:min-h-0 lg:overflow-hidden lg:px-10">
       <aside className="pointer-events-none absolute right-6 top-1/2 hidden -translate-y-1/2 flex-col gap-3 xl:flex">
         {CATEGORIES.map((category) => (
           <div
             key={category}
-            className="pointer-events-auto group relative flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white"
+            className="pointer-events-auto group relative flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white dark:border-neutral-800 dark:bg-[#191919]"
           >
             <span
               className="h-2.5 w-2.5 rounded-full"
               style={{ backgroundColor: CATEGORY_COLORS[category] }}
             />
-            <span className="absolute right-9 top-1/2 hidden -translate-y-1/2 whitespace-nowrap rounded-xl border border-gray-200 bg-white px-3 py-2 text-[11px] font-medium text-gray-600 group-hover:block">
+            <span className="absolute right-9 top-1/2 hidden -translate-y-1/2 whitespace-nowrap rounded-xl border border-gray-200 bg-white px-3 py-2 text-[11px] font-medium text-gray-600 group-hover:block dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300">
               {category}
             </span>
           </div>
@@ -93,7 +93,7 @@ export function ChronodexView({
         <div className="relative mx-auto aspect-square w-full">
           <svg
             viewBox="0 0 500 500"
-            className="h-full w-full overflow-visible"
+            className="h-full w-full overflow-visible text-black dark:text-neutral-100"
             role="img"
             aria-label="Chronodex radial de vinte e quatro horas"
             onClick={(event) => {
@@ -102,7 +102,14 @@ export function ChronodexView({
               }
             }}
           >
-            <circle cx="250" cy="250" r="100" fill="#ffffff" stroke="#111111" strokeWidth="0.9" />
+            <circle
+              cx="250"
+              cy="250"
+              r="100"
+              stroke="currentColor"
+              strokeWidth="0.9"
+              className="fill-white dark:fill-[#111111]"
+            />
 
             {guideRings.map((ring) => (
               <g key={ring.period}>
@@ -111,7 +118,7 @@ export function ChronodexView({
                   cy="250"
                   r={ring.inner}
                   fill="none"
-                  stroke="#111111"
+                  stroke="currentColor"
                   strokeWidth="0.55"
                 />
                 <circle
@@ -119,7 +126,7 @@ export function ChronodexView({
                   cy="250"
                   r={ring.outer}
                   fill="none"
-                  stroke="#111111"
+                  stroke="currentColor"
                   strokeWidth="0.55"
                 />
                 {hourIndexes.map((hour) => {
@@ -139,7 +146,7 @@ export function ChronodexView({
                         angles.endAngle,
                       )}
                       fill="none"
-                      stroke="#111111"
+                      stroke="currentColor"
                       strokeWidth="0.62"
                     />
                   );
@@ -163,7 +170,7 @@ export function ChronodexView({
                       y1={inner.y}
                       x2={outer.x}
                       y2={outer.y}
-                      stroke="#111111"
+                      stroke="currentColor"
                       strokeWidth={isHour ? 0.62 : 0.34}
                       strokeLinecap="round"
                     />
@@ -185,7 +192,7 @@ export function ChronodexView({
                       y={point.y}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      className="fill-gray-600 text-[8.5px] font-medium"
+                      className="fill-gray-600 text-[8.5px] font-medium dark:fill-neutral-400"
                     >
                       {formatHourLabel(hour, ring.period)}
                     </text>
@@ -218,10 +225,9 @@ export function ChronodexView({
                   cx={point.x}
                   cy={point.y}
                   r="9.5"
-                  fill="#ffffff"
-                  stroke="#111111"
+                  stroke="currentColor"
                   strokeWidth="0.9"
-                  className="pointer-events-none"
+                  className="pointer-events-none fill-white dark:fill-[#111111]"
                 />
               );
             })}
@@ -233,19 +239,19 @@ export function ChronodexView({
 
           {hoveredBlock ? (
             <div
-              className="pointer-events-none absolute z-10 max-w-64 rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-xs text-gray-600"
+              className="pointer-events-none absolute z-10 max-w-64 rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-xs text-gray-600 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300"
               style={{
                 left: `${hoveredBlock.position.x}px`,
                 top: `${hoveredBlock.position.y}px`,
                 transform: 'translate(14px, -50%)',
               }}
             >
-              <p className="text-sm font-medium text-black">{hoveredBlock.block.title}</p>
-              <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-gray-500">
+              <p className="text-sm font-medium text-black dark:text-white">{hoveredBlock.block.title}</p>
+              <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-gray-500 dark:text-neutral-500">
                 {hoveredBlock.block.startTime} - {hoveredBlock.block.endTime}
               </p>
               {hoveredBlock.block.description ? (
-                <p className="mt-2 leading-5 text-gray-600">
+                <p className="mt-2 leading-5 text-gray-600 dark:text-neutral-300">
                   {hoveredBlock.block.description}
                 </p>
               ) : null}
@@ -255,12 +261,12 @@ export function ChronodexView({
       </div>
 
       {selectedBlock ? (
-        <div className="w-full max-w-[760px] border-t border-gray-200 pt-3 text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+        <div className="w-full max-w-[760px] border-t border-gray-200 pt-3 text-center dark:border-neutral-800">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500 dark:text-neutral-500">
             {selectedBlock.category}
           </p>
-          <p className="mt-2 text-sm font-medium text-black">{selectedBlock.title}</p>
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-2 text-sm font-medium text-black dark:text-white">{selectedBlock.title}</p>
+          <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
             {selectedBlock.startTime} - {selectedBlock.endTime} ·{' '}
             {formatDuration(getDuration(selectedBlock.startTime, selectedBlock.endTime))}
           </p>
@@ -269,9 +275,9 @@ export function ChronodexView({
 
       <div className="grid w-full max-w-[900px] grid-cols-2 gap-2 lg:grid-cols-4">
         {footerCards.map((card) => (
-          <div key={card.label} className="rounded-2xl border border-gray-200 bg-white px-4 py-3">
-            <p className="truncate text-sm font-light text-black">{card.value}</p>
-            <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500">
+          <div key={card.label} className="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-[#191919]">
+            <p className="truncate text-sm font-light text-black dark:text-white">{card.value}</p>
+            <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
               {card.label}
             </p>
           </div>

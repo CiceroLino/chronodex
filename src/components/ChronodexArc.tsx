@@ -60,7 +60,7 @@ export function ChronodexArc({
                 angles.endAngle,
               )}
               fill={block.color}
-              stroke={isSelected || block.highlighted ? '#111111' : '#262626'}
+            stroke={isSelected || block.highlighted ? 'currentColor' : '#262626'}
               strokeWidth={isSelected || isActive || block.highlighted ? 1 : 0.55}
               opacity={block.highlighted ? 0.74 : isActive ? 0.7 : 0.52}
               className="cursor-pointer transition-opacity duration-150 hover:opacity-75"
@@ -98,12 +98,12 @@ export function ChronodexArc({
                     angles.endAngle,
                   )}
                   fill="none"
-                  stroke="#111111"
+                  stroke="currentColor"
                   strokeWidth="2.2"
                   strokeLinecap="round"
                 />
-                <circle cx={startMarker.x} cy={startMarker.y} r="3.6" fill="#111111" />
-                <circle cx={endMarker.x} cy={endMarker.y} r="3.6" fill="#111111" />
+                <circle cx={startMarker.x} cy={startMarker.y} r="3.6" fill="currentColor" />
+                <circle cx={endMarker.x} cy={endMarker.y} r="3.6" fill="currentColor" />
               </g>
             ) : null}
           </g>

@@ -20,7 +20,7 @@ export function CurrentTimeIndicator({ now }: CurrentTimeIndicatorProps) {
         y1={inner.y}
         x2={outer.x}
         y2={outer.y}
-        stroke="#111111"
+        stroke="currentColor"
         strokeWidth="0.9"
         strokeLinecap="round"
       />
