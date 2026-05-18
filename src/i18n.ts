@@ -25,7 +25,10 @@ type Messages = {
   actionsDescription: string;
   activeBlock: string;
   addBlock: string;
+  addReminder: string;
   blockCount: string;
+  blockEnded: string;
+  blockStarted: string;
   blockFormDescription: string;
   blocks: string;
   cancelEdit: string;
@@ -44,7 +47,9 @@ type Messages = {
   dayBlocks: string;
   delete: string;
   description: string;
+  dismissNotice: string;
   editBlock: string;
+  enableNotifications: string;
   end: string;
   equalTimeError: string;
   exportJson: string;
@@ -66,10 +71,21 @@ type Messages = {
   keepBlock: string;
   loadExample: string;
   noBlocks: string;
+  noReminders: string;
+  notices: string;
+  notificationsBlocked: string;
+  notificationsEnabled: string;
+  notificationsEnabledDescription: string;
+  notificationsUnavailable: string;
   optional: string;
   planned: string;
   progress: string;
   requiredBlocksForDashboard: string;
+  reminderDue: string;
+  reminders: string;
+  reminderTime: string;
+  reminderTitlePlaceholder: string;
+  removeReminder: string;
   saveChange: string;
   spiderDashboard: string;
   spiderDashboardDescription: string;
@@ -77,6 +93,9 @@ type Messages = {
   start: string;
   themeDark: string;
   themeLight: string;
+  testNotification: string;
+  testNotificationScheduled: string;
+  testNotificationTitle: string;
   timeNow: string;
   title: string;
   titlePlaceholder: string;
@@ -93,7 +112,10 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     actionsDescription: 'Importação, exportação e estado inicial.',
     activeBlock: 'bloco atual',
     addBlock: 'Adicionar bloco',
+    addReminder: 'Adicionar lembrete',
     blockCount: 'blocos',
+    blockEnded: 'Bloco finalizado',
+    blockStarted: 'Bloco iniciado',
     blockFormDescription: 'Defina horário, cor e marcação temporal.',
     blocks: 'blocos',
     cancelEdit: 'Cancelar edição',
@@ -112,7 +134,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     dayBlocks: 'Blocos do dia',
     delete: 'Excluir',
     description: 'Descrição',
+    dismissNotice: 'Dispensar aviso',
     editBlock: 'Editar bloco',
+    enableNotifications: 'Ativar notificações',
     end: 'Fim',
     equalTimeError: 'O horário inicial não pode ser igual ao horário final.',
     exportJson: 'Exportar JSON',
@@ -134,10 +158,21 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     keepBlock: 'Manter bloco',
     loadExample: 'Carregar exemplo',
     noBlocks: 'Nenhum bloco planejado ainda.',
+    noReminders: 'Nenhum lembrete criado ainda.',
+    notices: 'avisos',
+    notificationsBlocked: 'As notificações estão bloqueadas no navegador.',
+    notificationsEnabled: 'Notificações ativadas.',
+    notificationsEnabledDescription: 'Você receberá avisos na área de trabalho enquanto esta guia estiver aberta.',
+    notificationsUnavailable: 'Este navegador não suporta notificações.',
     optional: 'Opcional',
     planned: 'planejadas',
     progress: 'progresso',
     requiredBlocksForDashboard: 'Adicione pelo menos 4 blocos para abrir o dashboard.',
+    reminderDue: 'Lembrete',
+    reminders: 'Lembretes',
+    reminderTime: 'Horário do lembrete',
+    reminderTitlePlaceholder: 'Ex.: Beber água',
+    removeReminder: 'Remover lembrete',
     saveChange: 'Salvar alteração',
     spiderDashboard: 'Spider dashboard',
     spiderDashboardDescription: 'Distribuição de tempo por categoria nas 24 horas.',
@@ -145,6 +180,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     start: 'Início',
     themeDark: 'Ativar tema escuro',
     themeLight: 'Ativar tema claro',
+    testNotification: 'Testar em 5 segundos',
+    testNotificationScheduled: 'Notificação teste agendada para daqui a 5 segundos.',
+    testNotificationTitle: 'Notificação teste',
     timeNow: 'hora atual',
     title: 'Título',
     titlePlaceholder: 'Ex.: Revisar planejamento',
@@ -159,7 +197,10 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     actionsDescription: 'Importación, exportación y estado inicial.',
     activeBlock: 'bloque actual',
     addBlock: 'Añadir bloque',
+    addReminder: 'Añadir recordatorio',
     blockCount: 'bloques',
+    blockEnded: 'Bloque finalizado',
+    blockStarted: 'Bloque iniciado',
     blockFormDescription: 'Define horario, color y marca temporal.',
     blocks: 'bloques',
     cancelEdit: 'Cancelar edición',
@@ -178,7 +219,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     dayBlocks: 'Bloques del día',
     delete: 'Eliminar',
     description: 'Descripción',
+    dismissNotice: 'Descartar aviso',
     editBlock: 'Editar bloque',
+    enableNotifications: 'Activar notificaciones',
     end: 'Fin',
     equalTimeError: 'La hora inicial no puede ser igual a la hora final.',
     exportJson: 'Exportar JSON',
@@ -200,10 +243,21 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     keepBlock: 'Mantener bloque',
     loadExample: 'Cargar ejemplo',
     noBlocks: 'Aún no hay bloques planificados.',
+    noReminders: 'Aún no hay recordatorios.',
+    notices: 'avisos',
+    notificationsBlocked: 'Las notificaciones están bloqueadas en el navegador.',
+    notificationsEnabled: 'Notificaciones activadas.',
+    notificationsEnabledDescription: 'Recibirás avisos en el escritorio mientras esta pestaña esté abierta.',
+    notificationsUnavailable: 'Este navegador no soporta notificaciones.',
     optional: 'Opcional',
     planned: 'planificadas',
     progress: 'progreso',
     requiredBlocksForDashboard: 'Añade al menos 4 bloques para abrir el dashboard.',
+    reminderDue: 'Recordatorio',
+    reminders: 'Recordatorios',
+    reminderTime: 'Hora del recordatorio',
+    reminderTitlePlaceholder: 'Ej.: Beber agua',
+    removeReminder: 'Eliminar recordatorio',
     saveChange: 'Guardar cambio',
     spiderDashboard: 'Spider dashboard',
     spiderDashboardDescription: 'Distribución de tiempo por categoría en las 24 horas.',
@@ -211,6 +265,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     start: 'Inicio',
     themeDark: 'Activar tema oscuro',
     themeLight: 'Activar tema claro',
+    testNotification: 'Probar en 5 segundos',
+    testNotificationScheduled: 'Notificación de prueba programada para dentro de 5 segundos.',
+    testNotificationTitle: 'Notificación de prueba',
     timeNow: 'hora actual',
     title: 'Título',
     titlePlaceholder: 'Ej.: Revisar planificación',
@@ -225,7 +282,10 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     actionsDescription: 'Import, export, and initial state.',
     activeBlock: 'current block',
     addBlock: 'Add block',
+    addReminder: 'Add reminder',
     blockCount: 'blocks',
+    blockEnded: 'Block ended',
+    blockStarted: 'Block started',
     blockFormDescription: 'Set time, color, and temporal marking.',
     blocks: 'blocks',
     cancelEdit: 'Cancel edit',
@@ -244,7 +304,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     dayBlocks: 'Day blocks',
     delete: 'Delete',
     description: 'Description',
+    dismissNotice: 'Dismiss notice',
     editBlock: 'Edit block',
+    enableNotifications: 'Enable notifications',
     end: 'End',
     equalTimeError: 'Start time cannot be the same as end time.',
     exportJson: 'Export JSON',
@@ -266,10 +328,21 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     keepBlock: 'Keep block',
     loadExample: 'Load example',
     noBlocks: 'No blocks planned yet.',
+    noReminders: 'No reminders yet.',
+    notices: 'notices',
+    notificationsBlocked: 'Notifications are blocked in the browser.',
+    notificationsEnabled: 'Notifications enabled.',
+    notificationsEnabledDescription: 'You will receive desktop alerts while this tab is open.',
+    notificationsUnavailable: 'This browser does not support notifications.',
     optional: 'Optional',
     planned: 'planned',
     progress: 'progress',
     requiredBlocksForDashboard: 'Add at least 4 blocks to open the dashboard.',
+    reminderDue: 'Reminder',
+    reminders: 'Reminders',
+    reminderTime: 'Reminder time',
+    reminderTitlePlaceholder: 'E.g. Drink water',
+    removeReminder: 'Remove reminder',
     saveChange: 'Save change',
     spiderDashboard: 'Spider dashboard',
     spiderDashboardDescription: 'Time distribution by category across the 24-hour day.',
@@ -277,6 +350,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     start: 'Start',
     themeDark: 'Enable dark theme',
     themeLight: 'Enable light theme',
+    testNotification: 'Test in 5 seconds',
+    testNotificationScheduled: 'Test notification scheduled for 5 seconds from now.',
+    testNotificationTitle: 'Test notification',
     timeNow: 'current time',
     title: 'Title',
     titlePlaceholder: 'E.g. Review planning',
@@ -291,7 +367,10 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     actionsDescription: 'インポート、エクスポート、初期状態。',
     activeBlock: '現在のブロック',
     addBlock: 'ブロックを追加',
+    addReminder: 'リマインダーを追加',
     blockCount: 'ブロック',
+    blockEnded: 'ブロック終了',
+    blockStarted: 'ブロック開始',
     blockFormDescription: '時刻、色、時間マークを設定します。',
     blocks: 'ブロック',
     cancelEdit: '編集をキャンセル',
@@ -310,7 +389,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     dayBlocks: '今日のブロック',
     delete: '削除',
     description: '説明',
+    dismissNotice: '通知を閉じる',
     editBlock: 'ブロックを編集',
+    enableNotifications: '通知を有効化',
     end: '終了',
     equalTimeError: '開始時刻と終了時刻は同じにできません。',
     exportJson: 'JSONを書き出す',
@@ -332,10 +413,21 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     keepBlock: 'ブロックを残す',
     loadExample: '例を読み込む',
     noBlocks: '計画されたブロックはまだありません。',
+    noReminders: 'リマインダーはまだありません。',
+    notices: '通知',
+    notificationsBlocked: 'ブラウザで通知がブロックされています。',
+    notificationsEnabled: '通知が有効になりました。',
+    notificationsEnabledDescription: 'このタブを開いている間、デスクトップ通知を受け取れます。',
+    notificationsUnavailable: 'このブラウザは通知をサポートしていません。',
     optional: '任意',
     planned: '計画済み',
     progress: '進捗',
     requiredBlocksForDashboard: 'ダッシュボードを開くには4つ以上のブロックを追加してください。',
+    reminderDue: 'リマインダー',
+    reminders: 'リマインダー',
+    reminderTime: 'リマインダー時刻',
+    reminderTitlePlaceholder: '例: 水を飲む',
+    removeReminder: 'リマインダーを削除',
     saveChange: '変更を保存',
     spiderDashboard: 'スパイダーダッシュボード',
     spiderDashboardDescription: '24時間におけるカテゴリ別の時間配分。',
@@ -343,6 +435,9 @@ export const MESSAGES: Record<AppLocale, Messages> = {
     start: '開始',
     themeDark: 'ダークテーマを有効化',
     themeLight: 'ライトテーマを有効化',
+    testNotification: '5秒後にテスト',
+    testNotificationScheduled: 'テスト通知を5秒後に予約しました。',
+    testNotificationTitle: 'テスト通知',
     timeNow: '現在時刻',
     title: 'タイトル',
     titlePlaceholder: '例: 計画を見直す',

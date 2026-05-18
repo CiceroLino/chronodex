@@ -18,6 +18,25 @@ export type TimeBlock = {
   highlighted?: boolean;
 };
 
+export type Reminder = {
+  id: string;
+  title: string;
+  description?: string;
+  time: string;
+  enabled: boolean;
+};
+
+export type NoticeKind = 'reminder' | 'block-start' | 'block-end';
+
+export type Notice = {
+  id: string;
+  kind: NoticeKind;
+  title: string;
+  description?: string;
+  time: string;
+  createdAt: number;
+};
+
 export const CATEGORIES: Category[] = [
   'Trabalho',
   'Estudo',

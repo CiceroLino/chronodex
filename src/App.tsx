@@ -1,5 +1,7 @@
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { ChronodexView } from './components/ChronodexView';
+import { NoticeRail } from './components/NoticeRail';
+import { ReminderForm } from './components/ReminderForm';
 import { SpiderDashboard } from './components/SpiderDashboard';
 import { TimeBlockForm } from './components/TimeBlockForm';
 import { TimeBlockList } from './components/TimeBlockList';
@@ -12,7 +14,14 @@ import {
   SUPPORTED_LOCALES,
   type AppLocale,
 } from './i18n';
-import { CATEGORY_COLORS, CATEGORIES, type TimeBlock } from './types';
+import { CATEGORY_COLORS, CATEGORIES, type Notice, type Reminder, type TimeBlock } from './types';
+import {
+  getBlockEventKey,
+  getDueBlockEvents,
+  getDueReminderEvents,
+  getReminderEventKey,
+  parseReminders,
+} from './utils/reminders';
 import {
   detectOverlaps,
   getBlockProgressPercent,
@@ -24,6 +33,7 @@ import {
 type EditableBlock = Omit<TimeBlock, 'id'>;
 
 const STORAGE_KEY = 'chronodex-time-blocks-v2';
+const REMINDERS_STORAGE_KEY = 'chronodex-reminders-v1';
 const THEME_STORAGE_KEY = 'chronodex-theme';
 
 type Theme = 'light' | 'dark';
@@ -238,6 +248,20 @@ function readStoredBlocks(): TimeBlock[] {
   }
 }
 
+function readStoredReminders(): Reminder[] {
+  const stored = window.localStorage.getItem(REMINDERS_STORAGE_KEY);
+
+  if (!stored) {
+    return [];
+  }
+
+  try {
+    return parseReminders(JSON.parse(stored));
+  } catch {
+    return [];
+  }
+}
+
 function parseBlocks(value: unknown): TimeBlock[] {
   if (!Array.isArray(value)) {
     return [];
@@ -294,10 +318,13 @@ function readStoredLocale(): AppLocale {
 
 function App() {
   const [blocks, setBlocks] = useState<TimeBlock[]>(() => readStoredBlocks());
+  const [reminders, setReminders] = useState<Reminder[]>(() => readStoredReminders());
+  const [notices, setNotices] = useState<Notice[]>([]);
   const [editingBlock, setEditingBlock] = useState<TimeBlock | null>(null);
   const [blockPendingDelete, setBlockPendingDelete] = useState<TimeBlock | null>(null);
   const [selectedBlock, setSelectedBlock] = useState<TimeBlock | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [actionsError, setActionsError] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
@@ -308,12 +335,20 @@ function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [theme, setTheme] = useState<Theme>(() => readStoredTheme());
   const [locale, setLocale] = useState<AppLocale>(() => readStoredLocale());
+  const [notificationPermission, setNotificationPermission] = useState<
+    NotificationPermission | 'unsupported'
+  >(() => (typeof Notification === 'undefined' ? 'unsupported' : Notification.permission));
   const importInputRef = useRef<HTMLInputElement>(null);
+  const firedEventsRef = useRef(new Set<string>());
   const messages = getMessages(locale);
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(blocks));
   }, [blocks]);
+
+  useEffect(() => {
+    window.localStorage.setItem(REMINDERS_STORAGE_KEY, JSON.stringify(reminders));
+  }, [reminders]);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setNow(new Date()), 1000);
@@ -329,6 +364,75 @@ function App() {
     document.documentElement.lang = INTL_LOCALES[locale];
     window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
   }, [locale]);
+
+  function showDesktopNotification(title: string, description?: string, tag?: string) {
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') {
+      return;
+    }
+
+    new Notification(title, {
+      body: description,
+      icon: '/favicon.svg',
+      badge: '/favicon.svg',
+      tag,
+    });
+  }
+
+  useEffect(() => {
+    const currentTime = new Intl.DateTimeFormat(INTL_LOCALES[locale], {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(now);
+
+    function pushNotice(notice: Omit<Notice, 'id' | 'createdAt'>) {
+      setNotices((current) => [
+        {
+          ...notice,
+          id: createId(),
+          createdAt: Date.now(),
+        },
+        ...current,
+      ].slice(0, 8));
+
+      showDesktopNotification(
+        notice.title,
+        notice.description,
+        `chronodex-${notice.kind}-${notice.time}`,
+      );
+    }
+
+    getDueReminderEvents(reminders, now).forEach((reminder) => {
+      const key = getReminderEventKey(reminder, now);
+
+      if (firedEventsRef.current.has(key)) {
+        return;
+      }
+
+      firedEventsRef.current.add(key);
+      pushNotice({
+        kind: 'reminder',
+        title: `${messages.reminderDue}: ${reminder.title}`,
+        description: reminder.description,
+        time: currentTime,
+      });
+    });
+
+    getDueBlockEvents(blocks, now).forEach((event) => {
+      const key = getBlockEventKey(event.kind, event.block, now);
+
+      if (firedEventsRef.current.has(key)) {
+        return;
+      }
+
+      firedEventsRef.current.add(key);
+      pushNotice({
+        kind: event.kind,
+        title: event.kind === 'block-start' ? messages.blockStarted : messages.blockEnded,
+        description: event.block.title,
+        time: currentTime,
+      });
+    });
+  }, [blocks, locale, messages, now, notificationPermission, reminders]);
 
   const sortedBlocks = useMemo(() => sortBlocks(blocks), [blocks]);
   const overlapIds = useMemo(() => detectOverlaps(blocks), [blocks]);
@@ -397,6 +501,95 @@ function App() {
 
   function cancelDeleteBlock() {
     setBlockPendingDelete(null);
+  }
+
+  function addReminder(reminder: Omit<Reminder, 'id'>) {
+    setReminders((current) => [...current, { ...reminder, id: createId() }]);
+  }
+
+  function removeReminder(id: string) {
+    setReminders((current) => current.filter((reminder) => reminder.id !== id));
+  }
+
+  async function enableNotifications() {
+    if (typeof Notification === 'undefined') {
+      setActionsError(messages.notificationsUnavailable);
+      setNotificationPermission('unsupported');
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
+
+    if (permission === 'granted') {
+      setActionsError(null);
+      showDesktopNotification(
+        messages.notificationsEnabled,
+        messages.notificationsEnabledDescription,
+        'chronodex-notifications-enabled',
+      );
+      setNotices((current) => [
+        {
+          id: createId(),
+          kind: 'reminder' as const,
+          title: messages.notificationsEnabled,
+          description: messages.notificationsEnabledDescription,
+          time: new Intl.DateTimeFormat(INTL_LOCALES[locale], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }).format(new Date()),
+          createdAt: Date.now(),
+        },
+        ...current,
+      ].slice(0, 8));
+      return;
+    }
+
+    if (permission === 'denied') {
+      setActionsError(messages.notificationsBlocked);
+    }
+  }
+
+  function scheduleTestNotification() {
+    const scheduledTime = new Intl.DateTimeFormat(INTL_LOCALES[locale], {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date());
+
+    setNotices((current) => [
+      {
+        id: createId(),
+        kind: 'reminder' as const,
+        title: messages.testNotificationScheduled,
+        time: scheduledTime,
+        createdAt: Date.now(),
+      },
+      ...current,
+    ].slice(0, 8));
+
+    window.setTimeout(() => {
+      const firedTime = new Intl.DateTimeFormat(INTL_LOCALES[locale], {
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date());
+
+      showDesktopNotification(
+        messages.testNotificationTitle,
+        messages.notificationsEnabledDescription,
+        `chronodex-test-${Date.now()}`,
+      );
+      setNotices((current) => [
+        {
+          id: createId(),
+          kind: 'reminder' as const,
+          title: messages.testNotificationTitle,
+          description: messages.notificationsEnabledDescription,
+          time: firedTime,
+          createdAt: Date.now(),
+        },
+        ...current,
+      ].slice(0, 8));
+    }, 5000);
   }
 
   function openNewBlockDialog() {
@@ -656,7 +849,10 @@ function App() {
           <button
             type="button"
             aria-label={messages.actions}
-            onClick={() => setIsActionsOpen(true)}
+            onClick={() => {
+              setActionsError(null);
+              setIsActionsOpen(true);
+            }}
             className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300 dark:hover:bg-neutral-900"
           >
             <svg
@@ -804,7 +1000,7 @@ function App() {
               className="absolute inset-0 cursor-default"
               onClick={() => setIsActionsOpen(false)}
             />
-            <section className="modal-panel-in relative w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
+            <section className="modal-panel-in relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-[#171717]">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-sm font-medium text-black dark:text-white">
@@ -837,6 +1033,24 @@ function App() {
               <div className="grid gap-2">
                 <button
                   type="button"
+                  onClick={enableNotifications}
+                  disabled={notificationPermission === 'granted'}
+                  className="rounded-xl border border-black bg-black px-4 py-3 text-left text-sm font-medium text-white transition hover:bg-gray-800 disabled:opacity-50 dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                >
+                  {notificationPermission === 'granted'
+                    ? messages.notificationsEnabled
+                    : messages.enableNotifications}
+                </button>
+                <button
+                  type="button"
+                  onClick={scheduleTestNotification}
+                  disabled={notificationPermission !== 'granted'}
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
+                >
+                  {messages.testNotification}
+                </button>
+                <button
+                  type="button"
                   onClick={loadExample}
                   className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-medium text-gray-800 transition hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-200 dark:hover:bg-neutral-900"
                 >
@@ -866,6 +1080,58 @@ function App() {
                   {messages.clearDay}
                 </button>
               </div>
+
+              {actionsError ? (
+                <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+                  {actionsError}
+                </div>
+              ) : null}
+
+              <section className="mt-6 border-t border-gray-200 pt-5 dark:border-neutral-800">
+                <div className="mb-4">
+                  <h3 className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500 dark:text-neutral-500">
+                    {messages.reminders}
+                  </h3>
+                </div>
+                <ReminderForm locale={locale} onSubmit={addReminder} />
+
+                <div className="mt-4 space-y-2">
+                  {reminders.length === 0 ? (
+                    <p className="rounded-xl border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 dark:border-neutral-800 dark:text-neutral-500">
+                      {messages.noReminders}
+                    </p>
+                  ) : (
+                    reminders.map((reminder) => (
+                      <div
+                        key={reminder.id}
+                        className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white px-3 py-3 dark:border-neutral-800 dark:bg-[#191919]"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-gray-500 dark:text-neutral-500">
+                            {reminder.time}
+                          </p>
+                          <p className="mt-1 truncate text-sm font-medium text-black dark:text-white">
+                            {reminder.title}
+                          </p>
+                          {reminder.description ? (
+                            <p className="mt-1 line-clamp-2 text-xs leading-5 text-gray-600 dark:text-neutral-300">
+                              {reminder.description}
+                            </p>
+                          ) : null}
+                        </div>
+                        <button
+                          type="button"
+                          aria-label={messages.removeReminder}
+                          onClick={() => removeReminder(reminder.id)}
+                          className="rounded-xl border border-gray-200 px-3 py-2 text-xs font-medium text-red-700 transition hover:border-red-200 hover:bg-red-50 dark:border-neutral-800 dark:text-red-400 dark:hover:bg-red-950/30"
+                        >
+                          {messages.delete}
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </section>
             </section>
           </div>
         ) : null}
@@ -1199,6 +1465,13 @@ function App() {
           selectedBlock={selectedBlock}
           locale={locale}
           onSelectBlock={setSelectedBlock}
+        />
+        <NoticeRail
+          notices={notices}
+          locale={locale}
+          onDismiss={(id) =>
+            setNotices((current) => current.filter((notice) => notice.id !== id))
+          }
         />
       </div>
     </main>
