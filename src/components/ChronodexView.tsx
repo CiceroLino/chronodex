@@ -290,24 +290,80 @@ export function ChronodexView({
               ) : null}
             </div>
           ) : null}
-        </div>
-      </div>
 
-      {selectedBlock ? (
-        <div className="w-full max-w-[760px] border-t border-gray-200 pt-3 text-center dark:border-neutral-800">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500 dark:text-neutral-500">
-            {getCategoryLabel(selectedBlock.category, locale)}
-          </p>
-          <p className="mt-2 text-sm font-medium text-black dark:text-white">{selectedBlock.title}</p>
-          <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
-            {selectedBlock.startTime} - {selectedBlock.endTime} ·{' '}
-            {formatLocalizedDuration(
-              getDuration(selectedBlock.startTime, selectedBlock.endTime),
-              locale,
-            )}
-          </p>
         </div>
-      ) : null}
+
+        {selectedBlock ? (
+          <div className="modal-panel-in relative z-20 mt-4 w-full overflow-hidden rounded-2xl border border-black bg-white p-4 text-left shadow-[0_14px_38px_rgba(0,0,0,0.10)] dark:border-white/40 dark:bg-[#191919] dark:shadow-[0_14px_38px_rgba(0,0,0,0.35)] xl:absolute xl:left-[calc(100%+2rem)] xl:top-8 xl:mt-0 xl:w-72">
+            <span
+              aria-hidden="true"
+              className="absolute left-0 top-0 h-1 w-full"
+              style={{ backgroundColor: selectedBlock.color }}
+            />
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
+                  {getCategoryLabel(selectedBlock.category, locale)}
+                </p>
+                <h2 className="mt-1 truncate text-sm font-medium text-black dark:text-white">
+                  {selectedBlock.title}
+                </h2>
+              </div>
+              <button
+                type="button"
+                aria-label={messages.closeForm}
+                onClick={() => onSelectBlock(null)}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-gray-300 text-gray-700 transition hover:border-black hover:bg-gray-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-white dark:hover:bg-neutral-900"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="h-3.5 w-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="1.8"
+                >
+                  <path d="M6 6l12 12" />
+                  <path d="M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 dark:border-neutral-800 dark:bg-[#111111]">
+                <p className="text-[9px] font-medium uppercase tracking-[0.14em] text-gray-500 dark:text-neutral-500">
+                  {messages.start}
+                </p>
+                <p className="mt-1 font-medium text-black dark:text-white">
+                  {selectedBlock.startTime}
+                </p>
+              </div>
+              <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 dark:border-neutral-800 dark:bg-[#111111]">
+                <p className="text-[9px] font-medium uppercase tracking-[0.14em] text-gray-500 dark:text-neutral-500">
+                  {messages.end}
+                </p>
+                <p className="mt-1 font-medium text-black dark:text-white">
+                  {selectedBlock.endTime}
+                </p>
+              </div>
+            </div>
+
+            {selectedBlock.description ? (
+              <p className="mt-2 line-clamp-3 text-xs leading-5 text-gray-600 dark:text-neutral-300">
+                {selectedBlock.description}
+              </p>
+            ) : null}
+
+            <p className="mt-4 border-t border-gray-200 pt-3 text-center text-xs font-medium text-gray-600 dark:border-neutral-800 dark:text-neutral-300">
+              {formatLocalizedDuration(
+                getDuration(selectedBlock.startTime, selectedBlock.endTime),
+                locale,
+              )}
+            </p>
+          </div>
+        ) : null}
+      </div>
 
       <div className="grid w-full max-w-[900px] grid-cols-2 gap-2 lg:grid-cols-4">
         {footerCards.map((card) => (

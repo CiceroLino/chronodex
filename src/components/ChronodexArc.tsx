@@ -26,6 +26,8 @@ export function ChronodexArc({
   onLeave,
 }: ChronodexArcProps) {
   const ranges = splitBlockRangeByHalfDay(block);
+  const blockOpacity = isSelected ? 0.84 : block.highlighted ? 0.74 : isActive ? 0.7 : 0.52;
+  const blockStrokeWidth = isSelected ? 1.35 : isActive || block.highlighted ? 1 : 0.55;
 
   return (
     <g>
@@ -61,9 +63,9 @@ export function ChronodexArc({
               )}
               fill={block.color}
               stroke={isSelected || block.highlighted ? 'currentColor' : '#262626'}
-              strokeWidth={isSelected || isActive || block.highlighted ? 1 : 0.55}
-              opacity={block.highlighted ? 0.74 : isActive ? 0.7 : 0.52}
-              className="chronodex-block-in cursor-pointer transition-opacity duration-150 hover:opacity-75"
+              strokeWidth={blockStrokeWidth}
+              opacity={blockOpacity}
+              className="chronodex-block-in cursor-pointer outline-none transition-opacity duration-150 hover:opacity-75 focus:outline-none"
               style={{ animationDelay: `${index * 80}ms` }}
               role="button"
               tabIndex={0}
