@@ -5,7 +5,14 @@ export type MinuteRange = {
   end: number;
 };
 
+export type ChronodexPeriod = 'am' | 'pm';
+
+export type ChronodexRange = MinuteRange & {
+  period: ChronodexPeriod;
+};
+
 const DAY_MINUTES = 1440;
+const HALF_DAY_MINUTES = 720;
 
 export function timeToMinutes(time: string): number {
   const [hours, minutes] = time.split(':').map(Number);
@@ -50,8 +57,18 @@ export function minutesToAngle(minutes: number): number {
 }
 
 export function minutesToChronodexAngle(minutes: number): number {
-  const shifted = ((minutes - 720) % DAY_MINUTES) + DAY_MINUTES;
-  return minutesToAngle(shifted % DAY_MINUTES);
+  const normalized = ((minutes % HALF_DAY_MINUTES) + HALF_DAY_MINUTES) % HALF_DAY_MINUTES;
+  return (normalized / HALF_DAY_MINUTES) * 360 - 90;
+}
+
+export function getChronodexAngleRange(startMinutes: number, endMinutes: number) {
+  const startAngle = minutesToChronodexAngle(startMinutes);
+  const span = ((endMinutes - startMinutes) / HALF_DAY_MINUTES) * 360;
+
+  return {
+    startAngle,
+    endAngle: startAngle + span,
+  };
 }
 
 export function polarToCartesian(
@@ -147,6 +164,28 @@ export function splitBlockRange(block: TimeBlock): MinuteRange[] {
     { start, end: DAY_MINUTES },
     { start: 0, end },
   ];
+}
+
+export function splitBlockRangeByHalfDay(block: TimeBlock): ChronodexRange[] {
+  return splitBlockRange(block).flatMap((range) => {
+    const slices: ChronodexRange[] = [];
+
+    for (let start = range.start; start < range.end; ) {
+      const nextBoundary =
+        start < HALF_DAY_MINUTES ? HALF_DAY_MINUTES : DAY_MINUTES;
+      const end = Math.min(range.end, nextBoundary);
+
+      slices.push({
+        start,
+        end,
+        period: start < HALF_DAY_MINUTES ? 'am' : 'pm',
+      });
+
+      start = end;
+    }
+
+    return slices;
+  });
 }
 
 export function detectOverlaps(blocks: TimeBlock[]): Set<string> {

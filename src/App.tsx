@@ -12,7 +12,7 @@ import {
 
 type EditableBlock = Omit<TimeBlock, 'id'>;
 
-const STORAGE_KEY = 'chronodex-time-blocks';
+const STORAGE_KEY = 'chronodex-time-blocks-v2';
 
 const sampleBlocks: TimeBlock[] = [
   {

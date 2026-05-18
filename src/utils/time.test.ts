@@ -4,10 +4,12 @@ import {
   describeArc,
   detectOverlaps,
   getDuration,
+  getChronodexAngleRange,
   minutesToAngle,
   minutesToChronodexAngle,
   minutesToTime,
   splitBlockRange,
+  splitBlockRangeByHalfDay,
   timeToMinutes,
 } from './time';
 import type { TimeBlock } from '../types';
@@ -43,16 +45,41 @@ describe('time utilities', () => {
     expect(minutesToAngle(1080)).toBe(180);
   });
 
-  test('maps chronodex minutes with noon at the top', () => {
+  test('maps chronodex minutes as a twelve-hour cycle with noon and midnight at the top', () => {
+    expect(minutesToChronodexAngle(0)).toBe(-90);
+    expect(minutesToChronodexAngle(180)).toBe(0);
+    expect(minutesToChronodexAngle(360)).toBe(90);
+    expect(minutesToChronodexAngle(540)).toBe(180);
     expect(minutesToChronodexAngle(720)).toBe(-90);
-    expect(minutesToChronodexAngle(900)).toBe(-45);
-    expect(minutesToChronodexAngle(1080)).toBe(0);
+    expect(minutesToChronodexAngle(900)).toBe(0);
+  });
+
+  test('returns short chronodex angle ranges across the twelve o clock point', () => {
+    expect(getChronodexAngleRange(-26, 26)).toEqual({
+      startAngle: 257,
+      endAngle: 283,
+    });
+    expect(getChronodexAngleRange(1380, 1440)).toEqual({
+      startAngle: 240,
+      endAngle: 270,
+    });
   });
 
   test('splits ranges that cross midnight into two renderable segments', () => {
     expect(splitBlockRange(block('night', '22:00', '01:00'))).toEqual([
       { start: 1320, end: 1440 },
       { start: 0, end: 60 },
+    ]);
+  });
+
+  test('splits blocks into AM and PM chronodex rings', () => {
+    expect(splitBlockRangeByHalfDay(block('mixed', '11:00', '13:30'))).toEqual([
+      { start: 660, end: 720, period: 'am' },
+      { start: 720, end: 810, period: 'pm' },
+    ]);
+    expect(splitBlockRangeByHalfDay(block('night', '23:00', '01:00'))).toEqual([
+      { start: 1380, end: 1440, period: 'pm' },
+      { start: 0, end: 60, period: 'am' },
     ]);
   });
 

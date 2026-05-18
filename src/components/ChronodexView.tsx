@@ -2,6 +2,7 @@ import type { TimeBlock } from '../types';
 import {
   describeAnnularSector,
   formatDuration,
+  getChronodexAngleRange,
   getDuration,
   getTotalPlannedMinutes,
   isMinuteInsideBlock,
@@ -19,18 +20,18 @@ type ChronodexViewProps = {
   onSelectBlock: (block: TimeBlock | null) => void;
 };
 
-const labelHours = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+const hourIndexes = Array.from({ length: 12 }, (_, index) => index);
+const guideRings = [
+  { period: 'AM', inner: 120, outer: 150, labelRadius: 108, tickInner: 151, tickOuter: 158 },
+  { period: 'PM', inner: 160, outer: 194, labelRadius: 209, tickInner: 195, tickOuter: 205 },
+];
 
-function formatHourLabel(hour: number): string {
-  if (hour === 12) {
-    return '12pm';
+function formatHourLabel(hour: number, period: string): string {
+  if (hour === 0) {
+    return `12${period.toLowerCase()}`;
   }
 
-  if (hour < 12) {
-    return `${hour}am`;
-  }
-
-  return `${hour - 12}pm`;
+  return `${hour}${period.toLowerCase()}`;
 }
 
 export function ChronodexView({
@@ -78,72 +79,97 @@ export function ChronodexView({
               }
             }}
           >
-            <circle cx="250" cy="250" r="106" fill="#ffffff" stroke="#111111" strokeWidth="0.9" />
-            <circle cx="250" cy="250" r="124" fill="none" stroke="#111111" strokeWidth="0.55" />
-            <circle cx="250" cy="250" r="160" fill="none" stroke="#111111" strokeWidth="0.55" />
+            <circle cx="250" cy="250" r="100" fill="#ffffff" stroke="#111111" strokeWidth="0.9" />
 
-            {Array.from({ length: 24 }, (_, index) => {
-              const start = index * 60 - 28;
-              const end = index * 60 + 28;
-
-              return (
-                <path
-                  key={`outer-arm-${index}`}
-                  d={describeAnnularSector(
-                    250,
-                    250,
-                    index % 3 === 0 ? 164 : 172,
-                    index % 3 === 0 ? 224 : 214,
-                    minutesToChronodexAngle(start),
-                    minutesToChronodexAngle(end),
-                  )}
+            {guideRings.map((ring) => (
+              <g key={ring.period}>
+                <circle
+                  cx="250"
+                  cy="250"
+                  r={ring.inner}
                   fill="none"
                   stroke="#111111"
-                  strokeWidth="0.72"
+                  strokeWidth="0.55"
                 />
-              );
-            })}
-
-            {Array.from({ length: 96 }, (_, tick) => {
-              const angle = minutesToChronodexAngle(tick * 15);
-              const isHour = tick % 4 === 0;
-              const inner = polarToCartesian(250, 250, isHour ? 162 : 166, angle);
-              const outer = polarToCartesian(250, 250, isHour ? 181 : 175, angle);
-
-              return (
-                <line
-                  key={`tick-${tick}`}
-                  x1={inner.x}
-                  y1={inner.y}
-                  x2={outer.x}
-                  y2={outer.y}
+                <circle
+                  cx="250"
+                  cy="250"
+                  r={ring.outer}
+                  fill="none"
                   stroke="#111111"
-                  strokeWidth={isHour ? 0.72 : 0.38}
-                  strokeLinecap="round"
+                  strokeWidth="0.55"
                 />
-              );
-            })}
+                {hourIndexes.map((hour) => {
+                  const start = hour * 60 - 26;
+                  const end = hour * 60 + 26;
+                  const angles = getChronodexAngleRange(start, end);
 
-            {labelHours.map((hour) => {
-              const point = polarToCartesian(
-                250,
-                250,
-                244,
-                minutesToChronodexAngle(hour * 60),
-              );
-              return (
-                <text
-                  key={hour}
-                  x={point.x}
-                  y={point.y}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="fill-gray-600 text-[10px] font-medium"
-                >
-                  {formatHourLabel(hour)}
-                </text>
-              );
-            })}
+                  return (
+                    <path
+                      key={`${ring.period}-arm-${hour}`}
+                      d={describeAnnularSector(
+                        250,
+                        250,
+                        ring.inner,
+                        ring.outer,
+                        angles.startAngle,
+                        angles.endAngle,
+                      )}
+                      fill="none"
+                      stroke="#111111"
+                      strokeWidth="0.62"
+                    />
+                  );
+                })}
+
+                {Array.from({ length: 48 }, (_, tick) => {
+                  const angle = minutesToChronodexAngle(tick * 15);
+                  const isHour = tick % 4 === 0;
+                  const inner = polarToCartesian(
+                    250,
+                    250,
+                    isHour ? ring.inner : ring.tickInner,
+                    angle,
+                  );
+                  const outer = polarToCartesian(250, 250, ring.tickOuter, angle);
+
+                  return (
+                    <line
+                      key={`${ring.period}-tick-${tick}`}
+                      x1={inner.x}
+                      y1={inner.y}
+                      x2={outer.x}
+                      y2={outer.y}
+                      stroke="#111111"
+                      strokeWidth={isHour ? 0.62 : 0.34}
+                      strokeLinecap="round"
+                    />
+                  );
+                })}
+
+                {hourIndexes.map((hour) => {
+                  const point = polarToCartesian(
+                    250,
+                    250,
+                    ring.labelRadius,
+                    minutesToChronodexAngle(hour * 60),
+                  );
+
+                  return (
+                    <text
+                      key={`${ring.period}-label-${hour}`}
+                      x={point.x}
+                      y={point.y}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      className="fill-gray-600 text-[8.5px] font-medium"
+                    >
+                      {formatHourLabel(hour, ring.period)}
+                    </text>
+                  );
+                })}
+              </g>
+            ))}
 
             <g>
               {blocks.map((block) => (
