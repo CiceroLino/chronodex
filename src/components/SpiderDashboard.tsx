@@ -68,7 +68,7 @@ export function SpiderDashboard({ blocks, locale }: SpiderDashboardProps) {
       <div className="relative">
         <svg
           viewBox="0 0 260 260"
-          className="spider-radar-in h-full min-h-64 w-full text-black dark:text-white"
+          className="h-full min-h-64 w-full text-black dark:text-white"
           role="img"
           aria-label={messages.spiderDashboard}
         >
@@ -112,12 +112,12 @@ export function SpiderDashboard({ blocks, locale }: SpiderDashboardProps) {
             );
           })}
           <polygon
-            className="spider-shape-in"
             points={points}
             fill="currentColor"
             fillOpacity="0.08"
             stroke="currentColor"
             strokeWidth="1.5"
+            strokeLinejoin="round"
           />
         </svg>
       </div>
