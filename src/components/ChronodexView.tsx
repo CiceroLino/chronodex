@@ -121,6 +121,11 @@ export function ChronodexView({
     ? 'hoje'
     : `${minutesToTime(metricScope.start)}-${minutesToTime(metricScope.end)}`;
   const elapsedDisplayMinutes = Math.floor(dayMetrics.elapsedMinutes);
+  const elapsedPlannedDisplayMinutes = Math.floor(dayMetrics.elapsedPlannedMinutes);
+  const elapsedEmptyDisplayMinutes = Math.floor(dayMetrics.elapsedEmptyMinutes);
+  const remainingDisplayMinutes = Math.floor(dayMetrics.remainingMinutes);
+  const remainingPlannedDisplayMinutes = Math.floor(dayMetrics.remainingPlannedMinutes);
+  const remainingFreeDisplayMinutes = Math.floor(dayMetrics.remainingFreeMinutes);
   const compassInsights: Record<CompassInsight, {
     label: string;
     value: string;
@@ -137,22 +142,22 @@ export function ChronodexView({
     },
     used: {
       label: 'Aproveitado',
-      value: formatLocalizedDuration(dayMetrics.elapsedPlannedMinutes, locale),
+      value: formatLocalizedDuration(elapsedPlannedDisplayMinutes, locale),
       detail: `${Math.round((dayMetrics.elapsedPlannedMinutes / elapsedBase) * 100)}% do tempo passado em blocos · ${scopeLabel}`,
       ratio: dayMetrics.elapsedPlannedMinutes / elapsedBase,
       tone: '#2563eb',
     },
     empty: {
       label: 'Vazio passado',
-      value: formatLocalizedDuration(dayMetrics.elapsedEmptyMinutes, locale),
+      value: formatLocalizedDuration(elapsedEmptyDisplayMinutes, locale),
       detail: `${Math.round((dayMetrics.elapsedEmptyMinutes / elapsedBase) * 100)}% do tempo passado sem bloco · ${scopeLabel}`,
       ratio: dayMetrics.elapsedEmptyMinutes / elapsedBase,
       tone: '#737373',
     },
     remaining: {
       label: 'Restante',
-      value: formatLocalizedDuration(dayMetrics.remainingMinutes, locale),
-      detail: `${formatLocalizedDuration(dayMetrics.remainingPlannedMinutes, locale)} planejado · ${formatLocalizedDuration(dayMetrics.remainingFreeMinutes, locale)} livre · ${scopeLabel}`,
+      value: formatLocalizedDuration(remainingDisplayMinutes, locale),
+      detail: `${formatLocalizedDuration(remainingPlannedDisplayMinutes, locale)} planejado · ${formatLocalizedDuration(remainingFreeDisplayMinutes, locale)} livre · ${scopeLabel}`,
       ratio: dayMetrics.remainingMinutes / metricBaseMinutes,
       tone: '#0f766e',
     },
