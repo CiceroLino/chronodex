@@ -71,6 +71,12 @@ describe('time utilities', () => {
       startTime: '09:00',
       endTime: '10:00',
     });
+    expect(splitBlockRangeByHalfDay({
+      ...block('preview', '11:30', '12:30'),
+    })).toEqual([
+      { start: 690, end: 720, period: 'am' },
+      { start: 720, end: 750, period: 'pm' },
+    ]);
     expect(getBlockTimeRangeFromStartMinute(1410)).toEqual({
       startTime: '23:30',
       endTime: '00:30',

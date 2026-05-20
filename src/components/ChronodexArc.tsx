@@ -70,7 +70,7 @@ export function ChronodexArc({
               fillOpacity={fillOpacity}
               stroke={isSelected || block.highlighted ? 'currentColor' : '#262626'}
               strokeWidth={blockStrokeWidth}
-              className="chronodex-block-in cursor-pointer outline-none transition-[fill-opacity] duration-150 hover:fill-opacity-60 focus:outline-none"
+              className="chronodex-block-in chronodex-block-hoverable cursor-pointer outline-none transition-[fill-opacity] duration-150 hover:fill-opacity-60 focus:outline-none"
               style={{ animationDelay: `${index * 80}ms` }}
               role="button"
               tabIndex={0}
@@ -80,6 +80,7 @@ export function ChronodexArc({
                 onSelect(block);
               }}
               onPointerMove={(event) => {
+                event.stopPropagation();
                 const bounds = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
 
                 if (!bounds) {
@@ -91,7 +92,10 @@ export function ChronodexArc({
                   y: event.clientY - bounds.top,
                 });
               }}
-              onPointerLeave={onLeave}
+              onPointerLeave={(event) => {
+                event.stopPropagation();
+                onLeave();
+              }}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                   onSelect(block);

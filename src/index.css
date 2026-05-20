@@ -203,6 +203,38 @@ button:disabled {
   transform-origin: center;
 }
 
+.chronodex-block-hoverable {
+  filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+  transition:
+    fill-opacity 150ms ease,
+    filter 180ms ease,
+    stroke-width 180ms ease;
+}
+
+.chronodex-block-hoverable:hover {
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.12));
+  stroke-width: 1.35;
+}
+
+.chronodex-hover-preview-fill {
+  animation: chronodex-hover-preview-in 160ms ease-out both;
+  opacity: 0.08;
+}
+
+.dark .chronodex-hover-preview-fill {
+  opacity: 0.14;
+}
+
+.chronodex-hover-preview-trace {
+  animation: chronodex-active-block-trace 1.35s linear infinite;
+  stroke-dasharray: 0.16 0.84;
+  stroke-width: 2.15;
+}
+
+.chronodex-hover-preview-handle {
+  animation: chronodex-hover-handle-in 180ms ease-out both;
+}
+
 .chronodex-active-block-trace {
   animation: chronodex-active-block-trace 2.4s linear infinite;
   stroke-dasharray: 0.18 0.82;
@@ -230,6 +262,27 @@ button:disabled {
 
   to {
     stroke-dashoffset: 0;
+  }
+}
+
+@keyframes chronodex-hover-preview-in {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes chronodex-hover-handle-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
 
