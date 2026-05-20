@@ -16,6 +16,7 @@ import {
   getDuration,
   getBlockProgressPercent,
   isMinuteInsideBlock,
+  getNearestChronodexMinute,
   minutesToChronodexAngle,
   polarToCartesian,
   splitBlockRangeByHalfDay,
@@ -138,7 +139,7 @@ export function ChronodexView({
       setSelectionDraft((current) => current
         ? {
             ...current,
-            endMinute: minute,
+            endMinute: getNearestChronodexMinute(current.endMinute, minute),
             position: { x: result.svgPoint.x, y: result.svgPoint.y },
           }
         : current);
@@ -176,7 +177,9 @@ export function ChronodexView({
     }
 
     const result = getMinuteFromPointerEvent(event);
-    const endMinute = result?.minute ?? selectionDraft.endMinute;
+    const endMinute = result?.minute === null || result?.minute === undefined
+      ? selectionDraft.endMinute
+      : getNearestChronodexMinute(selectionDraft.endMinute, result.minute);
 
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);

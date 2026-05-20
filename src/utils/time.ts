@@ -101,6 +101,23 @@ export function getChronodexMinuteFromPoint(center: Point, point: Point): number
   return periodOffset + boundedHalfDayMinutes;
 }
 
+export function getNearestChronodexMinute(referenceMinute: number, minute: number): number {
+  const candidates = [minute, minute - DAY_MINUTES, minute + DAY_MINUTES];
+  const isTwelveOClockPoint =
+    ((minute % HALF_DAY_MINUTES) + HALF_DAY_MINUTES) % HALF_DAY_MINUTES === 0;
+
+  if (isTwelveOClockPoint) {
+    candidates.push(minute - HALF_DAY_MINUTES, minute + HALF_DAY_MINUTES);
+  }
+
+  return candidates.reduce((nearest, candidate) => {
+    const nearestDistance = Math.abs(nearest - referenceMinute);
+    const candidateDistance = Math.abs(candidate - referenceMinute);
+
+    return candidateDistance < nearestDistance ? candidate : nearest;
+  });
+}
+
 export function getBlockTimeRangeFromStartMinute(startMinute: number): {
   startTime: string;
   endTime: string;
@@ -114,10 +131,15 @@ export function getBlockTimeRangeFromMinuteRange(startMinute: number, endMinute:
 } {
   const start = Math.min(startMinute, endMinute);
   const selectedEnd = Math.max(startMinute, endMinute);
-  const end = selectedEnd === start ? start + SNAP_INTERVAL_MINUTES : selectedEnd;
+  const crossesMidnight = selectedEnd - start > HALF_DAY_MINUTES;
+  const end = selectedEnd === start
+    ? start + SNAP_INTERVAL_MINUTES
+    : crossesMidnight
+      ? start
+      : selectedEnd;
 
   return {
-    startTime: minutesToTime(start),
+    startTime: minutesToTime(crossesMidnight ? selectedEnd : start),
     endTime: minutesToTime(end),
   };
 }
@@ -246,6 +268,16 @@ export function splitBlockRangeByHalfDay(block: TimeBlock): ChronodexRange[] {
     }
 
     return slices;
+  });
+}
+
+export function isChronodexBlockBoundaryMinute(minute: number, block: TimeBlock): boolean {
+  return splitBlockRangeByHalfDay(block).some((range) => {
+    const periodOffset = range.period === 'am' ? 0 : HALF_DAY_MINUTES;
+    const rangeStart = periodOffset + (((range.start % HALF_DAY_MINUTES) + HALF_DAY_MINUTES) % HALF_DAY_MINUTES);
+    const rangeEnd = periodOffset + (((range.end % HALF_DAY_MINUTES) + HALF_DAY_MINUTES) % HALF_DAY_MINUTES);
+
+    return minute === rangeStart || minute === rangeEnd;
   });
 }
 

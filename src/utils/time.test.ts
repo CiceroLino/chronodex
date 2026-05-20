@@ -10,6 +10,8 @@ import {
   getChronodexMinuteFromPoint,
   getDuration,
   getChronodexAngleRange,
+  isChronodexBlockBoundaryMinute,
+  getNearestChronodexMinute,
   getSpiderPointRadius,
   minutesToAngle,
   minutesToChronodexAngle,
@@ -97,6 +99,28 @@ describe('time utilities', () => {
       startTime: '09:00',
       endTime: '09:30',
     });
+  });
+
+  test('creates the short selected time range when dragging counterclockwise across midnight', () => {
+    expect(getBlockTimeRangeFromMinuteRange(30, 1410)).toEqual({
+      startTime: '23:30',
+      endTime: '00:30',
+    });
+  });
+
+  test('keeps chronodex drag minutes continuous across twelve o clock points', () => {
+    expect(getNearestChronodexMinute(30, 1410)).toBe(-30);
+    expect(getNearestChronodexMinute(690, 0)).toBe(720);
+    expect(getNearestChronodexMinute(1410, 720)).toBe(1440);
+  });
+
+  test('matches chronodex block boundaries at twelve o clock points', () => {
+    expect(isChronodexBlockBoundaryMinute(0, block('morning', '11:30', '12:00')))
+      .toBe(true);
+    expect(isChronodexBlockBoundaryMinute(720, block('night', '23:30', '00:00')))
+      .toBe(true);
+    expect(isChronodexBlockBoundaryMinute(660, block('morning', '11:30', '12:00')))
+      .toBe(false);
   });
 
   test('ignores points outside the interactive chronodex rings', () => {

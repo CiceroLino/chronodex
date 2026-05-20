@@ -1,8 +1,11 @@
+import type { MouseEvent, PointerEvent } from 'react';
 import type { TimeBlock } from '../types';
 import {
   describeAnnularSector,
   describeArc,
   getChronodexAngleRange,
+  getChronodexMinuteFromPoint,
+  isChronodexBlockBoundaryMinute,
   minutesToChronodexAngle,
   polarToCartesian,
   splitBlockRangeByHalfDay,
@@ -17,6 +20,28 @@ type ChronodexArcProps = {
   onHover: (block: TimeBlock, position: { x: number; y: number }) => void;
   onLeave: () => void;
 };
+
+function getPointerMinute(event: MouseEvent<SVGPathElement> | PointerEvent<SVGPathElement>) {
+  const svg = event.currentTarget.ownerSVGElement;
+
+  if (!svg) {
+    return null;
+  }
+
+  const point = svg.createSVGPoint();
+  point.x = event.clientX;
+  point.y = event.clientY;
+
+  const matrix = svg.getScreenCTM();
+
+  if (!matrix) {
+    return null;
+  }
+
+  const svgPoint = point.matrixTransform(matrix.inverse());
+
+  return getChronodexMinuteFromPoint({ x: 250, y: 250 }, svgPoint);
+}
 
 export function ChronodexArc({
   block,
@@ -76,10 +101,22 @@ export function ChronodexArc({
               tabIndex={0}
               aria-label={`${block.title}, ${block.startTime} até ${block.endTime}`}
               onClick={(event) => {
+                const minute = getPointerMinute(event);
+
+                if (minute !== null && isChronodexBlockBoundaryMinute(minute, block)) {
+                  return;
+                }
+
                 event.stopPropagation();
                 onSelect(block);
               }}
               onPointerDown={(event) => {
+                const minute = getPointerMinute(event);
+
+                if (minute !== null && isChronodexBlockBoundaryMinute(minute, block)) {
+                  return;
+                }
+
                 event.stopPropagation();
               }}
               onPointerMove={(event) => {
