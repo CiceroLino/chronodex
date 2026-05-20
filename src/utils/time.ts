@@ -11,6 +11,11 @@ export type ChronodexRange = MinuteRange & {
   period: ChronodexPeriod;
 };
 
+export type Point = {
+  x: number;
+  y: number;
+};
+
 export type CategoryTimeShare = {
   category: Category;
   minutes: number;
@@ -19,6 +24,9 @@ export type CategoryTimeShare = {
 
 const DAY_MINUTES = 1440;
 const HALF_DAY_MINUTES = 720;
+const SNAP_INTERVAL_MINUTES = 15;
+const AM_RING = { inner: 120, outer: 150 };
+const PM_RING = { inner: 160, outer: 194 };
 
 export function timeToMinutes(time: string): number {
   const [hours, minutes] = time.split(':').map(Number);
@@ -65,6 +73,42 @@ export function minutesToAngle(minutes: number): number {
 export function minutesToChronodexAngle(minutes: number): number {
   const normalized = ((minutes % HALF_DAY_MINUTES) + HALF_DAY_MINUTES) % HALF_DAY_MINUTES;
   return (normalized / HALF_DAY_MINUTES) * 360 - 90;
+}
+
+export function getChronodexMinuteFromPoint(center: Point, point: Point): number | null {
+  const dx = point.x - center.x;
+  const dy = point.y - center.y;
+  const radius = Math.sqrt(dx ** 2 + dy ** 2);
+  const periodOffset = radius >= AM_RING.inner && radius <= AM_RING.outer
+    ? 0
+    : radius >= PM_RING.inner && radius <= PM_RING.outer
+      ? HALF_DAY_MINUTES
+      : null;
+
+  if (periodOffset === null) {
+    return null;
+  }
+
+  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const rawHalfDayMinutes = (((angle + 90 + 360) % 360) / 360) * HALF_DAY_MINUTES;
+  const snappedHalfDayMinutes =
+    Math.round(rawHalfDayMinutes / SNAP_INTERVAL_MINUTES) * SNAP_INTERVAL_MINUTES;
+  const boundedHalfDayMinutes =
+    snappedHalfDayMinutes === HALF_DAY_MINUTES
+      ? HALF_DAY_MINUTES - SNAP_INTERVAL_MINUTES
+      : snappedHalfDayMinutes;
+
+  return periodOffset + boundedHalfDayMinutes;
+}
+
+export function getBlockTimeRangeFromStartMinute(startMinute: number): {
+  startTime: string;
+  endTime: string;
+} {
+  return {
+    startTime: minutesToTime(startMinute),
+    endTime: minutesToTime(startMinute + 60),
+  };
 }
 
 export function getChronodexAngleRange(startMinutes: number, endMinutes: number) {

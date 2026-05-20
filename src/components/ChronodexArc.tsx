@@ -75,7 +75,10 @@ export function ChronodexArc({
               role="button"
               tabIndex={0}
               aria-label={`${block.title}, ${block.startTime} até ${block.endTime}`}
-              onClick={() => onSelect(block)}
+              onClick={(event) => {
+                event.stopPropagation();
+                onSelect(block);
+              }}
               onPointerMove={(event) => {
                 const bounds = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
 

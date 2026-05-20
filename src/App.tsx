@@ -24,6 +24,7 @@ import {
 } from './utils/reminders';
 import {
   detectOverlaps,
+  getBlockTimeRangeFromStartMinute,
   getBlockProgressPercent,
   getTotalPlannedMinutes,
   isMinuteInsideBlock,
@@ -332,6 +333,9 @@ function App() {
   const [reminders, setReminders] = useState<Reminder[]>(() => readStoredReminders());
   const [notices, setNotices] = useState<Notice[]>([]);
   const [editingBlock, setEditingBlock] = useState<TimeBlock | null>(null);
+  const [draftBlockTimeRange, setDraftBlockTimeRange] = useState<
+    Pick<TimeBlock, 'startTime' | 'endTime'> | null
+  >(null);
   const [blockPendingDelete, setBlockPendingDelete] = useState<TimeBlock | null>(null);
   const [selectedBlock, setSelectedBlock] = useState<TimeBlock | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -482,6 +486,7 @@ function App() {
         current.map((block) => (block.id === editingBlock.id ? updatedBlock : block)),
       );
       setEditingBlock(null);
+      setDraftBlockTimeRange(null);
       setSelectedBlock(updatedBlock);
       setIsBlockDialogOpen(false);
       return;
@@ -489,6 +494,7 @@ function App() {
 
     const newBlock = { ...form, id: createId() };
     setBlocks((current) => [...current, newBlock]);
+    setDraftBlockTimeRange(null);
     setSelectedBlock(newBlock);
     setIsBlockDialogOpen(false);
   }
@@ -613,6 +619,15 @@ function App() {
 
   function openNewBlockDialog() {
     setEditingBlock(null);
+    setDraftBlockTimeRange(null);
+    setError(null);
+    setIsBlockDialogOpen(true);
+  }
+
+  function openBlockDialogAtMinute(minute: number) {
+    setEditingBlock(null);
+    setDraftBlockTimeRange(getBlockTimeRangeFromStartMinute(minute));
+    setSelectedBlock(null);
     setError(null);
     setIsBlockDialogOpen(true);
   }
@@ -744,6 +759,7 @@ function App() {
               locale={locale}
               onEdit={(block) => {
                 setEditingBlock(block);
+                setDraftBlockTimeRange(null);
                 setSelectedBlock(block);
                 setError(null);
                 setIsBlockDialogOpen(true);
@@ -1144,6 +1160,7 @@ function App() {
                 onEdit={(block) => {
                   setIsMobileBlocksOpen(false);
                   setEditingBlock(block);
+                  setDraftBlockTimeRange(null);
                   setSelectedBlock(block);
                   setError(null);
                   setIsBlockDialogOpen(true);
@@ -1284,6 +1301,7 @@ function App() {
               onClick={() => {
                 setIsBlockDialogOpen(false);
                 setEditingBlock(null);
+                setDraftBlockTimeRange(null);
                 setError(null);
               }}
             />
@@ -1303,6 +1321,7 @@ function App() {
                   onClick={() => {
                     setIsBlockDialogOpen(false);
                     setEditingBlock(null);
+                    setDraftBlockTimeRange(null);
                     setError(null);
                   }}
                   className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
@@ -1324,11 +1343,13 @@ function App() {
               <TimeBlockForm
                 editingBlock={editingBlock}
                 error={error}
+                initialTimeRange={draftBlockTimeRange}
                 locale={locale}
                 onSubmit={saveBlock}
                 onCancelEdit={() => {
                   setIsBlockDialogOpen(false);
                   setEditingBlock(null);
+                  setDraftBlockTimeRange(null);
                   setError(null);
                 }}
               />
@@ -1643,6 +1664,7 @@ function App() {
           locale={locale}
           blockOpacity={blockOpacity}
           onSelectBlock={setSelectedBlock}
+          onCreateBlockAtMinute={openBlockDialogAtMinute}
         />
         <NoticeRail
           notices={notices}

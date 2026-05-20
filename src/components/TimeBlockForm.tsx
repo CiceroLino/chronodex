@@ -11,6 +11,7 @@ type FormState = Omit<TimeBlock, 'id'>;
 type TimeBlockFormProps = {
   editingBlock: TimeBlock | null;
   error: string | null;
+  initialTimeRange?: Pick<TimeBlock, 'startTime' | 'endTime'> | null;
   locale: AppLocale;
   onSubmit: (block: FormState) => void;
   onCancelEdit: () => void;
@@ -29,6 +30,7 @@ const emptyForm: FormState = {
 export function TimeBlockForm({
   editingBlock,
   error,
+  initialTimeRange,
   locale,
   onSubmit,
   onCancelEdit,
@@ -43,8 +45,11 @@ export function TimeBlockForm({
       return;
     }
 
-    setForm(emptyForm);
-  }, [editingBlock]);
+    setForm({
+      ...emptyForm,
+      ...initialTimeRange,
+    });
+  }, [editingBlock, initialTimeRange]);
 
   function updateField<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
     setForm((current) => ({ ...current, [key]: value }));

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type MouseEvent, useState } from 'react';
 import {
   formatLocalizedDuration,
   getCategoryLabel,
@@ -8,6 +8,7 @@ import {
 import { CATEGORIES, CATEGORY_COLORS, type TimeBlock } from '../types';
 import {
   describeAnnularSector,
+  getChronodexMinuteFromPoint,
   getChronodexAngleRange,
   getDuration,
   getBlockProgressPercent,
@@ -27,6 +28,7 @@ type ChronodexViewProps = {
   locale: AppLocale;
   blockOpacity: number;
   onSelectBlock: (block: TimeBlock | null) => void;
+  onCreateBlockAtMinute: (minute: number) => void;
 };
 
 const hourIndexes = Array.from({ length: 12 }, (_, index) => index);
@@ -50,6 +52,7 @@ export function ChronodexView({
   locale,
   blockOpacity,
   onSelectBlock,
+  onCreateBlockAtMinute,
 }: ChronodexViewProps) {
   const [hoveredBlock, setHoveredBlock] = useState<{
     block: TimeBlock;
@@ -62,6 +65,32 @@ export function ChronodexView({
     ? getBlockProgressPercent(currentMinute, activeBlock)
     : null;
   const chronodexBlocks = sortBlocksForChronodex(blocks);
+
+  function handleChronodexClick(event: MouseEvent<SVGSVGElement>) {
+    const svg = event.currentTarget;
+    const point = svg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+
+    const matrix = svg.getScreenCTM();
+
+    if (!matrix) {
+      return;
+    }
+
+    const svgPoint = point.matrixTransform(matrix.inverse());
+    const minute = getChronodexMinuteFromPoint(
+      { x: 250, y: 250 },
+      { x: svgPoint.x, y: svgPoint.y },
+    );
+
+    if (minute === null) {
+      onSelectBlock(null);
+      return;
+    }
+
+    onCreateBlockAtMinute(minute);
+  }
 
   return (
     <section className="relative flex min-h-[680px] flex-col items-center justify-center gap-4 bg-[#f7f7f7] px-4 pb-28 pt-8 transition-colors dark:bg-[#111111] sm:min-h-[760px] sm:px-6 lg:h-screen lg:min-h-0 lg:overflow-hidden lg:px-10 lg:py-6">
@@ -88,11 +117,7 @@ export function ChronodexView({
             className="h-full w-full overflow-visible text-black dark:text-neutral-100"
             role="img"
             aria-label="Chronodex radial de vinte e quatro horas"
-            onClick={(event) => {
-              if (event.target === event.currentTarget) {
-                onSelectBlock(null);
-              }
-            }}
+            onClick={handleChronodexClick}
           >
             <circle
               cx="250"

@@ -3,8 +3,10 @@ import {
   describeAnnularSector,
   describeArc,
   detectOverlaps,
+  getBlockTimeRangeFromStartMinute,
   getBlockProgressPercent,
   getCategoryTimeShares,
+  getChronodexMinuteFromPoint,
   getDuration,
   getChronodexAngleRange,
   getSpiderPointRadius,
@@ -56,6 +58,29 @@ describe('time utilities', () => {
     expect(minutesToChronodexAngle(540)).toBe(180);
     expect(minutesToChronodexAngle(720)).toBe(-90);
     expect(minutesToChronodexAngle(900)).toBe(0);
+  });
+
+  test('converts points in chronodex rings to snapped minutes', () => {
+    expect(getChronodexMinuteFromPoint({ x: 250, y: 250 }, { x: 250, y: 120 })).toBe(0);
+    expect(getChronodexMinuteFromPoint({ x: 250, y: 250 }, { x: 250, y: 380 })).toBe(360);
+    expect(getChronodexMinuteFromPoint({ x: 250, y: 250 }, { x: 430, y: 250 })).toBe(900);
+  });
+
+  test('creates a default one-hour time range from a start minute', () => {
+    expect(getBlockTimeRangeFromStartMinute(540)).toEqual({
+      startTime: '09:00',
+      endTime: '10:00',
+    });
+    expect(getBlockTimeRangeFromStartMinute(1410)).toEqual({
+      startTime: '23:30',
+      endTime: '00:30',
+    });
+  });
+
+  test('ignores points outside the interactive chronodex rings', () => {
+    expect(getChronodexMinuteFromPoint({ x: 250, y: 250 }, { x: 250, y: 250 })).toBeNull();
+    expect(getChronodexMinuteFromPoint({ x: 250, y: 250 }, { x: 250, y: 98 })).toBeNull();
+    expect(getChronodexMinuteFromPoint({ x: 250, y: 250 }, { x: 250, y: 95 })).toBeNull();
   });
 
   test('returns short chronodex angle ranges across the twelve o clock point', () => {
