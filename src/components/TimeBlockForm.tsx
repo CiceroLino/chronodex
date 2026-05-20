@@ -107,25 +107,29 @@ export function TimeBlockForm({
           >
             {messages.start}
           </label>
-          <input
-            id="startTime"
-            type="time"
-            value={form.startTime}
-            onChange={(event) => updateField('startTime', event.target.value)}
-            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:focus:border-neutral-500"
-          />
+          <span className="time-input-shell">
+            <input
+              id="startTime"
+              type="time"
+              value={form.startTime}
+              onChange={(event) => updateField('startTime', event.target.value)}
+              className="time-input h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:focus:border-neutral-500"
+            />
+          </span>
         </div>
         <div>
           <label className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400" htmlFor="endTime">
             {messages.end}
           </label>
-          <input
-            id="endTime"
-            type="time"
-            value={form.endTime}
-            onChange={(event) => updateField('endTime', event.target.value)}
-            className="h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:focus:border-neutral-500"
-          />
+          <span className="time-input-shell">
+            <input
+              id="endTime"
+              type="time"
+              value={form.endTime}
+              onChange={(event) => updateField('endTime', event.target.value)}
+              className="time-input h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:focus:border-neutral-500"
+            />
+          </span>
         </div>
       </div>
 
