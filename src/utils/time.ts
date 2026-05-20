@@ -24,7 +24,7 @@ export type CategoryTimeShare = {
 
 const DAY_MINUTES = 1440;
 const HALF_DAY_MINUTES = 720;
-const SNAP_INTERVAL_MINUTES = 15;
+const SNAP_INTERVAL_MINUTES = 30;
 const AM_RING = { inner: 120, outer: 150 };
 const PM_RING = { inner: 160, outer: 194 };
 
@@ -105,9 +105,20 @@ export function getBlockTimeRangeFromStartMinute(startMinute: number): {
   startTime: string;
   endTime: string;
 } {
+  return getBlockTimeRangeFromMinuteRange(startMinute, startMinute);
+}
+
+export function getBlockTimeRangeFromMinuteRange(startMinute: number, endMinute: number): {
+  startTime: string;
+  endTime: string;
+} {
+  const start = Math.min(startMinute, endMinute);
+  const selectedEnd = Math.max(startMinute, endMinute);
+  const end = selectedEnd === start ? start + SNAP_INTERVAL_MINUTES : selectedEnd;
+
   return {
-    startTime: minutesToTime(startMinute),
-    endTime: minutesToTime(startMinute + 60),
+    startTime: minutesToTime(start),
+    endTime: minutesToTime(end),
   };
 }
 

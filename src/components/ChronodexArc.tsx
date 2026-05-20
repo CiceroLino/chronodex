@@ -79,6 +79,9 @@ export function ChronodexArc({
                 event.stopPropagation();
                 onSelect(block);
               }}
+              onPointerDown={(event) => {
+                event.stopPropagation();
+              }}
               onPointerMove={(event) => {
                 event.stopPropagation();
                 const bounds = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
@@ -95,6 +98,9 @@ export function ChronodexArc({
               onPointerLeave={(event) => {
                 event.stopPropagation();
                 onLeave();
+              }}
+              onPointerUp={(event) => {
+                event.stopPropagation();
               }}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {

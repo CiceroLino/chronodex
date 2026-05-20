@@ -1,4 +1,4 @@
-import { type MouseEvent, type PointerEvent, useState } from 'react';
+import { type PointerEvent, useState } from 'react';
 import {
   formatLocalizedDuration,
   getCategoryLabel,
@@ -9,6 +9,7 @@ import { CATEGORIES, CATEGORY_COLORS, type TimeBlock } from '../types';
 import {
   describeAnnularSector,
   describeArc,
+  getBlockTimeRangeFromMinuteRange,
   getBlockTimeRangeFromStartMinute,
   getChronodexMinuteFromPoint,
   getChronodexAngleRange,
@@ -31,7 +32,7 @@ type ChronodexViewProps = {
   locale: AppLocale;
   blockOpacity: number;
   onSelectBlock: (block: TimeBlock | null) => void;
-  onCreateBlockAtMinute: (minute: number) => void;
+  onCreateBlockAtRange: (startMinute: number, endMinute: number) => void;
 };
 
 const hourIndexes = Array.from({ length: 12 }, (_, index) => index);
@@ -56,7 +57,7 @@ export function ChronodexView({
   locale,
   blockOpacity,
   onSelectBlock,
-  onCreateBlockAtMinute,
+  onCreateBlockAtRange,
 }: ChronodexViewProps) {
   const [hoveredBlock, setHoveredBlock] = useState<{
     block: TimeBlock;
@@ -66,6 +67,11 @@ export function ChronodexView({
     minute: number;
     position: { x: number; y: number };
   } | null>(null);
+  const [selectionDraft, setSelectionDraft] = useState<{
+    startMinute: number;
+    endMinute: number;
+    position: { x: number; y: number };
+  } | null>(null);
   const currentMinute = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
   const messages = getMessages(locale);
   const activeBlock = blocks.find((block) => isMinuteInsideBlock(currentMinute, block)) ?? null;
@@ -73,16 +79,19 @@ export function ChronodexView({
     ? getBlockProgressPercent(currentMinute, activeBlock)
     : null;
   const chronodexBlocks = sortBlocksForChronodex(blocks);
-  const hoveredTimeRange = hoveredMinute
+  const previewTimeRange = selectionDraft
+    ? getBlockTimeRangeFromMinuteRange(selectionDraft.startMinute, selectionDraft.endMinute)
+    : hoveredMinute
     ? getBlockTimeRangeFromStartMinute(hoveredMinute.minute)
     : null;
-  const previewBlock = hoveredTimeRange
+  const previewPosition = selectionDraft?.position ?? hoveredMinute?.position ?? null;
+  const previewBlock = previewTimeRange
     ? {
         id: 'hover-preview',
         title: 'Preview',
         description: '',
-        startTime: hoveredTimeRange.startTime,
-        endTime: hoveredTimeRange.endTime,
+        startTime: previewTimeRange.startTime,
+        endTime: previewTimeRange.endTime,
         category: 'Trabalho' as const,
         color: previewBlockColor,
       }
@@ -90,7 +99,7 @@ export function ChronodexView({
   const previewRanges = previewBlock ? splitBlockRangeByHalfDay(previewBlock) : [];
 
   function getMinuteFromPointerEvent(
-    event: MouseEvent<SVGSVGElement> | PointerEvent<SVGSVGElement>,
+    event: PointerEvent<SVGSVGElement>,
   ) {
     const svg = event.currentTarget;
     const point = svg.createSVGPoint();
@@ -116,27 +125,66 @@ export function ChronodexView({
     const result = getMinuteFromPointerEvent(event);
 
     if (!result?.minute && result?.minute !== 0) {
-      setHoveredMinute(null);
+      if (!selectionDraft) {
+        setHoveredMinute(null);
+      }
       return;
     }
 
+    const minute = result.minute;
     setHoveredBlock(null);
+
+    if (selectionDraft) {
+      setSelectionDraft((current) => current
+        ? {
+            ...current,
+            endMinute: minute,
+            position: { x: result.svgPoint.x, y: result.svgPoint.y },
+          }
+        : current);
+      return;
+    }
+
     setHoveredMinute({
-      minute: result.minute,
+      minute,
       position: { x: result.svgPoint.x, y: result.svgPoint.y },
     });
   }
 
-  function handleChronodexClick(event: MouseEvent<SVGSVGElement>) {
+  function handleChronodexPointerDown(event: PointerEvent<SVGSVGElement>) {
     const result = getMinuteFromPointerEvent(event);
-    const minute = result?.minute ?? null;
 
-    if (minute === null) {
+    if (!result || result.minute === null) {
       onSelectBlock(null);
       return;
     }
 
-    onCreateBlockAtMinute(minute);
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.preventDefault();
+    setHoveredBlock(null);
+    setHoveredMinute(null);
+    setSelectionDraft({
+      startMinute: result.minute,
+      endMinute: result.minute,
+      position: { x: result.svgPoint.x, y: result.svgPoint.y },
+    });
+  }
+
+  function handleChronodexPointerUp(event: PointerEvent<SVGSVGElement>) {
+    if (!selectionDraft) {
+      return;
+    }
+
+    const result = getMinuteFromPointerEvent(event);
+    const endMinute = result?.minute ?? selectionDraft.endMinute;
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    onCreateBlockAtRange(selectionDraft.startMinute, endMinute);
+    setSelectionDraft(null);
+    setHoveredMinute(null);
   }
 
   return (
@@ -164,11 +212,15 @@ export function ChronodexView({
             className="h-full w-full overflow-visible text-black dark:text-neutral-100"
             role="img"
             aria-label="Chronodex radial de vinte e quatro horas"
-            onClick={handleChronodexClick}
+            onPointerDown={handleChronodexPointerDown}
             onPointerMove={handleChronodexPointerMove}
+            onPointerUp={handleChronodexPointerUp}
+            onPointerCancel={() => setSelectionDraft(null)}
             onPointerLeave={() => {
               setHoveredBlock(null);
-              setHoveredMinute(null);
+              if (!selectionDraft) {
+                setHoveredMinute(null);
+              }
             }}
           >
             <circle
@@ -419,16 +471,16 @@ export function ChronodexView({
             </div>
           ) : null}
 
-          {hoveredMinute && hoveredTimeRange ? (
+          {previewPosition && previewTimeRange ? (
             <div
               className="pointer-events-none absolute z-10 rounded-xl border border-gray-200 bg-white px-3 py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-gray-600 shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:border-neutral-800 dark:bg-[#191919] dark:text-neutral-300"
               style={{
-                left: `${hoveredMinute.position.x}px`,
-                top: `${hoveredMinute.position.y}px`,
+                left: `${previewPosition.x}px`,
+                top: `${previewPosition.y}px`,
                 transform: 'translate(14px, -50%)',
               }}
             >
-              {hoveredTimeRange.startTime} - {hoveredTimeRange.endTime}
+              {previewTimeRange.startTime} - {previewTimeRange.endTime}
             </div>
           ) : null}
 

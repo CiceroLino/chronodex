@@ -24,7 +24,7 @@ import {
 } from './utils/reminders';
 import {
   detectOverlaps,
-  getBlockTimeRangeFromStartMinute,
+  getBlockTimeRangeFromMinuteRange,
   getBlockProgressPercent,
   getTotalPlannedMinutes,
   isMinuteInsideBlock,
@@ -624,9 +624,9 @@ function App() {
     setIsBlockDialogOpen(true);
   }
 
-  function openBlockDialogAtMinute(minute: number) {
+  function openBlockDialogAtRange(startMinute: number, endMinute: number) {
     setEditingBlock(null);
-    setDraftBlockTimeRange(getBlockTimeRangeFromStartMinute(minute));
+    setDraftBlockTimeRange(getBlockTimeRangeFromMinuteRange(startMinute, endMinute));
     setSelectedBlock(null);
     setError(null);
     setIsBlockDialogOpen(true);
@@ -1664,7 +1664,7 @@ function App() {
           locale={locale}
           blockOpacity={blockOpacity}
           onSelectBlock={setSelectedBlock}
-          onCreateBlockAtMinute={openBlockDialogAtMinute}
+          onCreateBlockAtRange={openBlockDialogAtRange}
         />
         <NoticeRail
           notices={notices}

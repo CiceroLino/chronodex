@@ -3,6 +3,7 @@ import {
   describeAnnularSector,
   describeArc,
   detectOverlaps,
+  getBlockTimeRangeFromMinuteRange,
   getBlockTimeRangeFromStartMinute,
   getBlockProgressPercent,
   getCategoryTimeShares,
@@ -66,10 +67,10 @@ describe('time utilities', () => {
     expect(getChronodexMinuteFromPoint({ x: 250, y: 250 }, { x: 430, y: 250 })).toBe(900);
   });
 
-  test('creates a default one-hour time range from a start minute', () => {
+  test('creates a default thirty-minute time range from a start minute', () => {
     expect(getBlockTimeRangeFromStartMinute(540)).toEqual({
       startTime: '09:00',
-      endTime: '10:00',
+      endTime: '09:30',
     });
     expect(splitBlockRangeByHalfDay({
       ...block('preview', '11:30', '12:30'),
@@ -79,7 +80,22 @@ describe('time utilities', () => {
     ]);
     expect(getBlockTimeRangeFromStartMinute(1410)).toEqual({
       startTime: '23:30',
-      endTime: '00:30',
+      endTime: '00:00',
+    });
+  });
+
+  test('creates a selected time range with a thirty-minute minimum', () => {
+    expect(getBlockTimeRangeFromMinuteRange(540, 660)).toEqual({
+      startTime: '09:00',
+      endTime: '11:00',
+    });
+    expect(getBlockTimeRangeFromMinuteRange(660, 540)).toEqual({
+      startTime: '09:00',
+      endTime: '11:00',
+    });
+    expect(getBlockTimeRangeFromMinuteRange(540, 540)).toEqual({
+      startTime: '09:00',
+      endTime: '09:30',
     });
   });
 
