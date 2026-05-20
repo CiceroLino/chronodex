@@ -10,6 +10,9 @@ import {
   getChronodexMinuteFromPoint,
   getDuration,
   getChronodexAngleRange,
+  getChronodexDayMetrics,
+  getChronodexScopeMetrics,
+  getRadialDragOffset,
   isChronodexBlockBoundaryMinute,
   getNearestChronodexMinute,
   getSpiderPointRadius,
@@ -123,6 +126,27 @@ describe('time utilities', () => {
       .toBe(false);
   });
 
+  test('calculates inward radial drag offset for floating chronodex nodes', () => {
+    expect(getRadialDragOffset(
+      { x: 250, y: 14 },
+      { x: 250, y: 250 },
+      { x: 250, y: 42 },
+      34,
+    )).toBe(28);
+    expect(getRadialDragOffset(
+      { x: 250, y: 14 },
+      { x: 250, y: 250 },
+      { x: 250, y: 0 },
+      34,
+    )).toBe(0);
+    expect(getRadialDragOffset(
+      { x: 250, y: 14 },
+      { x: 250, y: 250 },
+      { x: 250, y: 80 },
+      34,
+    )).toBe(34);
+  });
+
   test('ignores points outside the interactive chronodex rings', () => {
     expect(getChronodexMinuteFromPoint({ x: 250, y: 250 }, { x: 250, y: 250 })).toBeNull();
     expect(getChronodexMinuteFromPoint({ x: 250, y: 250 }, { x: 250, y: 98 })).toBeNull();
@@ -213,6 +237,49 @@ describe('time utilities', () => {
     expect(shares.find((share) => share.category === 'Saúde')).toMatchObject({
       minutes: 0,
       percentage: 0,
+    });
+  });
+
+  test('calculates today metrics without double-counting overlapping blocks', () => {
+    expect(getChronodexDayMetrics([
+      block('work', '09:00', '11:00'),
+      block('meeting', '10:00', '12:00'),
+      block('study', '13:00', '14:00'),
+    ], timeToMinutes('12:00'))).toEqual({
+      elapsedMinutes: 720,
+      elapsedPlannedMinutes: 180,
+      elapsedEmptyMinutes: 540,
+      remainingMinutes: 720,
+      remainingPlannedMinutes: 60,
+      remainingFreeMinutes: 660,
+    });
+  });
+
+  test('calculates first-half metrics when the compass dot is dragged inside', () => {
+    expect(getChronodexScopeMetrics([
+      block('work', '09:00', '11:00'),
+      block('study', '13:00', '14:00'),
+    ], timeToMinutes('14:00'), { start: 0, end: 720 })).toEqual({
+      elapsedMinutes: 720,
+      elapsedPlannedMinutes: 120,
+      elapsedEmptyMinutes: 600,
+      remainingMinutes: 0,
+      remainingPlannedMinutes: 0,
+      remainingFreeMinutes: 0,
+    });
+  });
+
+  test('calculates clock-sector metrics when a compass dot is dragged inside', () => {
+    expect(getChronodexScopeMetrics([
+      block('early', '00:30', '01:30'),
+      block('late', '03:30', '04:30'),
+    ], timeToMinutes('02:00'), { start: 0, end: 180 })).toEqual({
+      elapsedMinutes: 120,
+      elapsedPlannedMinutes: 60,
+      elapsedEmptyMinutes: 60,
+      remainingMinutes: 60,
+      remainingPlannedMinutes: 0,
+      remainingFreeMinutes: 60,
     });
   });
 

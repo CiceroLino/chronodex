@@ -249,6 +249,8 @@ button:disabled {
   .chronodex-tick-draw,
   .chronodex-label-in,
   .chronodex-node-in,
+  .chronodex-compass-sweep,
+  .chronodex-compass-progress,
   .chronodex-block-in {
     animation-delay: 120ms !important;
     animation-duration: 260ms;
@@ -263,6 +265,39 @@ button:disabled {
   to {
     stroke-dashoffset: 0;
   }
+}
+
+@keyframes chronodex-compass-sweep {
+  from {
+    opacity: 0;
+    transform: rotate(-18deg) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes chronodex-compass-progress {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.chronodex-compass-sweep {
+  animation: chronodex-compass-sweep 360ms ease-out both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.chronodex-compass-progress {
+  animation: chronodex-compass-progress 520ms ease-out both;
+  stroke-dasharray: 1;
 }
 
 @keyframes chronodex-hover-preview-in {

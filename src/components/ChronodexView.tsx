@@ -13,11 +13,15 @@ import {
   getBlockTimeRangeFromStartMinute,
   getChronodexMinuteFromPoint,
   getChronodexAngleRange,
+  getChronodexScopeMetrics,
+  type ChronodexMetricScope,
   getDuration,
   getBlockProgressPercent,
   isMinuteInsideBlock,
   getNearestChronodexMinute,
+  getRadialDragOffset,
   minutesToChronodexAngle,
+  minutesToTime,
   polarToCartesian,
   splitBlockRangeByHalfDay,
   sortBlocksForChronodex,
@@ -25,6 +29,8 @@ import {
 import { ChronodexArc } from './ChronodexArc';
 import { CurrentTimeIndicator } from './CurrentTimeIndicator';
 import { StatsPanel } from './StatsPanel';
+
+type CompassInsight = 'progress' | 'used' | 'empty' | 'remaining';
 
 type ChronodexViewProps = {
   blocks: TimeBlock[];
@@ -42,6 +48,23 @@ const guideRings = [
   { period: 'PM', inner: 160, outer: 194, labelRadius: 209, tickInner: 195, tickOuter: 205 },
 ];
 const previewBlockColor = '#111111';
+const dayMinutes = 1440;
+const compassNodeRadius = 236;
+const compassNodeMaxDragOffset = 34;
+const compassNodeScopeOffset = 18;
+const compassInsightByHour: Array<{ hour: number; mode: CompassInsight }> = [
+  { hour: 0, mode: 'progress' },
+  { hour: 3, mode: 'used' },
+  { hour: 6, mode: 'empty' },
+  { hour: 9, mode: 'remaining' },
+];
+
+function getCompassSector(hour: number): ChronodexMetricScope {
+  return {
+    start: hour * 60,
+    end: (hour + 3) * 60,
+  };
+}
 
 function formatHourLabel(hour: number, period: string): string {
   if (hour === 0) {
@@ -68,6 +91,12 @@ export function ChronodexView({
     minute: number;
     position: { x: number; y: number };
   } | null>(null);
+  const [activeInsight, setActiveInsight] = useState<CompassInsight | null>(null);
+  const [draggedInsight, setDraggedInsight] = useState<{
+    mode: CompassInsight;
+    hour: number;
+    offset: number;
+  } | null>(null);
   const [selectionDraft, setSelectionDraft] = useState<{
     startMinute: number;
     endMinute: number;
@@ -79,6 +108,55 @@ export function ChronodexView({
   const activeBlockProgress = activeBlock
     ? getBlockProgressPercent(currentMinute, activeBlock)
     : null;
+  const isSectorScope = (draggedInsight?.offset ?? 0) >= compassNodeScopeOffset;
+  const metricScope = isSectorScope && draggedInsight
+    ? getCompassSector(draggedInsight.hour)
+    : 'day';
+  const metricBaseMinutes = metricScope === 'day'
+    ? dayMinutes
+    : metricScope.end - metricScope.start;
+  const dayMetrics = getChronodexScopeMetrics(blocks, currentMinute, metricScope);
+  const elapsedBase = Math.max(dayMetrics.elapsedMinutes, 1);
+  const scopeLabel = metricScope === 'day'
+    ? 'hoje'
+    : `${minutesToTime(metricScope.start)}-${minutesToTime(metricScope.end)}`;
+  const compassInsights: Record<CompassInsight, {
+    label: string;
+    value: string;
+    detail: string;
+    ratio: number;
+    tone: string;
+  }> = {
+    progress: {
+      label: isSectorScope ? 'Setor passado' : 'Dia passado',
+      value: formatLocalizedDuration(dayMetrics.elapsedMinutes, locale),
+      detail: `${Math.round((dayMetrics.elapsedMinutes / metricBaseMinutes) * 100)}% de ${scopeLabel}`,
+      ratio: dayMetrics.elapsedMinutes / metricBaseMinutes,
+      tone: '#111111',
+    },
+    used: {
+      label: 'Aproveitado',
+      value: formatLocalizedDuration(dayMetrics.elapsedPlannedMinutes, locale),
+      detail: `${Math.round((dayMetrics.elapsedPlannedMinutes / elapsedBase) * 100)}% do tempo passado em blocos · ${scopeLabel}`,
+      ratio: dayMetrics.elapsedPlannedMinutes / elapsedBase,
+      tone: '#2563eb',
+    },
+    empty: {
+      label: 'Vazio passado',
+      value: formatLocalizedDuration(dayMetrics.elapsedEmptyMinutes, locale),
+      detail: `${Math.round((dayMetrics.elapsedEmptyMinutes / elapsedBase) * 100)}% do tempo passado sem bloco · ${scopeLabel}`,
+      ratio: dayMetrics.elapsedEmptyMinutes / elapsedBase,
+      tone: '#737373',
+    },
+    remaining: {
+      label: 'Restante',
+      value: formatLocalizedDuration(dayMetrics.remainingMinutes, locale),
+      detail: `${formatLocalizedDuration(dayMetrics.remainingPlannedMinutes, locale)} planejado · ${formatLocalizedDuration(dayMetrics.remainingFreeMinutes, locale)} livre · ${scopeLabel}`,
+      ratio: dayMetrics.remainingMinutes / metricBaseMinutes,
+      tone: '#0f766e',
+    },
+  };
+  const currentInsight = activeInsight ? compassInsights[activeInsight] : null;
   const chronodexBlocks = sortBlocksForChronodex(blocks);
   const previewTimeRange = selectionDraft
     ? getBlockTimeRangeFromMinuteRange(selectionDraft.startMinute, selectionDraft.endMinute)
@@ -120,6 +198,28 @@ export function ChronodexView({
       minute,
       svgPoint,
     };
+  }
+
+  function getPointFromCompassPointerEvent(
+    event: PointerEvent<SVGCircleElement>,
+  ) {
+    const svg = event.currentTarget.ownerSVGElement;
+
+    if (!svg) {
+      return null;
+    }
+
+    const point = svg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+
+    const matrix = svg.getScreenCTM();
+
+    if (!matrix) {
+      return null;
+    }
+
+    return point.matrixTransform(matrix.inverse());
   }
 
   function handleChronodexPointerMove(event: PointerEvent<SVGSVGElement>) {
@@ -218,9 +318,15 @@ export function ChronodexView({
             onPointerDown={handleChronodexPointerDown}
             onPointerMove={handleChronodexPointerMove}
             onPointerUp={handleChronodexPointerUp}
-            onPointerCancel={() => setSelectionDraft(null)}
+            onPointerCancel={() => {
+              setSelectionDraft(null);
+              setDraggedInsight(null);
+            }}
             onPointerLeave={() => {
               setHoveredBlock(null);
+              if (!draggedInsight) {
+                setActiveInsight(null);
+              }
               if (!selectionDraft) {
                 setHoveredMinute(null);
               }
@@ -252,11 +358,11 @@ export function ChronodexView({
                 <circle
                   cx="250"
                   cy="250"
-                  r={ring.outer}
+                  r={ring.period === 'PM' && draggedInsight ? ring.outer + 12 : ring.outer}
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="0.55"
-                  className="chronodex-line-draw"
+                  strokeWidth={ring.period === 'PM' && draggedInsight ? 0.95 : 0.55}
+                  className="chronodex-line-draw transition-[r,stroke-width] duration-200"
                   style={{ animationDelay: `${60 + ringIndex * 120}ms` }}
                   pathLength={1}
                 />
@@ -426,19 +532,140 @@ export function ChronodexView({
               ))}
             </g>
 
-            {[0, 3, 6, 9].map((hour, index) => {
-              const point = polarToCartesian(250, 250, 236, minutesToChronodexAngle(hour * 60));
-              return (
+            {currentInsight ? (
+              <g className="pointer-events-none chronodex-compass-sweep">
                 <circle
-                  key={`node-${hour}`}
-                  cx={point.x}
-                  cy={point.y}
-                  r="9.5"
+                  cx="250"
+                  cy="250"
+                  r="226"
+                  fill="none"
                   stroke="currentColor"
-                  strokeWidth="0.9"
-                  className="chronodex-node-in pointer-events-none fill-white dark:fill-[#111111]"
-                  style={{ animationDelay: `${680 + index * 70}ms` }}
+                  strokeWidth="1"
+                  opacity="0.12"
                 />
+                <path
+                  d={describeArc(
+                    250,
+                    250,
+                    226,
+                    -90,
+                    -90 + currentInsight.ratio * (isSectorScope ? 90 : 360),
+                  )}
+                  fill="none"
+                  stroke={currentInsight.tone}
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  pathLength={1}
+                  className="chronodex-compass-progress"
+                />
+              </g>
+            ) : null}
+
+            {compassInsightByHour.map(({ hour, mode }, index) => {
+              const basePoint = polarToCartesian(
+                250,
+                250,
+                compassNodeRadius,
+                minutesToChronodexAngle(hour * 60),
+              );
+              const dragOffset = draggedInsight?.mode === mode ? draggedInsight.offset : 0;
+              const point = polarToCartesian(
+                250,
+                250,
+                compassNodeRadius - dragOffset,
+                minutesToChronodexAngle(hour * 60),
+              );
+              const insight = compassInsights[mode];
+              const isActiveInsight = activeInsight === mode;
+              return (
+                <g key={`node-${hour}`}>
+                  {dragOffset > 0 ? (
+                    <line
+                      x1={basePoint.x}
+                      y1={basePoint.y}
+                      x2={point.x}
+                      y2={point.y}
+                      stroke="currentColor"
+                      strokeWidth="0.7"
+                      opacity="0.38"
+                      strokeLinecap="round"
+                      className="pointer-events-none"
+                    />
+                  ) : null}
+                  <circle
+                    cx={point.x}
+                    cy={point.y}
+                    r={isActiveInsight ? 10.5 : 9.5}
+                    stroke="currentColor"
+                    strokeWidth={isActiveInsight ? 1.55 : 0.9}
+                    className="chronodex-node-in fill-white transition-[r,stroke-width] duration-150 dark:fill-[#111111]"
+                    style={{ animationDelay: `${680 + index * 70}ms` }}
+                  />
+                  <circle
+                    cx={point.x}
+                    cy={point.y}
+                    r="22"
+                    fill="transparent"
+                    className="cursor-pointer outline-none"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={insight.label}
+                    onPointerDown={(event) => {
+                      event.stopPropagation();
+                      event.currentTarget.setPointerCapture(event.pointerId);
+                      setActiveInsight(mode);
+                      setDraggedInsight({ mode, hour, offset: 0 });
+                    }}
+                    onPointerMove={(event) => {
+                      if (draggedInsight?.mode !== mode) {
+                        return;
+                      }
+
+                      const svgPoint = getPointFromCompassPointerEvent(event);
+
+                      if (!svgPoint) {
+                        return;
+                      }
+
+                      setDraggedInsight({
+                        mode,
+                        hour,
+                        offset: getRadialDragOffset(
+                          basePoint,
+                          { x: 250, y: 250 },
+                          svgPoint,
+                          compassNodeMaxDragOffset,
+                        ),
+                      });
+                    }}
+                    onPointerUp={(event) => {
+                      event.stopPropagation();
+                      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                        event.currentTarget.releasePointerCapture(event.pointerId);
+                      }
+                      setDraggedInsight(null);
+                    }}
+                    onPointerCancel={() => setDraggedInsight(null)}
+                    onPointerEnter={() => setActiveInsight(mode)}
+                    onPointerLeave={() => {
+                      if (draggedInsight?.mode !== mode) {
+                        setActiveInsight(null);
+                      }
+                    }}
+                    onFocus={() => setActiveInsight(mode)}
+                    onBlur={() => setActiveInsight(null)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setActiveInsight(mode);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setActiveInsight(mode);
+                      }
+                    }}
+                  />
+                </g>
               );
             })}
 
@@ -471,6 +698,20 @@ export function ChronodexView({
                   {hoveredBlock.block.description}
                 </p>
               ) : null}
+            </div>
+          ) : null}
+
+          {currentInsight ? (
+            <div className="pointer-events-none absolute left-1/2 top-8 z-10 -translate-x-1/2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:border-neutral-800 dark:bg-[#191919]">
+              <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
+                {currentInsight.label}
+              </p>
+              <p className="mt-1 text-lg font-light leading-none text-black dark:text-white">
+                {currentInsight.value}
+              </p>
+              <p className="mt-2 text-[11px] font-medium text-gray-500 dark:text-neutral-400">
+                {currentInsight.detail}
+              </p>
             </div>
           ) : null}
 

@@ -22,6 +22,17 @@ export type CategoryTimeShare = {
   percentage: number;
 };
 
+export type ChronodexDayMetrics = {
+  elapsedMinutes: number;
+  elapsedPlannedMinutes: number;
+  elapsedEmptyMinutes: number;
+  remainingMinutes: number;
+  remainingPlannedMinutes: number;
+  remainingFreeMinutes: number;
+};
+
+export type ChronodexMetricScope = 'day' | MinuteRange;
+
 const DAY_MINUTES = 1440;
 const HALF_DAY_MINUTES = 720;
 const SNAP_INTERVAL_MINUTES = 30;
@@ -166,6 +177,29 @@ export function polarToCartesian(
     x: centerX + radius * Math.cos(angleInRadians),
     y: centerY + radius * Math.sin(angleInRadians),
   };
+}
+
+export function getRadialDragOffset(
+  origin: Point,
+  center: Point,
+  point: Point,
+  maxOffset: number,
+): number {
+  const inwardX = center.x - origin.x;
+  const inwardY = center.y - origin.y;
+  const length = Math.sqrt(inwardX ** 2 + inwardY ** 2);
+
+  if (length === 0) {
+    return 0;
+  }
+
+  const unitX = inwardX / length;
+  const unitY = inwardY / length;
+  const dragX = point.x - origin.x;
+  const dragY = point.y - origin.y;
+  const offset = dragX * unitX + dragY * unitY;
+
+  return Math.min(Math.max(Math.round(offset), 0), maxOffset);
 }
 
 export function describeArc(
@@ -341,6 +375,66 @@ export function getCategoryTimeShares(blocks: TimeBlock[]): CategoryTimeShare[] 
       percentage: Number(((minutes / DAY_MINUTES) * 100).toFixed(1)),
     };
   });
+}
+
+function getMergedDuration(ranges: MinuteRange[]): number {
+  const sortedRanges = [...ranges].sort((first, second) => first.start - second.start);
+  const mergedRanges = sortedRanges.reduce<MinuteRange[]>((merged, range) => {
+    const previous = merged.at(-1);
+
+    if (!previous || range.start > previous.end) {
+      merged.push({ ...range });
+      return merged;
+    }
+
+    previous.end = Math.max(previous.end, range.end);
+    return merged;
+  }, []);
+
+  return mergedRanges.reduce((total, range) => total + range.end - range.start, 0);
+}
+
+function getPlannedMinutesBetween(blocks: TimeBlock[], startMinute: number, endMinute: number): number {
+  const clippedRanges = blocks.flatMap((block) =>
+    splitBlockRange(block)
+      .map((range) => ({
+        start: Math.max(range.start, startMinute),
+        end: Math.min(range.end, endMinute),
+      }))
+      .filter((range) => range.end > range.start),
+  );
+
+  return getMergedDuration(clippedRanges);
+}
+
+export function getChronodexDayMetrics(
+  blocks: TimeBlock[],
+  currentMinute: number,
+): ChronodexDayMetrics {
+  return getChronodexScopeMetrics(blocks, currentMinute, 'day');
+}
+
+export function getChronodexScopeMetrics(
+  blocks: TimeBlock[],
+  currentMinute: number,
+  scope: ChronodexMetricScope,
+): ChronodexDayMetrics {
+  const scopeStart = scope === 'day' ? 0 : scope.start;
+  const scopeEnd = scope === 'day' ? DAY_MINUTES : scope.end;
+  const scopedCurrentMinute = Math.min(Math.max(currentMinute, scopeStart), scopeEnd);
+  const elapsedMinutes = scopedCurrentMinute - scopeStart;
+  const remainingMinutes = scopeEnd - scopedCurrentMinute;
+  const elapsedPlannedMinutes = getPlannedMinutesBetween(blocks, scopeStart, scopedCurrentMinute);
+  const remainingPlannedMinutes = getPlannedMinutesBetween(blocks, scopedCurrentMinute, scopeEnd);
+
+  return {
+    elapsedMinutes,
+    elapsedPlannedMinutes,
+    elapsedEmptyMinutes: elapsedMinutes - elapsedPlannedMinutes,
+    remainingMinutes,
+    remainingPlannedMinutes,
+    remainingFreeMinutes: remainingMinutes - remainingPlannedMinutes,
+  };
 }
 
 export function getSpiderPointRadius(
