@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { getMessages, type AppLocale } from '../i18n';
 import type { Reminder } from '../types';
+import { TimeInput } from './TimeInput';
 
 type ReminderFormProps = {
   locale: AppLocale;
@@ -48,20 +49,12 @@ export function ReminderForm({ locale, onSubmit }: ReminderFormProps) {
         />
       </div>
 
-      <div>
-        <label className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400" htmlFor="reminder-time">
-          {messages.reminderTime}
-        </label>
-        <span className="time-input-shell">
-          <input
-            id="reminder-time"
-            type="time"
-            value={form.time}
-            onChange={(event) => setForm((current) => ({ ...current, time: event.target.value }))}
-            className="time-input h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:focus:border-neutral-500"
-          />
-        </span>
-      </div>
+      <TimeInput
+        id="reminder-time"
+        label={messages.reminderTime}
+        value={form.time}
+        onChange={(value) => setForm((current) => ({ ...current, time: value }))}
+      />
 
       <div>
         <label className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400" htmlFor="reminder-description">

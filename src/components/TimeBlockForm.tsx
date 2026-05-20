@@ -5,6 +5,7 @@ import {
   type AppLocale,
 } from '../i18n';
 import { CATEGORIES, CATEGORY_COLORS, type Category, type TimeBlock } from '../types';
+import { TimeInput } from './TimeInput';
 
 type FormState = Omit<TimeBlock, 'id'>;
 
@@ -105,37 +106,18 @@ export function TimeBlockForm({
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label
-            className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400"
-            htmlFor="startTime"
-          >
-            {messages.start}
-          </label>
-          <span className="time-input-shell">
-            <input
-              id="startTime"
-              type="time"
-              value={form.startTime}
-              onChange={(event) => updateField('startTime', event.target.value)}
-              className="time-input h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:focus:border-neutral-500"
-            />
-          </span>
-        </div>
-        <div>
-          <label className="mb-2 block text-xs font-medium text-gray-600 dark:text-neutral-400" htmlFor="endTime">
-            {messages.end}
-          </label>
-          <span className="time-input-shell">
-            <input
-              id="endTime"
-              type="time"
-              value={form.endTime}
-              onChange={(event) => updateField('endTime', event.target.value)}
-              className="time-input h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-black outline-none transition focus:border-gray-500 dark:border-neutral-800 dark:bg-[#191919] dark:text-white dark:focus:border-neutral-500"
-            />
-          </span>
-        </div>
+        <TimeInput
+          id="startTime"
+          label={messages.start}
+          value={form.startTime}
+          onChange={(value) => updateField('startTime', value)}
+        />
+        <TimeInput
+          id="endTime"
+          label={messages.end}
+          value={form.endTime}
+          onChange={(value) => updateField('endTime', value)}
+        />
       </div>
 
       <div className="grid grid-cols-[1fr_auto] gap-3">
