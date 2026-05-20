@@ -120,6 +120,7 @@ export function ChronodexView({
   const scopeLabel = metricScope === 'day'
     ? 'hoje'
     : `${minutesToTime(metricScope.start)}-${minutesToTime(metricScope.end)}`;
+  const elapsedDisplayMinutes = Math.floor(dayMetrics.elapsedMinutes);
   const compassInsights: Record<CompassInsight, {
     label: string;
     value: string;
@@ -129,7 +130,7 @@ export function ChronodexView({
   }> = {
     progress: {
       label: isSectorScope ? 'Setor passado' : 'Dia passado',
-      value: formatLocalizedDuration(dayMetrics.elapsedMinutes, locale),
+      value: formatLocalizedDuration(elapsedDisplayMinutes, locale),
       detail: `${Math.round((dayMetrics.elapsedMinutes / metricBaseMinutes) * 100)}% de ${scopeLabel}`,
       ratio: dayMetrics.elapsedMinutes / metricBaseMinutes,
       tone: '#111111',
