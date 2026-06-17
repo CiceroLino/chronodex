@@ -14,7 +14,7 @@ import {
   SUPPORTED_LOCALES,
   type AppLocale,
 } from './i18n';
-import { CATEGORY_COLORS, CATEGORIES, type Notice, type Reminder, type TimeBlock } from './types';
+import { CATEGORY_COLORS, type Notice, type Reminder, type TimeBlock } from './types';
 import {
   getBlockEventKey,
   getDueBlockEvents,
@@ -22,6 +22,11 @@ import {
   getReminderEventKey,
   parseReminders,
 } from './utils/reminders';
+import {
+  createChronodexExportData,
+  parseBlocks,
+  parseChronodexImportData,
+} from './utils/dataPortability';
 import {
   detectOverlaps,
   getBlockTimeRangeFromMinuteRange,
@@ -243,8 +248,7 @@ function readStoredBlocks(): TimeBlock[] {
   }
 
   try {
-    const parsed = JSON.parse(stored);
-    return parseBlocks(parsed);
+    return parseBlocks(JSON.parse(stored));
   } catch {
     return [];
   }
@@ -262,46 +266,6 @@ function readStoredReminders(): Reminder[] {
   } catch {
     return [];
   }
-}
-
-function parseBlocks(value: unknown): TimeBlock[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value.flatMap((item): TimeBlock[] => {
-    if (!item || typeof item !== 'object') {
-      return [];
-    }
-
-    const block = item as Partial<TimeBlock>;
-    const category = block.category;
-    const hasValidCategory =
-      typeof category === 'string' && CATEGORIES.includes(category);
-
-    if (
-      typeof block.title !== 'string' ||
-      typeof block.startTime !== 'string' ||
-      typeof block.endTime !== 'string' ||
-      typeof block.color !== 'string' ||
-      !hasValidCategory
-    ) {
-      return [];
-    }
-
-    return [
-      {
-        id: typeof block.id === 'string' ? block.id : createId(),
-        title: block.title,
-        description: typeof block.description === 'string' ? block.description : '',
-        startTime: block.startTime,
-        endTime: block.endTime,
-        category,
-        color: block.color,
-        highlighted: block.highlighted === true,
-      },
-    ];
-  });
 }
 
 function sortBlocks(blocks: TimeBlock[]): TimeBlock[] {
@@ -651,13 +615,14 @@ function App() {
   }
 
   function exportJson() {
-    const blob = new Blob([JSON.stringify(blocks, null, 2)], {
+    const exportData = createChronodexExportData(blocks, reminders);
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
       type: 'application/json',
     });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = 'chronodex-blocos.json';
+    anchor.download = `chronodex-${new Date().toISOString().slice(0, 10)}.json`;
     anchor.click();
     URL.revokeObjectURL(url);
     setIsVisualSettingsOpen(false);
@@ -672,14 +637,15 @@ function App() {
 
     try {
       const content = await file.text();
-      const parsedBlocks = parseBlocks(JSON.parse(content));
+      const importedData = parseChronodexImportData(JSON.parse(content));
 
-      if (parsedBlocks.length === 0) {
+      if (importedData.blocks.length === 0 && importedData.reminders.length === 0) {
         setError(messages.invalidImportError);
         return;
       }
 
-      setBlocks(parsedBlocks);
+      setBlocks(importedData.blocks);
+      setReminders(importedData.reminders);
       setEditingBlock(null);
       setSelectedBlock(null);
       setError(null);
