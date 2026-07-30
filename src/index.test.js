@@ -21,4 +21,32 @@ describe('global styles', () => {
     expect(reminderForm).toContain('<TimeInput');
     expect(timeBlockForm).toContain('<TimeInput');
   });
+
+  test('keeps Chronodex entrance motion on its final geometry', () => {
+    const lineEntrance = css.slice(
+      css.indexOf('@keyframes chronodex-line-draw'),
+      css.indexOf('@keyframes chronodex-tick-draw'),
+    );
+    const tickEntrance = css.slice(
+      css.indexOf('@keyframes chronodex-tick-draw'),
+      css.indexOf('@keyframes chronodex-label-in'),
+    );
+
+    expect(lineEntrance).not.toContain('stroke-dashoffset');
+    expect(lineEntrance).not.toContain('stroke-dasharray');
+    expect(tickEntrance).not.toContain('transform:');
+    expect(css).not.toContain('transform: scale(0.985)');
+  });
+
+  test('provides a static Chronodex state for reduced motion', () => {
+    expect(css).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*?\.chronodex-line-draw/,
+    );
+    expect(css).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*?animation:\s*none\s*!important/,
+    );
+    expect(css).toMatch(
+      /\*::after\s*\{\s*transition:\s*none\s*!important/,
+    );
+  });
 });

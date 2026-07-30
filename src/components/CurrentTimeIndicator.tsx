@@ -1,3 +1,4 @@
+import { CHRONODEX_GEOMETRY } from '../chronodexGeometry';
 import { minutesToChronodexAngle, polarToCartesian } from '../utils/time';
 
 type CurrentTimeIndicatorProps = {
@@ -8,10 +9,21 @@ export function CurrentTimeIndicator({ now }: CurrentTimeIndicatorProps) {
   const minutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
   const angle = minutesToChronodexAngle(minutes);
   const isPm = now.getHours() >= 12;
-  const innerRadius = isPm ? 160 : 120;
-  const outerRadius = isPm ? 194 : 150;
-  const inner = polarToCartesian(250, 250, innerRadius, angle);
-  const outer = polarToCartesian(250, 250, outerRadius, angle);
+  const radii = isPm
+    ? CHRONODEX_GEOMETRY.currentTime.pm
+    : CHRONODEX_GEOMETRY.currentTime.am;
+  const inner = polarToCartesian(
+    CHRONODEX_GEOMETRY.center,
+    CHRONODEX_GEOMETRY.center,
+    radii.inner,
+    angle,
+  );
+  const outer = polarToCartesian(
+    CHRONODEX_GEOMETRY.center,
+    CHRONODEX_GEOMETRY.center,
+    radii.outer,
+    angle,
+  );
 
   return (
     <g>
@@ -23,6 +35,7 @@ export function CurrentTimeIndicator({ now }: CurrentTimeIndicatorProps) {
         stroke="currentColor"
         strokeWidth="0.9"
         strokeLinecap="round"
+        className="chronodex-current-time chronodex-content-in"
       />
     </g>
   );

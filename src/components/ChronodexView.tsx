@@ -1,5 +1,9 @@
 import { type PointerEvent, useState } from 'react';
 import {
+  CHRONODEX_GEOMETRY,
+  describeChronodexRingClip,
+} from '../chronodexGeometry';
+import {
   formatLocalizedDuration,
   getCategoryLabel,
   getMessages,
@@ -44,12 +48,11 @@ type ChronodexViewProps = {
 
 const hourIndexes = Array.from({ length: 12 }, (_, index) => index);
 const guideRings = [
-  { period: 'AM', inner: 120, outer: 150, labelRadius: 108, tickInner: 151, tickOuter: 158 },
-  { period: 'PM', inner: 160, outer: 194, labelRadius: 209, tickInner: 195, tickOuter: 205 },
+  { period: 'AM', ...CHRONODEX_GEOMETRY.rings.am },
+  { period: 'PM', ...CHRONODEX_GEOMETRY.rings.pm },
 ];
 const previewBlockColor = '#111111';
 const dayMinutes = 1440;
-const compassNodeRadius = 236;
 const compassNodeMaxDragOffset = 34;
 const compassNodeScopeOffset = 18;
 const compassInsightByHour: Array<{ hour: number; mode: CompassInsight }> = [
@@ -338,6 +341,20 @@ export function ChronodexView({
               }
             }}
           >
+            <defs>
+              {(['am', 'pm'] as const).map((period) => (
+                <clipPath
+                  key={period}
+                  id={`chronodex-${period}-ring-clip`}
+                >
+                  <path
+                    d={describeChronodexRingClip(period)}
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                  />
+                </clipPath>
+              ))}
+            </defs>
             <circle
               cx="250"
               cy="250"
@@ -358,18 +375,19 @@ export function ChronodexView({
                   stroke="currentColor"
                   strokeWidth="0.55"
                   className="chronodex-line-draw"
-                  style={{ animationDelay: `${ringIndex * 120}ms` }}
+                  style={{ animationDelay: `${ringIndex * 30}ms` }}
                   pathLength={1}
                 />
                 <circle
                   cx="250"
                   cy="250"
-                  r={ring.period === 'PM' && draggedInsight ? ring.outer + 12 : ring.outer}
+                  r={ring.outer}
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth={ring.period === 'PM' && draggedInsight ? 0.95 : 0.55}
-                  className="chronodex-line-draw transition-[r,stroke-width] duration-200"
-                  style={{ animationDelay: `${60 + ringIndex * 120}ms` }}
+                  strokeWidth="0.55"
+                  className="chronodex-line-draw"
+                  data-chronodex-ring={`${ring.period.toLowerCase()}-outer`}
+                  style={{ animationDelay: `${30 + ringIndex * 30}ms` }}
                   pathLength={1}
                 />
                 {hourIndexes.map((hour) => {
@@ -392,7 +410,7 @@ export function ChronodexView({
                       stroke="currentColor"
                       strokeWidth="0.62"
                       className="chronodex-line-draw"
-                      style={{ animationDelay: `${180 + hour * 18 + ringIndex * 80}ms` }}
+                      style={{ animationDelay: `${70 + ringIndex * 40}ms` }}
                       pathLength={1}
                     />
                   );
@@ -420,7 +438,7 @@ export function ChronodexView({
                       strokeWidth={isHour ? 0.62 : 0.34}
                       strokeLinecap="round"
                       className="chronodex-tick-draw"
-                      style={{ animationDelay: `${280 + tick * 7 + ringIndex * 90}ms` }}
+                      style={{ animationDelay: `${120 + ringIndex * 40}ms` }}
                     />
                   );
                 })}
@@ -441,7 +459,7 @@ export function ChronodexView({
                       textAnchor="middle"
                       dominantBaseline="middle"
                       className="chronodex-label-in chronodex-hour-label fill-gray-600 text-[8.5px] font-medium dark:fill-neutral-400"
-                      style={{ animationDelay: `${520 + hour * 24 + ringIndex * 80}ms` }}
+                      style={{ animationDelay: `${180 + ringIndex * 30}ms` }}
                     >
                       {formatHourLabel(hour, ring.period)}
                     </text>
@@ -452,11 +470,9 @@ export function ChronodexView({
 
             <g>
               {previewRanges.map((range, index) => {
-                const radii = range.period === 'am'
-                  ? { inner: 120, outer: 150 }
-                  : { inner: 160, outer: 194 };
+                const radii = CHRONODEX_GEOMETRY.rings[range.period];
                 const angles = getChronodexAngleRange(range.start, range.end);
-                const markerRadius = radii.outer;
+                const markerRadius = radii.outer - 1.5;
                 const startMarker = polarToCartesian(
                   250,
                   250,
@@ -471,7 +487,11 @@ export function ChronodexView({
                 );
 
                 return (
-                  <g key={`hover-preview-${index}`} className="pointer-events-none">
+                  <g
+                    key={`hover-preview-${index}`}
+                    className="pointer-events-none"
+                    clipPath={`url(#chronodex-${range.period}-ring-clip)`}
+                  >
                     <path
                       d={describeAnnularSector(
                         250,
@@ -543,7 +563,7 @@ export function ChronodexView({
                 <circle
                   cx="250"
                   cy="250"
-                  r="226"
+                  r={CHRONODEX_GEOMETRY.compassProgressRadius}
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1"
@@ -553,13 +573,13 @@ export function ChronodexView({
                   d={describeArc(
                     250,
                     250,
-                    226,
+                    CHRONODEX_GEOMETRY.compassProgressRadius,
                     -90,
                     -90 + currentInsight.ratio * (isSectorScope ? 90 : 360),
                   )}
                   fill="none"
                   stroke={currentInsight.tone}
-                  strokeWidth="5"
+                  strokeWidth="3.2"
                   strokeLinecap="round"
                   pathLength={1}
                   className="chronodex-compass-progress"
@@ -571,14 +591,14 @@ export function ChronodexView({
               const basePoint = polarToCartesian(
                 250,
                 250,
-                compassNodeRadius,
+                CHRONODEX_GEOMETRY.compassNodeRadius,
                 minutesToChronodexAngle(hour * 60),
               );
               const dragOffset = draggedInsight?.mode === mode ? draggedInsight.offset : 0;
               const point = polarToCartesian(
                 250,
                 250,
-                compassNodeRadius - dragOffset,
+                CHRONODEX_GEOMETRY.compassNodeRadius - dragOffset,
                 minutesToChronodexAngle(hour * 60),
               );
               const insight = compassInsights[mode];
@@ -605,7 +625,7 @@ export function ChronodexView({
                     stroke="currentColor"
                     strokeWidth={isActiveInsight ? 1.55 : 0.9}
                     className="chronodex-node-in fill-white transition-[r,stroke-width] duration-150 dark:fill-[#111111]"
-                    style={{ animationDelay: `${680 + index * 70}ms` }}
+                    style={{ animationDelay: `${260 + index * 30}ms` }}
                   />
                   <circle
                     cx={point.x}
@@ -708,7 +728,10 @@ export function ChronodexView({
           ) : null}
 
           {currentInsight ? (
-            <div className="pointer-events-none absolute left-1/2 top-8 z-10 -translate-x-1/2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:border-neutral-800 dark:bg-[#191919]">
+            <div
+              data-testid="chronodex-compass-insight"
+              className="pointer-events-none absolute left-1/2 top-8 z-10 -translate-x-1/2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:border-neutral-800 dark:bg-[#191919] xl:left-[calc(100%+1.5rem)] xl:top-1/2 xl:w-48 xl:translate-x-0 xl:-translate-y-1/2"
+            >
               <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-neutral-500">
                 {currentInsight.label}
               </p>

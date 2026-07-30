@@ -35,6 +35,11 @@ export function SpiderDashboard({ blocks, locale }: SpiderDashboardProps) {
     .join('|');
 
   useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setDrawProgress(1);
+      return;
+    }
+
     let frame = 0;
     const startedAt = performance.now();
 

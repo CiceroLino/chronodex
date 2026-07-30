@@ -112,24 +112,20 @@ button:disabled {
 @keyframes chronodex-line-draw {
   from {
     opacity: 0;
-    stroke-dashoffset: 1;
   }
 
   to {
     opacity: 1;
-    stroke-dashoffset: 0;
   }
 }
 
 @keyframes chronodex-tick-draw {
   from {
     opacity: 0;
-    transform: scaleY(0.35);
   }
 
   to {
     opacity: 1;
-    transform: scaleY(1);
   }
 }
 
@@ -155,29 +151,26 @@ button:disabled {
   }
 }
 
-@keyframes chronodex-block-in {
+@keyframes chronodex-content-in {
   from {
-    transform: scale(0.985);
+    opacity: 0;
   }
 
   to {
-    transform: scale(1);
+    opacity: 1;
   }
 }
 
 .chronodex-line-draw {
-  animation: chronodex-line-draw 760ms ease-out both;
-  stroke-dasharray: 1;
+  animation: chronodex-line-draw 220ms ease-out both;
 }
 
 .chronodex-tick-draw {
-  animation: chronodex-tick-draw 360ms ease-out both;
-  transform-box: fill-box;
-  transform-origin: center;
+  animation: chronodex-tick-draw 180ms ease-out both;
 }
 
 .chronodex-label-in {
-  animation: chronodex-label-in 360ms ease-out both;
+  animation: chronodex-label-in 160ms ease-out both;
 }
 
 .chronodex-hour-label {
@@ -192,27 +185,22 @@ button:disabled {
 }
 
 .chronodex-node-in {
-  animation: chronodex-node-in 420ms ease-out both;
+  animation: chronodex-node-in 180ms ease-out both;
   transform-box: fill-box;
   transform-origin: center;
 }
 
-.chronodex-block-in {
-  animation: chronodex-block-in 520ms ease-out both;
-  transform-box: fill-box;
-  transform-origin: center;
+.chronodex-content-in {
+  animation: chronodex-content-in 160ms ease-out 360ms both;
 }
 
 .chronodex-block-hoverable {
-  filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
   transition:
     fill-opacity 150ms ease,
-    filter 180ms ease,
     stroke-width 180ms ease;
 }
 
 .chronodex-block-hoverable:hover {
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.12));
   stroke-width: 1.35;
 }
 
@@ -243,17 +231,19 @@ button:disabled {
 @media (max-width: 767px) {
   .chronodex-line-draw {
     animation-delay: 0ms !important;
-    animation-duration: 420ms;
+    animation-duration: 180ms;
   }
 
   .chronodex-tick-draw,
   .chronodex-label-in,
-  .chronodex-node-in,
-  .chronodex-compass-sweep,
-  .chronodex-compass-progress,
-  .chronodex-block-in {
-    animation-delay: 120ms !important;
-    animation-duration: 260ms;
+  .chronodex-node-in {
+    animation-delay: 80ms !important;
+    animation-duration: 140ms;
+  }
+
+  .chronodex-content-in {
+    animation-delay: 200ms !important;
+    animation-duration: 140ms;
   }
 }
 
@@ -270,12 +260,10 @@ button:disabled {
 @keyframes chronodex-compass-sweep {
   from {
     opacity: 0;
-    transform: rotate(-18deg) scale(0.985);
   }
 
   to {
     opacity: 1;
-    transform: rotate(0deg) scale(1);
   }
 }
 
@@ -290,24 +278,17 @@ button:disabled {
 }
 
 .chronodex-compass-sweep {
-  animation: chronodex-compass-sweep 360ms ease-out both;
-  transform-box: fill-box;
-  transform-origin: center;
+  animation: chronodex-compass-sweep 180ms ease-out both;
 }
 
 .chronodex-compass-progress {
-  animation: chronodex-compass-progress 520ms ease-out both;
+  animation: chronodex-compass-progress 360ms ease-out both;
   stroke-dasharray: 1;
 }
 
 @keyframes chronodex-hover-preview-in {
   from {
     opacity: 0;
-    transform: scale(0.99);
-  }
-
-  to {
-    transform: scale(1);
   }
 }
 
@@ -335,4 +316,39 @@ button:disabled {
 
 .spider-legend-in {
   animation: spider-legend-in 360ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+
+  .modal-backdrop-in,
+  .modal-panel-in,
+  .chronodex-line-draw,
+  .chronodex-tick-draw,
+  .chronodex-label-in,
+  .chronodex-node-in,
+  .chronodex-content-in,
+  .chronodex-hover-preview-fill,
+  .chronodex-hover-preview-trace,
+  .chronodex-hover-preview-handle,
+  .chronodex-active-block-trace,
+  .chronodex-compass-sweep,
+  .chronodex-compass-progress,
+  .spider-legend-in {
+    animation: none !important;
+  }
+
+  .chronodex-block-hoverable,
+  .chronodex-node-in {
+    transition: none !important;
+  }
+
+  .chronodex-hover-preview-trace,
+  .chronodex-active-block-trace {
+    stroke-dasharray: none;
+  }
 }

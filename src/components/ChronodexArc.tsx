@@ -1,4 +1,5 @@
 import type { MouseEvent, PointerEvent } from 'react';
+import { CHRONODEX_GEOMETRY } from '../chronodexGeometry';
 import type { TimeBlock } from '../types';
 import {
   describeAnnularSector,
@@ -62,11 +63,9 @@ export function ChronodexArc({
   return (
     <g>
       {ranges.map((range, index) => {
-        const radii = range.period === 'am'
-          ? { inner: 120, outer: 150 }
-          : { inner: 160, outer: 194 };
+        const radii = CHRONODEX_GEOMETRY.rings[range.period];
         const angles = getChronodexAngleRange(range.start, range.end);
-        const markerRadius = radii.outer;
+        const markerRadius = radii.outer - 1.5;
         const startMarker = polarToCartesian(
           250,
           250,
@@ -81,7 +80,10 @@ export function ChronodexArc({
         );
 
         return (
-          <g key={`${block.id}-${index}`}>
+          <g
+            key={`${block.id}-${index}`}
+            clipPath={`url(#chronodex-${range.period}-ring-clip)`}
+          >
             <path
               d={describeAnnularSector(
                 250,
@@ -95,8 +97,8 @@ export function ChronodexArc({
               fillOpacity={fillOpacity}
               stroke={isSelected || block.highlighted ? 'currentColor' : '#262626'}
               strokeWidth={blockStrokeWidth}
-              className="chronodex-block-in chronodex-block-hoverable cursor-pointer outline-none transition-[fill-opacity] duration-150 hover:fill-opacity-60 focus:outline-none"
-              style={{ animationDelay: `${index * 80}ms` }}
+              className="chronodex-content-in chronodex-block-hoverable cursor-pointer outline-none transition-[fill-opacity] duration-150 hover:fill-opacity-60 focus:outline-none"
+              style={{ animationDelay: `${360 + index * 40}ms` }}
               role="button"
               tabIndex={0}
               aria-label={`${block.title}, ${block.startTime} até ${block.endTime}`}

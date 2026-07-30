@@ -1,3 +1,4 @@
+import { CHRONODEX_GEOMETRY } from '../chronodexGeometry';
 import { CATEGORIES, type Category, type TimeBlock } from '../types';
 
 export type MinuteRange = {
@@ -36,8 +37,8 @@ export type ChronodexMetricScope = 'day' | MinuteRange;
 const DAY_MINUTES = 1440;
 const HALF_DAY_MINUTES = 720;
 const SNAP_INTERVAL_MINUTES = 30;
-const AM_RING = { inner: 120, outer: 150 };
-const PM_RING = { inner: 160, outer: 194 };
+const AM_RING = CHRONODEX_GEOMETRY.rings.am;
+const PM_RING = CHRONODEX_GEOMETRY.rings.pm;
 
 export function timeToMinutes(time: string): number {
   const [hours, minutes] = time.split(':').map(Number);

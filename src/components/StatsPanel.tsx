@@ -38,7 +38,7 @@ export function StatsPanel({
     : null;
 
   return (
-    <div className="pointer-events-none absolute left-1/2 top-1/2 flex h-52 w-52 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-white text-center dark:bg-[#111111]">
+    <div className="chronodex-content-in pointer-events-none absolute left-1/2 top-1/2 flex h-52 w-52 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-white text-center dark:bg-[#111111]">
       <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-gray-500 dark:text-neutral-500">
         {weekday}
       </span>
