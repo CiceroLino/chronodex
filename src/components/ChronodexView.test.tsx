@@ -33,6 +33,17 @@ function renderChronodex() {
 }
 
 describe('ChronodexView motion geometry', () => {
+  test('uses only exact time ticks as radial guide divisions', () => {
+    const { container } = renderChronodex();
+
+    expect(
+      container.querySelectorAll('path.chronodex-line-draw'),
+    ).toHaveLength(0);
+    expect(
+      container.querySelectorAll('line.chronodex-tick-draw'),
+    ).toHaveLength(96);
+  });
+
   test('draws compass progress on the PM perimeter', () => {
     const { container } = renderChronodex();
 

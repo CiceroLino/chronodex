@@ -390,31 +390,6 @@ export function ChronodexView({
                   style={{ animationDelay: `${30 + ringIndex * 30}ms` }}
                   pathLength={1}
                 />
-                {hourIndexes.map((hour) => {
-                  const start = hour * 60 - 26;
-                  const end = hour * 60 + 26;
-                  const angles = getChronodexAngleRange(start, end);
-
-                  return (
-                    <path
-                      key={`${ring.period}-arm-${hour}`}
-                      d={describeAnnularSector(
-                        250,
-                        250,
-                        ring.inner,
-                        ring.outer,
-                        angles.startAngle,
-                        angles.endAngle,
-                      )}
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="0.62"
-                      className="chronodex-line-draw"
-                      style={{ animationDelay: `${70 + ringIndex * 40}ms` }}
-                      pathLength={1}
-                    />
-                  );
-                })}
 
                 {Array.from({ length: 48 }, (_, tick) => {
                   const angle = minutesToChronodexAngle(tick * 15);
