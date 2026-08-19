@@ -1,3 +1,5 @@
+
+
 # Chronodex
 
 A minimal radial time planner inspired by analog Chronodex diagrams, bullet journals, and technical editorial interfaces.
@@ -27,6 +29,7 @@ A minimal radial time planner inspired by analog Chronodex diagrams, bullet jour
 - Tailwind CSS
 - SVG
 - Vite
+- Vitest
 
 ## Run Locally
 
